@@ -1,0 +1,13 @@
+#pragma once
+#include "SGLMath.h"
+#include "SGLFramebuffer.h"
+#include "SGLMatrix2.h"
+#include "SGLMatrix3.h"
+#include "SGLMatrix4.h"
+#include "SGLRasterizer.h"
+#include "SGLShader.h"
+#include "SGLVector2.h"
+#include "SGLVector3.h"
+#include "SGLVector4.h"
+#include "SGLVertex.h"
+#include "SGLTexture.h"
