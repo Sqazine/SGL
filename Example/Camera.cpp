@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include "SGL.h"
+#include "../libSGL/libSGL.h"
 Camera::Camera(float left, float right, float top, float bottom, float znear, float zfar)
 	:m_Target(SGLVector3f::ZERO),m_Position(SGLVector3f(0.0f,0.0f,10.0f))
 {

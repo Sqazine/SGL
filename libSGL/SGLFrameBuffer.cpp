@@ -1,5 +1,6 @@
 #include "SGLFramebuffer.h"
 #include <memory>
+#include <cstring>
 #include "SGLMath.h"
 SGLColorbuffer::SGLColorbuffer(uint32_t width, uint32_t height)
 	:m_Width(width), m_Height(height), m_Buffer(new uint8_t[width * height * 4])
@@ -14,7 +15,6 @@ SGLColorbuffer::~SGLColorbuffer()
 
 void SGLColorbuffer::SetValue(uint32_t x, uint32_t y, const SGLVector4f& color)
 {
-	//在屏幕外的像素则丢弃
 	if (x >= m_Width || y >= m_Height)
 		return;
 

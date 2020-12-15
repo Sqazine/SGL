@@ -2,7 +2,7 @@
 #include "BlinnPhongShader.h"
 #include "Timer.h"
 #include "FPSCamera.h"
-#include <memory>
+
 Application::Application(const std::string& appName,uint32_t frameWidth, uint32_t frameHeight)
 	:m_IsRunning(true),m_IsFocusWindow(false),m_AppName(appName),m_FrameWidth(frameWidth),m_FrameHeight(frameHeight)
 {
@@ -18,7 +18,7 @@ void Application::Run()
 	Init();
 	while (m_IsRunning)
 	{
-		//计算增量时间
+		//璁＄畻澧為噺鏃堕棿
 		Timer::CalcDeltaTime();
 		ProcessInput();
 		Update();
@@ -30,7 +30,7 @@ void Application::Run()
 
 void Application::Init()
 {
-	//初始化SDL
+	//鍒濆鍖朣DL
 	SDL_Init(SDL_INIT_VIDEO);
 
 	m_Window = std::make_shared<Window>(m_AppName, m_FrameWidth, m_FrameHeight);

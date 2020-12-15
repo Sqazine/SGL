@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include <memory>
 #include <SDL2/SDL.h>
 #include "Model.h"
 #include "Camera.h"

@@ -1,5 +1,5 @@
 #pragma once
-#include "SGL.h"
+#include "../libSGL/libSGL.h"
 #include "Texture.h"
 class BlinnPhongShader
 	:SGLShader

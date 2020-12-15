@@ -1,7 +1,7 @@
+#include <memory>
 #include "Application.h"
 #include "Camera.h"
-#include "SGL.h"
-#include <memory>
+#include "../libSGL/libSGL.h"
 
 class PureColorShader :
 	public SGLShader
@@ -30,7 +30,6 @@ private:
 	void Init() override
 	{
 		Application::Init();
-		//m_Camera = std::make_shared<Camera>();
 	}
 
 	void Draw() override
@@ -40,7 +39,6 @@ private:
 	}
 
 	std::shared_ptr<PureColorShader> m_Shader;
-	//std::shared_ptr<Camera> m_Camera;
 	std::shared_ptr<Model> m_Model;
 };
 

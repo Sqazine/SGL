@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include "Camera.h"
-#include "SGL.h"
+#include "../libSGL/libSGL.h"
 class FPSCamera:public Camera
 {
 public:

@@ -1,6 +1,6 @@
 #include "Model.h"
 #include <iostream>
-#include "SGL.h"
+#include "../libSGL/libSGL.h"
 #include <iostream>
 Model::Model(const std::string& filePath)
 	:m_Position(SGLVector3f::ZERO), m_Rotation(SGLVector3f::ZERO), m_Scale(SGLVector3f(1.0f))
@@ -87,7 +87,7 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* aimesh, const aiScene* scene)
 	std::vector<uint32_t> tmpIndices;
 	std::vector<std::shared_ptr<Texture>> tmpTextures;
 	std::vector<aiFace*> tmpFaces;
-	//´¦ÀíÍø¸ñ¶¥µã
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ñ¶¥µï¿½
 	for (uint32_t i = 0; i < aimesh->mNumVertices; ++i)
 	{
 		SGLVertex tmpVert;
@@ -98,7 +98,7 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* aimesh, const aiScene* scene)
 		tmpVert.bitangent = SGLVector3f(aimesh->mBitangents[i].x, aimesh->mBitangents[i].y, aimesh->mBitangents[i].z);
 		tmpVertices.emplace_back(tmpVert);
 	}
-	//´¦ÀíÍø¸ñ¶¥µãË÷Òý
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ñ¶¥µï¿½ï¿½ï¿½ï¿½ï¿½
 	for (uint32_t i = 0; i < aimesh->mNumFaces; ++i)
 	{
 		aiFace face = aimesh->mFaces[i];
@@ -106,7 +106,7 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* aimesh, const aiScene* scene)
 			tmpIndices.emplace_back(face.mIndices[j]);
 	}
 
-	//´¦ÀíÍø¸ñÎÆÀí
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (aimesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[aimesh->mMaterialIndex];

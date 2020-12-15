@@ -1,6 +1,5 @@
 #include "BlinnPhongShader.h"
-#include "SGLVector4.h"
-#include "SGLMath.h"
+#include "../libSGL/libSGL.h"
 #include <iostream>
 BlinnPhongShader::BlinnPhongShader()
 {
@@ -20,12 +19,12 @@ SGLVertex BlinnPhongShader::VertexShader(const SGLVertex& modelVertex)
 
 SGLVector4f BlinnPhongShader::FragmentShader(const SGLVertex& screenVertex, uint32_t bufferWidth, uint32_t bufferHeight)
 {
-	SGLVector3 normalVS = SGLVector3f::Normalize(SGLVector4f::ToVector3(m_NormalTexture->GetTexel(screenVertex.texcoord))*2.0f-1.0f);
+	SGLVector3f normalVS = SGLVector3f::Normalize(SGLVector4f::ToVector3(m_NormalTexture->GetTexel(screenVertex.texcoord))*2.0f-1.0f);
 
 	SGLVector3f fragPosNDC((screenVertex.position.x / bufferWidth * 2.0f) - 1.0f, (screenVertex.position.y / bufferHeight * 2.0f) - 1.0f, screenVertex.position.z);
-	SGLVector4f fragPosCS = SGLVector4(fragPosNDC, 1.0f) * screenVertex.position.w;
+	SGLVector4f fragPosCS = SGLVector4f(fragPosNDC, 1.0f) * screenVertex.position.w;
 	SGLVector3f fragPosVS = SGLVector4f::ToVector3(fragPosCS * SGLMatrix4f::Inverse(m_ProjectionMatrix));
-	SGLVector3f viewDirVS = SGLVector3f::Normalize(SGLVector3(-fragPosVS));
+	SGLVector3f viewDirVS = SGLVector3f::Normalize(SGLVector3f(-fragPosVS));
 
 	SGLVector4f ambientLight = m_AmbientLightIntensity * SGLVector4f::ToVector3(m_DiffuseTexture->GetTexel(screenVertex.texcoord));
 	SGLVector4f diffuseLight = (SGLVector3f::Dot(-m_LightDir, normalVS) * 0.5f + 0.5f) * m_DiffuseTexture->GetTexel(screenVertex.texcoord);

@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "SGL.h"
+#include "../libSGL/libSGL.h"
 #include "Texture.h"
 #include <assimp/mesh.h>
 

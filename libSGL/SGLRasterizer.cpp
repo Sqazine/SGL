@@ -145,7 +145,7 @@ void SGLRasterizer::DrawElements(RENDER_MODE mode, uint32_t index, const std::ve
 
 void SGLRasterizer::DrawPoint(const SGLVertex& model_p)
 {
-	//Ä£ĞÍ¿Õ¼ä->ÊÀ½ç¿Õ¼ä->¹Û²ì¿Õ¼ä->²Ã¼ô¿Õ¼ä->NDC¿Õ¼ä->ÆÁÄ»¿Õ¼ä
+	//æ¨¡å‹ç©ºé—´->ä¸–ç•Œç©ºé—´->è§‚å¯Ÿç©ºé—´->è£å‰ªç©ºé—´->NDCç©ºé—´->å±å¹•ç©ºé—´
 	SGLVertex clip_p = m_Shader->VertexShader(model_p);
 	SGLVector3f ndc_position = ToNDCSpace(clip_p.position);
 	SGLVector2i32 screen_position = ToScreenSpace(ndc_position);
@@ -158,7 +158,7 @@ void SGLRasterizer::DrawPoint(const SGLVertex& model_p)
 		screen_vertex.tangent = model_p.tangent;
 		screen_vertex.bitangent = model_p.bitangent;
 
-		//¸ù¾İÖ¸¶¨µÄ¶¥µã»æÖÆÏñËØ
+		//æ ¹æ®æŒ‡å®šçš„é¡¶ç‚¹ç»˜åˆ¶åƒç´ 
 		for (uint32_t i = screen_position.x - m_PointSize / 2; i <= screen_position.x + m_PointSize / 2; ++i)
 			for (uint32_t j = screen_position.y - m_PointSize / 2; j <= screen_position.y + m_PointSize / 2; ++j)
 				if (i >= 0 && i < m_BufferWidth && j >= 0 && j < m_BufferHeight)
@@ -172,7 +172,7 @@ void SGLRasterizer::DrawPoint(const SGLVertex& model_p)
 
 void SGLRasterizer::DrawLine(const  SGLVertex& model_p0, const  SGLVertex& model_p1)
 {
-	//Ä£ĞÍ¿Õ¼ä->ÊÀ½ç¿Õ¼ä->¹Û²ì¿Õ¼ä->²Ã¼ô¿Õ¼ä->NDC¿Õ¼ä->ÆÁÄ»¿Õ¼ä
+	//æ¨¡å‹ç©ºé—´->ä¸–ç•Œç©ºé—´->è§‚å¯Ÿç©ºé—´->è£å‰ªç©ºé—´->NDCç©ºé—´->å±å¹•ç©ºé—´
 	SGLVertex clip_p0 = m_Shader->VertexShader(model_p0);
 	SGLVector3f ndc_position_p0 = ToNDCSpace(clip_p0.position);
 	SGLVector2i32 screen_position_p0 = ToScreenSpace(ndc_position_p0);
@@ -181,7 +181,7 @@ void SGLRasterizer::DrawLine(const  SGLVertex& model_p0, const  SGLVertex& model
 	SGLVector3f ndc_position_p1 = ToNDCSpace(clip_p1.position);
 	SGLVector2i32 screen_position_p1 =ToScreenSpace(ndc_position_p1);
 
-	//Bresenham»­ÏßËã·¨
+	//Bresenhamç”»çº¿ç®—æ³•
 	bool reverse = false;
 	if (SGLMath::Abs(static_cast<int>(screen_position_p1.x - screen_position_p0.x)) < SGLMath::Abs(static_cast<int>(screen_position_p1.y - screen_position_p0.y)))
 	{
@@ -203,30 +203,30 @@ void SGLRasterizer::DrawLine(const  SGLVertex& model_p0, const  SGLVertex& model
 	uint32_t y = screen_position_p0.y;
 
 	float screen_pos_len = (screen_position_p1 - screen_position_p0).Length();
-	SGLVector3 ndc_dir = ndc_position_p1 - ndc_position_p0;
+	SGLVector3f ndc_dir = ndc_position_p1 - ndc_position_p0;
 	for (uint32_t x = screen_position_p0.x; x <= screen_position_p1.x; ++x)
 	{
 		if (0 <= x && x < m_BufferWidth && 0 <= y && y < m_BufferHeight)
 		{
-			////½«Ö±ÏßÓ³Éä»ØÔ­À´µÄÇøÓò
+			////å°†ç›´çº¿æ˜ å°„å›åŸæ¥çš„åŒºåŸŸ
 			if (reverse)
 				std::swap(x, y);
 
-			//¶ÔÃ¿¸öÏñËØ½øĞĞ×ÅÉ«
+			//å¯¹æ¯ä¸ªåƒç´ è¿›è¡Œç€è‰²
 			float factor = SGLVector2f(x - screen_position_p0.x, y - screen_position_p0.y).Length() / screen_pos_len;
 
 			SGLVertex screen_vertex;
 			screen_vertex.position = SGLVector3f(x, y, ndc_position_p0.z * (1 - factor) + ndc_position_p1.z * factor);
 			screen_vertex.texcoord = model_p0.texcoord * (1 - factor) + model_p1.texcoord * factor;
 
-			//½øĞĞÉî¶È²âÊÔ
+			//è¿›è¡Œæ·±åº¦æµ‹è¯•
 			if (m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_vertex.position.z)
 			{
 				m_Framebuffer->GetDepthbuffer()->SetValue(x, y, screen_vertex.position.z);
 				m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_Shader->FragmentShader(screen_vertex, m_BufferWidth, m_BufferHeight));
 			}
 
-			//¼ÌĞøÏÂÒ»²½µÄ¼ÆËã
+			//ç»§ç»­ä¸‹ä¸€æ­¥çš„è®¡ç®—
 			if (reverse)
 				std::swap(x, y);
 
@@ -250,7 +250,7 @@ void SGLRasterizer::DrawTriangle_WireFrame(const SGLVertex& model_p0, const SGLV
 
 void SGLRasterizer::DrawTriangle_Solid(const SGLVertex& model_p0, const SGLVertex& model_p1, const SGLVertex& model_p2)
 {
-	//Ä£ĞÍ¿Õ¼ä->ÊÀ½ç¿Õ¼ä->¹Û²ì¿Õ¼ä->²Ã¼ô¿Õ¼ä->NDC¿Õ¼ä->ÆÁÄ»¿Õ¼ä
+	//æ¨¡å‹ç©ºé—´->ä¸–ç•Œç©ºé—´->è§‚å¯Ÿç©ºé—´->è£å‰ªç©ºé—´->NDCç©ºé—´->å±å¹•ç©ºé—´
 	SGLVertex clip_p0 = m_Shader->VertexShader(model_p0);
 	SGLVector3f ndc_position_p0 = ToNDCSpace(clip_p0.position);
 	SGLVector2i32 screen_position_p0 =ToScreenSpace(ndc_position_p0);
@@ -263,21 +263,21 @@ void SGLRasterizer::DrawTriangle_Solid(const SGLVertex& model_p0, const SGLVerte
 	SGLVector3f ndc_position_p2 = ToNDCSpace(clip_p2.position);
 	SGLVector2i32 screen_position_p2 = ToScreenSpace(ndc_position_p2);
 
-	//Èı½ÇĞÎ¹âÕ¤»¯²¿·Ö
+	//ä¸‰è§’å½¢å…‰æ …åŒ–éƒ¨åˆ†
 
-	//È¡Èı½ÇĞÎµÄAABB
+	//å–ä¸‰è§’å½¢çš„AABB
 	int32_t xMin = SGLMath::Min(screen_position_p0.x, SGLMath::Min(screen_position_p1.x, screen_position_p2.x));
 	int32_t yMin = SGLMath::Min(screen_position_p0.y, SGLMath::Min(screen_position_p1.y, screen_position_p2.y));
 	int32_t xMax = SGLMath::Max(screen_position_p0.x, SGLMath::Max(screen_position_p1.x, screen_position_p2.x));
 	int32_t yMax = SGLMath::Max(screen_position_p0.y, SGLMath::Max(screen_position_p1.y, screen_position_p2.y));
 
-	//½«AABB·¶Î§½Ø¶ÏÎªÆÁÄ»´óĞ¡£¬ÔÚÆÁÄ»ÍâµÄÏñËØÔò¶ªÆú
+	//å°†AABBèŒƒå›´æˆªæ–­ä¸ºå±å¹•å¤§å°ï¼Œåœ¨å±å¹•å¤–çš„åƒç´ åˆ™ä¸¢å¼ƒ
 	xMin = SGLMath::Clamp(xMin, 0,static_cast<int32_t>(m_BufferWidth - 1));
 	yMin = SGLMath::Clamp(yMin, 0,static_cast<int32_t>(m_BufferHeight - 1));
 	xMax = SGLMath::Clamp(xMax, 0,static_cast<int32_t>(m_BufferWidth - 1));
 	yMax = SGLMath::Clamp(yMax, 0,static_cast<int32_t>(m_BufferHeight - 1));
 
-	//ÖØĞÄ×ø±êÅĞ¶ÏAABBÄÚµÄµ±Ç°¶¥µãÊÇ·ñÔÚÈı½ÇĞÎÄÚ²¿
+	//é‡å¿ƒåæ ‡åˆ¤æ–­AABBå†…çš„å½“å‰é¡¶ç‚¹æ˜¯å¦åœ¨ä¸‰è§’å½¢å†…éƒ¨
 	for (uint32_t x = xMin; x <= xMax; ++x)
 	{
 		for (uint32_t y = yMin; y <= yMax; ++y)
@@ -290,7 +290,7 @@ void SGLRasterizer::DrawTriangle_Solid(const SGLVertex& model_p0, const SGLVerte
 			screen_vertex.normal = model_p0.normal * screen_bc_coord.x + model_p1.normal * screen_bc_coord.y + model_p2.normal * screen_bc_coord.z;
 			screen_vertex.tangent = model_p0.tangent.x * screen_bc_coord.x + model_p1.tangent.x * screen_bc_coord.y + model_p2.tangent.x * screen_bc_coord.z;
 			screen_vertex.bitangent = model_p0.bitangent.x * screen_bc_coord.x + model_p1.bitangent.x * screen_bc_coord.y + model_p2.bitangent.x * screen_bc_coord.z;
-			//Èç¹ûµ±Ç°Æ¬ÔªÔÚÈı½ÇĞÎÄÚÇÒÍ¨¹ıÉî¶È²âÊÔÔòäÖÈ¾µ½ÑÕÉ«»º´æÖĞ£¬·ñÔò¶ªÆú¸ÃÆ¬Ôª(ÕâÀïÊ¹ÓÃÌáÇ°Éî¶È²âÊÔ)
+			//å¦‚æœå½“å‰ç‰‡å…ƒåœ¨ä¸‰è§’å½¢å†…ä¸”é€šè¿‡æ·±åº¦æµ‹è¯•åˆ™æ¸²æŸ“åˆ°é¢œè‰²ç¼“å­˜ä¸­ï¼Œå¦åˆ™ä¸¢å¼ƒè¯¥ç‰‡å…ƒ(è¿™é‡Œä½¿ç”¨æå‰æ·±åº¦æµ‹è¯•)
 			if (screen_bc_coord.x >= 0.0f && screen_bc_coord.y >= 0.0f && screen_bc_coord.z >= 0.0f && 
 				m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_vertex.position.z && screen_vertex.position.z >= -1.0f)
 			{
