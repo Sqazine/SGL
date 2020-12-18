@@ -1,5 +1,5 @@
 #pragma once
-#include "../libSGL/libSGL.h"
+#include "SGL.h"
 #include <SDL2/SDL.h>
 class Camera
 {

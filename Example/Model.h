@@ -1,5 +1,5 @@
 #pragma once
-#include "../libSGL/libSGL.h"
+#include "SGL.h"
 #include <vector>
 #include "Texture.h"
 #include <assimp/Importer.hpp>

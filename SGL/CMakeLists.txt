@@ -1,0 +1,3 @@
+
+FILE(GLOB SGL_DIR *)
+add_library(SGL STATIC ${SGL_DIR})

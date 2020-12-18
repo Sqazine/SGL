@@ -1,5 +1,5 @@
 #include "BlinnPhongShader.h"
-#include "../libSGL/libSGL.h"
+#include "SGL.h"
 #include <iostream>
 BlinnPhongShader::BlinnPhongShader()
 {

@@ -4,7 +4,7 @@
 #include "FPSCamera.h"
 
 Application::Application(const std::string& appName,uint32_t frameWidth, uint32_t frameHeight)
-	:m_IsRunning(true),m_IsFocusWindow(false),m_AppName(appName),m_FrameWidth(frameWidth),m_FrameHeight(frameHeight)
+	:m_IsRunning(true),m_AppName(appName),m_FrameWidth(frameWidth),m_FrameHeight(frameHeight)
 {
 
 }
@@ -37,11 +37,7 @@ void Application::Init()
 
 	m_SDLRenderer =std::shared_ptr<SDL_Renderer>(SDL_CreateRenderer(m_Window->GetHandle(), -1, SDL_RENDERER_PRESENTVSYNC|SDL_RENDERER_ACCELERATED));
 	m_Rasterizer = std::make_shared<SGLRasterizer>(m_FrameWidth,m_FrameHeight);
-
-	if (m_IsFocusWindow)
-		SDL_SetRelativeMouseMode(SDL_TRUE);
-	else SDL_SetRelativeMouseMode(SDL_FALSE);
-
+	
 }
 
 void Application::ProcessInput()
@@ -58,6 +54,17 @@ void Application::ProcessInput()
 	if (keyboardState[SDL_SCANCODE_ESCAPE])
 		m_IsRunning = false;
 }
+
+void Application::Update()
+{
+
+}
+
+void Application::Draw()
+{
+	
+}
+	
 
 void Application::CleanUp()
 {

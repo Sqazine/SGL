@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
-#include "../libSGL/libSGL.h"
+#include "SGL.h"
 #include <assimp/material.h>
 
 class Texture:public SGLTexture2D
