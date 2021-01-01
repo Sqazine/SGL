@@ -50,7 +50,7 @@ enum class  BLEND_MODE
 class  SGLRasterizer
 {
 public:
-	SGLRasterizer(uint32_t width, uint32_t height);
+	SGLRasterizer(const SGLVector2u32 bufferExtent);
 	~SGLRasterizer();
 
 	const std::shared_ptr<SGLFramebuffer>& GetFramebuffer() const;
@@ -89,7 +89,7 @@ private:
 
 	std::shared_ptr<SGLFramebuffer> m_Framebuffer;
 
-	uint32_t m_BufferWidth, m_BufferHeight;
+	SGLVector2u32 m_BufferExtent;
 
 	bool m_IsDepthTest;
 

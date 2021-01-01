@@ -260,7 +260,7 @@ inline SGLMatrix4<T> operator*(const SGLMatrix4<T>& left, const T& value)
 template<typename T>
 inline SGLMatrix4<T>& SGLMatrix4<T>::operator+=(const SGLMatrix4<T>& right)
 {
-	// TODO: 在此处插入 return 语句
+	
 	*this = *this + right;
 	return *this;
 }
@@ -268,7 +268,7 @@ inline SGLMatrix4<T>& SGLMatrix4<T>::operator+=(const SGLMatrix4<T>& right)
 template<typename T>
 inline SGLMatrix4<T>& SGLMatrix4<T>::operator-=(const SGLMatrix4<T>& right)
 {
-	// TODO: 在此处插入 return 语句
+	
 	*this = this - right;
 	return *this;
 }
@@ -276,7 +276,7 @@ inline SGLMatrix4<T>& SGLMatrix4<T>::operator-=(const SGLMatrix4<T>& right)
 template<typename T>
 inline SGLMatrix4<T>& SGLMatrix4<T>::operator*=(const SGLMatrix4<T>& right)
 {
-	// TODO: 在此处插入 return 语句
+	
 	*this = *this * right;
 	return *this;
 }
@@ -284,7 +284,7 @@ inline SGLMatrix4<T>& SGLMatrix4<T>::operator*=(const SGLMatrix4<T>& right)
 template<typename T>
 inline SGLMatrix4<T>& SGLMatrix4<T>::operator*=(const T& value)
 {
-	// TODO: 在此处插入 return 语句
+	
 	*this = *this * value;
 	return *this;
 }

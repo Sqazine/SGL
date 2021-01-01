@@ -17,11 +17,11 @@ SGLVertex BlinnPhongShader::VertexShader(const SGLVertex& modelVertex)
 	return tmpVertex;
 }
 
-SGLVector4f BlinnPhongShader::FragmentShader(const SGLVertex& screenVertex, uint32_t bufferWidth, uint32_t bufferHeight)
+SGLVector4f BlinnPhongShader::FragmentShader(const SGLVertex& screenVertex,const SGLVector2u32& bufferExtent)
 {
 	SGLVector3f normalVS = SGLVector3f::Normalize(SGLVector4f::ToVector3(m_NormalTexture->GetTexel(screenVertex.texcoord))*2.0f-1.0f);
 
-	SGLVector3f fragPosNDC((screenVertex.position.x / bufferWidth * 2.0f) - 1.0f, (screenVertex.position.y / bufferHeight * 2.0f) - 1.0f, screenVertex.position.z);
+	SGLVector3f fragPosNDC((screenVertex.position.x / bufferExtent.x * 2.0f) - 1.0f, (screenVertex.position.y / bufferExtent.y * 2.0f) - 1.0f, screenVertex.position.z);
 	SGLVector4f fragPosCS = SGLVector4f(fragPosNDC, 1.0f) * screenVertex.position.w;
 	SGLVector3f fragPosVS = SGLVector4f::ToVector3(fragPosCS * SGLMatrix4f::Inverse(m_ProjectionMatrix));
 	SGLVector3f viewDirVS = SGLVector3f::Normalize(SGLVector3f(-fragPosVS));

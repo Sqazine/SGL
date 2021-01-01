@@ -35,8 +35,6 @@ public:
 	inline SGLVector4<T>& operator/=(const T& value);
 	inline SGLVector4<T>& operator=(const SGLVector4<T>& right);
 
-
-	//用于除以w
 	static SGLVector4<T> DivideByW(const SGLVector4<T>& vec);
 	static SGLVector3<T> ToVector3(const SGLVector4<T>& vec);
 
@@ -174,7 +172,7 @@ inline SGLVector4<T> operator*(const SGLVector4<T>& vec, const SGLMatrix4<T>& ma
 template<typename T>
 inline SGLVector4<T>& SGLVector4<T>::operator+=(const T& value)
 {
-	// TODO: 在此处插入 return 语句
+	
 	x += value;
 	y += value;
 	z += value;
@@ -185,7 +183,7 @@ inline SGLVector4<T>& SGLVector4<T>::operator+=(const T& value)
 template<typename T>
 inline SGLVector4<T>& SGLVector4<T>::operator+=(const SGLVector4<T>& right)
 {
-	// TODO: 在此处插入 return 语句
+	
 	x += right.x;
 	y += right.y;
 	z += right.z;
@@ -196,7 +194,7 @@ inline SGLVector4<T>& SGLVector4<T>::operator+=(const SGLVector4<T>& right)
 template<typename T>
 inline SGLVector4<T>& SGLVector4<T>::operator-=(const T& value)
 {
-	// TODO: 在此处插入 return 语句
+	
 	x -= value;
 	y -= value;
 	z -= value;
@@ -207,7 +205,7 @@ inline SGLVector4<T>& SGLVector4<T>::operator-=(const T& value)
 template<typename T>
 inline SGLVector4<T>& SGLVector4<T>::operator-=(const SGLVector4<T>& right)
 {
-	// TODO: 在此处插入 return 语句
+	
 	x -= right.x;
 	y -= right.y;
 	z -= right.z;
@@ -218,7 +216,7 @@ inline SGLVector4<T>& SGLVector4<T>::operator-=(const SGLVector4<T>& right)
 template<typename T>
 inline SGLVector4<T>& SGLVector4<T>::operator/=(const T& value)
 {
-	// TODO: 在此处插入 return 语句
+	
 	if (!SGLMath::IsNearZero(value))
 	{
 		x /= value;
@@ -232,7 +230,7 @@ inline SGLVector4<T>& SGLVector4<T>::operator/=(const T& value)
 template<typename T>
 inline SGLVector4<T>& SGLVector4<T>::operator=(const SGLVector4<T>& right)
 {
-	// TODO: 在此处插入 return 语句
+	
 	x = right.x;
 	y = right.y;
 	z = right.z;

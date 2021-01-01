@@ -1,6 +1,6 @@
 #pragma once
 #include "SGL.h"
-#include "Texture.h"
+#include "texture/Texture.h"
 class BlinnPhongShader
 	:SGLShader
 {
@@ -9,7 +9,7 @@ public:
 	~BlinnPhongShader();
 
 	SGLVertex VertexShader(const SGLVertex& modelVertex) override;
-	SGLVector4f FragmentShader(const SGLVertex& screenVertex,uint32_t bufferWidth, uint32_t bufferHeight) override;
+	SGLVector4f FragmentShader(const SGLVertex& screenVertex,const SGLVector2u32& bufferExtent) override;
 
 
 	void SetWorldMatrix(const SGLMatrix4f& matrix);

@@ -1,13 +1,11 @@
 #pragma once
 #include "SGL.h"
 #include <vector>
-#include "Texture.h"
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include "texture/Texture.h"
 #include "Mesh.h"
-
-
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
 class Model
 {
 public:

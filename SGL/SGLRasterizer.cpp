@@ -5,8 +5,8 @@
 #include <array>
 #include <iostream>
 
-SGLRasterizer::SGLRasterizer(uint32_t width, uint32_t height)
-	:m_Framebuffer(std::make_shared<SGLFramebuffer>(width,height)), m_BufferWidth(width), m_BufferHeight(height), m_Shader(nullptr),
+SGLRasterizer::SGLRasterizer(const SGLVector2u32 bufferExtent)
+	:m_Framebuffer(std::make_shared<SGLFramebuffer>(bufferExtent)), m_BufferExtent(bufferExtent), m_Shader(nullptr),
 	m_PointSize(1), m_LineWidth(1), m_BlendMode(BLEND_MODE::ONE)
 {
 }
@@ -22,8 +22,8 @@ const std::shared_ptr<SGLFramebuffer>& SGLRasterizer::GetFramebuffer() const
 
 void SGLRasterizer::ClearColor(const SGLVector4f& color)
 {
-	for (uint32_t i = 0; i < m_Framebuffer->GetColorbuffer()->GetBufferWidth(); ++i)
-		for (uint32_t j = 0; j < m_Framebuffer->GetColorbuffer()->GetBufferHeight(); ++j)
+	for (uint32_t i = 0; i < m_Framebuffer->GetColorbuffer()->GetBufferExtent().x; ++i)
+		for (uint32_t j = 0; j < m_Framebuffer->GetColorbuffer()->GetBufferExtent().y; ++j)
 			m_Framebuffer->GetColorbuffer()->SetValue(i, j, color);
 }
 
@@ -34,8 +34,8 @@ void SGLRasterizer::ClearColor(float r, float g, float b, float a)
 
 void SGLRasterizer::ClearDepth()
 {
-	for (uint32_t i = 0; i < m_Framebuffer->GetDepthbuffer()->GetBufferWidth(); ++i)
-		for (uint32_t j = 0; j < m_Framebuffer->GetDepthbuffer()->GetBufferHeight(); ++j)
+	for (uint32_t i = 0; i < m_Framebuffer->GetColorbuffer()->GetBufferExtent().x; ++i)
+		for (uint32_t j = 0; j < m_Framebuffer->GetColorbuffer()->GetBufferExtent().y; ++j)
 			m_Framebuffer->GetDepthbuffer()->SetValue(i, j, 1.0f);
 }
 
@@ -150,7 +150,7 @@ void SGLRasterizer::DrawPoint(const SGLVertex& model_p)
 	SGLVector3f ndc_position = ToNDCSpace(clip_p.position);
 	SGLVector2i32 screen_position = ToScreenSpace(ndc_position);
 
-	if (0 <= screen_position.x && screen_position.x < m_BufferWidth && 0 <= screen_position.y && screen_position.y < m_BufferHeight) {
+	if (0 <= screen_position.x && screen_position.x < m_BufferExtent.x && 0 <= screen_position.y && screen_position.y < m_BufferExtent.y) {
 		SGLVertex screen_vertex;
 		screen_vertex.position = SGLVector4f(SGLVector3f(screen_position.x, screen_position.y,ndc_position.z), clip_p.position.w);
 		screen_vertex.texcoord = model_p.texcoord;
@@ -161,11 +161,11 @@ void SGLRasterizer::DrawPoint(const SGLVertex& model_p)
 		//根据指定的顶点绘制像素
 		for (uint32_t i = screen_position.x - m_PointSize / 2; i <= screen_position.x + m_PointSize / 2; ++i)
 			for (uint32_t j = screen_position.y - m_PointSize / 2; j <= screen_position.y + m_PointSize / 2; ++j)
-				if (i >= 0 && i < m_BufferWidth && j >= 0 && j < m_BufferHeight)
+				if (i >= 0 && i < m_BufferExtent.x && j >= 0 && j < m_BufferExtent.y)
 					if (m_Framebuffer->GetDepthbuffer()->GetValue(i, j) > screen_vertex.position.z)
 					{
 						m_Framebuffer->GetDepthbuffer()->SetValue(i, j, screen_vertex.position.z);
-						m_Framebuffer->GetColorbuffer()->SetValue(i, j, m_Shader->FragmentShader(screen_vertex, m_BufferWidth, m_BufferHeight));
+						m_Framebuffer->GetColorbuffer()->SetValue(i, j, m_Shader->FragmentShader(screen_vertex, m_BufferExtent));
 					}
 	}
 }
@@ -206,7 +206,7 @@ void SGLRasterizer::DrawLine(const  SGLVertex& model_p0, const  SGLVertex& model
 	SGLVector3f ndc_dir = ndc_position_p1 - ndc_position_p0;
 	for (uint32_t x = screen_position_p0.x; x <= screen_position_p1.x; ++x)
 	{
-		if (0 <= x && x < m_BufferWidth && 0 <= y && y < m_BufferHeight)
+		if (0 <= x && x < m_BufferExtent.x && 0 <= y && y < m_BufferExtent.y)
 		{
 			////将直线映射回原来的区域
 			if (reverse)
@@ -223,7 +223,7 @@ void SGLRasterizer::DrawLine(const  SGLVertex& model_p0, const  SGLVertex& model
 			if (m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_vertex.position.z)
 			{
 				m_Framebuffer->GetDepthbuffer()->SetValue(x, y, screen_vertex.position.z);
-				m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_Shader->FragmentShader(screen_vertex, m_BufferWidth, m_BufferHeight));
+				m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_Shader->FragmentShader(screen_vertex, m_BufferExtent));
 			}
 
 			//继续下一步的计算
@@ -272,10 +272,10 @@ void SGLRasterizer::DrawTriangle_Solid(const SGLVertex& model_p0, const SGLVerte
 	int32_t yMax = SGLMath::Max(screen_position_p0.y, SGLMath::Max(screen_position_p1.y, screen_position_p2.y));
 
 	//将AABB范围截断为屏幕大小，在屏幕外的像素则丢弃
-	xMin = SGLMath::Clamp(xMin, 0,static_cast<int32_t>(m_BufferWidth - 1));
-	yMin = SGLMath::Clamp(yMin, 0,static_cast<int32_t>(m_BufferHeight - 1));
-	xMax = SGLMath::Clamp(xMax, 0,static_cast<int32_t>(m_BufferWidth - 1));
-	yMax = SGLMath::Clamp(yMax, 0,static_cast<int32_t>(m_BufferHeight - 1));
+	xMin = SGLMath::Clamp(xMin, 0,static_cast<int32_t>(m_BufferExtent.x - 1));
+	yMin = SGLMath::Clamp(yMin, 0,static_cast<int32_t>(m_BufferExtent.y - 1));
+	xMax = SGLMath::Clamp(xMax, 0,static_cast<int32_t>(m_BufferExtent.x- 1));
+	yMax = SGLMath::Clamp(yMax, 0,static_cast<int32_t>(m_BufferExtent.y - 1));
 
 	//重心坐标判断AABB内的当前顶点是否在三角形内部
 	for (uint32_t x = xMin; x <= xMax; ++x)
@@ -295,7 +295,7 @@ void SGLRasterizer::DrawTriangle_Solid(const SGLVertex& model_p0, const SGLVerte
 				m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_vertex.position.z && screen_vertex.position.z >= -1.0f)
 			{
 				m_Framebuffer->GetDepthbuffer()->SetValue(x, y, screen_vertex.position.z);
-				m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_Shader->FragmentShader(screen_vertex, m_BufferWidth, m_BufferHeight));
+				m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_Shader->FragmentShader(screen_vertex, m_BufferExtent));
 			}
 		}
 	}
@@ -331,7 +331,7 @@ SGLVector3f SGLRasterizer::ToNDCSpace(const SGLVector4f& v)
 
 SGLVector2i32 SGLRasterizer::ToScreenSpace(const SGLVector3f& v)
 {
-	int32_t screen_x =SGLMath::Round( m_BufferWidth * ((v.x + 1.0f) / 2.0f));
-	int32_t screen_y = SGLMath::Round( m_BufferHeight * ((v.y + 1.0f) / 2.0f));
+	int32_t screen_x =SGLMath::Round( m_BufferExtent.x * ((v.x + 1.0f) / 2.0f));
+	int32_t screen_y = SGLMath::Round( m_BufferExtent.y * ((v.y + 1.0f) / 2.0f));
 	return SGLVector2i32(screen_x, screen_y);
 }

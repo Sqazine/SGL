@@ -2,13 +2,14 @@
 #include <unordered_map>
 #include <memory>
 #include <SDL2/SDL.h>
-#include "Model.h"
-#include "Camera.h"
+#include "mesh/Model.h"
+#include "camera/Camera.h"
 #include "Window.h"
+#include "SGL.h"
 class Application
 {
 public:
-	Application(const std::string& appName, uint32_t frameWidth, uint32_t frameHeight);
+	Application(const std::string& appName, const SGLVector2u32& frameExtent);
 	~Application();
 
 
@@ -25,11 +26,10 @@ private:
 	bool m_IsRunning;
 	
 	std::shared_ptr<Window> m_Window;
-	std::shared_ptr<SDL_Renderer> m_SDLRenderer;
+	SDL_Renderer* m_SDLRenderer;
 	std::shared_ptr<SGLRasterizer> m_Rasterizer;
-
-
-	uint32_t m_FrameWidth, m_FrameHeight;
+	
+	SGLVector2u32 m_FrameExtent;
 	std::string m_AppName;
 };
 

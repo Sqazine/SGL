@@ -1,7 +1,6 @@
 #include "Model.h"
 #include <iostream>
 #include "SGL.h"
-#include <iostream>
 Model::Model(const std::string& filePath)
 	:m_Position(SGLVector3f::ZERO), m_Rotation(SGLVector3f::ZERO), m_Scale(SGLVector3f(1.0f))
 {

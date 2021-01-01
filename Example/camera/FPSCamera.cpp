@@ -1,5 +1,5 @@
 #include "FPSCamera.h"
-#include "Timer.h"
+#include "utilities/Timer.h"
 FPSCamera::FPSCamera(float fov, float aspect, float znear, float zfar)
 	:Camera(fov, aspect, znear, zfar), m_MoveSpeed(10.0f), m_RotateSpeed(5.0f), m_BoostSpeed(10.0f),
 	m_Yaw(SGLMath::ToRadian(-90.0f)), m_Pitch(0.0f), m_Roll(0.0f),m_Front(SGLVector3f(0.0f,0.0f,-1.0f)),m_Up(SGLVector3f::UNIT_Y),m_Right(SGLVector3f::UNIT_X)
@@ -39,7 +39,7 @@ void FPSCamera::ProcessInput(SDL_Event event, const uint8_t* keyboardState)
 		m_Yaw += SGLMath::ToRadian(mouseX * m_RotateSpeed * Timer::deltaTime);
 		m_Pitch -= SGLMath::ToRadian(mouseY * m_RotateSpeed * Timer::deltaTime);
 
-		//ÎÒÃÇ²»Ï£ÍûÏà»úÔÚ¸©ÑöÊ±·¢ÉúÊÓ¾õµ¹×ªµÄÇé¿ö,Òò´ËÒªÏÞÖÆ¸©Ñö½Ç
+		//ï¿½ï¿½ï¿½Ç²ï¿½Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ó¾ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Æ¸ï¿½ï¿½ï¿½ï¿½ï¿½
 		m_Pitch = SGLMath::Clamp(m_Pitch, -89.0f, 89.0f);
 
 		m_Front = SGLVector3f::Normalize(SGLVector3f(SGLMath::Cos(m_Pitch) * SGLMath::Cos(m_Yaw), SGLMath::Sin(m_Pitch), SGLMath::Cos(m_Pitch) * SGLMath::Sin(m_Yaw)));

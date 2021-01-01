@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "SGL.h"
-#include "Texture.h"
+#include "texture/Texture.h"
 #include <assimp/mesh.h>
 
 enum class INTERNAL_MESH_TYPE

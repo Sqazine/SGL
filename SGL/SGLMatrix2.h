@@ -177,7 +177,7 @@ inline bool operator==(const SGLMatrix2<T>& left, const SGLMatrix2<T>& right)
 template<typename T>
 inline SGLMatrix2<T>& SGLMatrix2<T>::operator+=(const SGLMatrix2<T>& right)
 {
-	// TODO: 在此处插入 return 语句
+	
 	*this = *this + right;
 	return *this;
 }
@@ -185,7 +185,7 @@ inline SGLMatrix2<T>& SGLMatrix2<T>::operator+=(const SGLMatrix2<T>& right)
 template<typename T>
 inline SGLMatrix2<T>& SGLMatrix2<T>::operator-=(const SGLMatrix2<T>& right)
 {
-	// TODO: 在此处插入 return 语句
+	
 	*this = *this - right;
 	return *this;
 }
@@ -193,7 +193,7 @@ inline SGLMatrix2<T>& SGLMatrix2<T>::operator-=(const SGLMatrix2<T>& right)
 template<typename T>
 inline SGLMatrix2<T>& SGLMatrix2<T>::operator*=(const SGLMatrix2<T>& right)
 {
-	// TODO: 在此处插入 return 语句
+	
 	*this = *this * right;
 	return *this;
 }
@@ -201,7 +201,7 @@ inline SGLMatrix2<T>& SGLMatrix2<T>::operator*=(const SGLMatrix2<T>& right)
 template<typename T>
 inline SGLMatrix2<T>& SGLMatrix2<T>::operator*=(const T& value)
 {
-	// TODO: 在此处插入 return 语句
+	
 	*this = *this * value;
 	return *this;
 }

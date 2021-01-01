@@ -1,5 +1,5 @@
 #include "Texture.h"
-#define STB_IMAGE_IMPLEMENTATION
+#include "Macros.h"
 #include <stb_image.h>
 #include <iostream>
 Texture::Texture(const std::string& filePath, aiTextureType type)

@@ -2,6 +2,8 @@
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "files.associations": {
         "vector": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "xstring": "cpp",
+        "xiosbase": "cpp"
     }
 }
