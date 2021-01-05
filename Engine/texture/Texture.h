@@ -7,12 +7,10 @@
 class Texture:public SGLTexture2D
 {
 public:
-	Texture(const std::string& filePath,aiTextureType type);
+	Texture(const std::string& filePath);
 
 	const std::string& GetTextureName() const;
-	const aiTextureType& GetTextureType() const;
 private:
 	std::string m_TextureName;
-	aiTextureType m_TextureType;
 };
 

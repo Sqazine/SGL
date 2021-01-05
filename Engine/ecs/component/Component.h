@@ -15,12 +15,14 @@ protected:                                                                      
 class Component
 {
 public:
-    Component(uint32_t updateOrder);
+    Component(uint32_t priority);
     ~Component();
 
-    
+
+    void SetPriority(uint32_t priority);
+    uint32_t GetPriority() const;    
 private:
     friend class Entity;
-    uint32_t m_UpdateOrder;
+    uint32_t m_Priority;
     std::weak_ptr<class Entity> m_Owner;
 };

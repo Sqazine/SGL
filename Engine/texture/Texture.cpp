@@ -2,8 +2,8 @@
 #include "Macros.h"
 #include <stb_image.h>
 #include <iostream>
-Texture::Texture(const std::string& filePath, aiTextureType type)
-	: m_TextureName(filePath.substr(filePath.find_last_of('/') + 1)), m_TextureType(type)
+Texture::Texture(const std::string& filePath)
+	: m_TextureName(filePath.substr(filePath.find_last_of('/') + 1))
 {
 	int width, height, channel;
 	uint8_t* raw_pixel = stbi_load(filePath.c_str(), &width, &height, &channel, 0);
@@ -21,9 +21,4 @@ Texture::Texture(const std::string& filePath, aiTextureType type)
 const std::string& Texture::GetTextureName() const
 {
 	return m_TextureName;
-}
-
-const aiTextureType& Texture::GetTextureType() const
-{
-	return m_TextureType;
 }

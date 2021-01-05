@@ -1,29 +1,29 @@
 #include "Mesh.h"
 
-Mesh::Mesh(INTERNAL_MESH_TYPE type, const std::vector<std::shared_ptr<Texture>> &textures)
+Mesh::Mesh(INTERNAL_MESH_TYPE type)
 {
-	// switch (type)
-	// {
-	// case INTERNAL_MESH_TYPE::TRIANGLE:
-	// 	CreateTriangleMeshData();
-	// 	break;
-	// case INTERNAL_MESH_TYPE::QUAD:
-	// 	CreateQuadMeshData();
-	// 	break;
-	// case INTERNAL_MESH_TYPE::SPHERE:
-	// 	CreateSphereMeshData();
-	// 	break;
-	// case INTERNAL_MESH_TYPE::CUBE:
-	// 	CreateCubeMeshData();
-	// 	break;
-	// case INTERNAL_MESH_TYPE::CAPSULE:
-	// 	CreateCapsuleMeshData();
-	// 	break;
-	// default:break;
-	// }
+	switch (type)
+	{
+	case INTERNAL_MESH_TYPE::TRIANGLE:
+		CreateTriangleMeshData();
+		break;
+	case INTERNAL_MESH_TYPE::QUAD:
+		CreateQuadMeshData();
+		break;
+	case INTERNAL_MESH_TYPE::SPHERE:
+		CreateSphereMeshData();
+		break;
+	case INTERNAL_MESH_TYPE::CUBE:
+		CreateCubeMeshData();
+		break;
+	case INTERNAL_MESH_TYPE::CAPSULE:
+		CreateCapsuleMeshData();
+		break;
+	default:break;
+	}
 }
 
-Mesh::Mesh(const std::vector<SGLVertex> &verts, const std::vector<uint32_t> &inds, const std::vector<std::shared_ptr<Texture>> &texts)
+Mesh::Mesh(const std::vector<SGLVertex> &verts, const std::vector<uint32_t> &inds)
 {
 }
 
@@ -39,38 +39,6 @@ const std::vector<SGLVertex> &Mesh::GetVertices() const
 const std::vector<uint32_t> &Mesh::GetIndices() const
 {
 	return m_Indices;
-}
-
-const std::vector<std::shared_ptr<Texture>> &Mesh::GetTextures() const
-{
-	return m_Textures;
-}
-
-const SGLVertex &Mesh::GetVertex(uint32_t index) const
-{
-
-	return m_Vertices.at(index);
-}
-
-const std::shared_ptr<Texture> &Mesh::GetTexture(uint32_t index) const
-{
-	return m_Textures.at(index);
-}
-
-const std::shared_ptr<Texture> &Mesh::GetTexture(const std::string &name) const
-{
-	for (const auto &texture : m_Textures)
-		if (texture->GetTextureName().compare(name) == 0)
-			return texture;
-	return nullptr;
-}
-
-const std::shared_ptr<Texture> &Mesh::GetTexture(const aiTextureType &type) const
-{
-	for (const auto tex : m_Textures)
-		if (tex->GetTextureType() == type)
-			return tex;
-	return nullptr;
 }
 
 void Mesh::CreateQuadMeshData()
