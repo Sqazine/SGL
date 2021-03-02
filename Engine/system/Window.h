@@ -2,8 +2,7 @@
 #include <cstdint>
 #include <SDL2/SDL.h>
 #include <string>
-#include <SGL.h>
-#include "SGLVector2.h"
+#include "SGL/SGL.h"
 enum WindowProperties
 {
 	FULLSCREEN = 0x00000001,
@@ -32,11 +31,11 @@ enum WindowProperties
 class Window
 {
 public:
-	Window(const std::string &title, const SGLVector2u32 &extent);
+	Window(const std::string &title, const SGL::Vector2u32 &extent);
 	~Window();
 
-	void ResizeExtent(const SGLVector2u32 &extent);
-	SGLVector2u32 GetExtent() const;
+	void ResizeExtent(const SGL::Vector2u32 &extent);
+	SGL::Vector2u32 GetExtent() const;
 
 	std::string GetTitle() const;
 	void SetTitle(const std::string &title);

@@ -1,5 +1,5 @@
 #pragma once
-#include "SGL.h"
+#include "SGL/SGL.h"
 #include <SDL2/SDL.h>
 class Camera
 {
@@ -11,19 +11,19 @@ public:
 	virtual void ProcessInput(SDL_Event event, const uint8_t* keyboardState) {}
 	virtual void Update() {}
 
-	void SetPosition(const SGLVector3f& pos);
-	const SGLVector3f& GetPosition() const;
+	void SetPosition(const SGL::Vector3f& pos);
+	const SGL::Vector3f& GetPosition() const;
 
-	void SetTarget(const SGLVector3f& tar);
-	const SGLVector3f& GetTarget() const;
+	void SetTarget(const SGL::Vector3f& tar);
+	const SGL::Vector3f& GetTarget() const;
 
-	const SGLMatrix4f& GetViewMatrix() const;
-	const SGLMatrix4f& GetProjectionMatrix() const;
+	const SGL::Matrix4f& GetViewMatrix() const;
+	const SGL::Matrix4f& GetProjectionMatrix() const;
 protected:			
-	SGLMatrix4f m_ViewMatrix;
-	SGLMatrix4f m_ProjectionMatrix;
-	SGLVector3f m_Position;
-	SGLVector3f m_Target;
+	SGL::Matrix4f m_ViewMatrix;
+	SGL::Matrix4f m_ProjectionMatrix;
+	SGL::Vector3f m_Position;
+	SGL::Vector3f m_Target;
 
 };
 

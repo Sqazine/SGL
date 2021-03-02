@@ -1,10 +1,10 @@
 #pragma once
 #include <cstdint>
 #include <string>
-#include "SGL.h"
+#include "SGL/SGL.h"
 #include <assimp/material.h>
 
-class Texture:public SGLTexture2D
+class Texture:public SGL::Texture2D
 {
 public:
 	Texture(const std::string& filePath);

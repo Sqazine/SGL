@@ -3,7 +3,7 @@
 #include "utilities/Timer.h"
 #include "camera/FPSCamera.h"
 
-Application::Application(const std::string& appName, const SGLVector2u32& frameExtent)
+Application::Application(const std::string& appName, const SGL::Vector2u32& frameExtent)
 	:m_IsRunning(true),m_AppName(appName),m_FrameExtent(frameExtent)
 {
 
@@ -36,7 +36,7 @@ void Application::Init()
 	m_Window = std::make_shared<Window>(m_AppName, m_FrameExtent);
 
 	m_SDLRenderer =SDL_CreateRenderer(m_Window->GetHandle(), -1, SDL_RENDERER_PRESENTVSYNC|SDL_RENDERER_ACCELERATED);
-	m_Rasterizer = std::make_shared<SGLRasterizer>(m_FrameExtent);
+	m_Rasterizer = std::make_shared<SGL::Rasterizer>(m_FrameExtent);
 	
 }
 
@@ -80,7 +80,7 @@ void Application::GenerateFrame()
 	{
 		for (uint32_t y = 0; y < m_FrameExtent.y; ++y)
 		{
-			SGLVector4u8 color = m_Rasterizer->GetFramebuffer()->GetColorbuffer()->GetValue(x, y);
+			SGL::Vector4u8 color = m_Rasterizer->GetFramebuffer()->GetColorbuffer()->GetValue(x, y);
 			SDL_SetRenderDrawColor(m_SDLRenderer, color.x, color.y, color.z, color.w);
 			SDL_RenderDrawPoint(m_SDLRenderer, x, m_FrameExtent.y - 1 - y);
 		}

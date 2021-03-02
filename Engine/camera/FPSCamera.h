@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include "Camera.h"
-#include "SGL.h"
+#include "SGL/SGL.h"
 class FPSCamera:public Camera
 {
 public:
@@ -14,8 +14,8 @@ private:
 	float m_Yaw, m_Pitch, m_Roll;
 	float m_MoveSpeed, m_RotateSpeed, m_BoostSpeed;
 
-	SGLVector3f m_Up;
-	SGLVector3f m_Right;
-	SGLVector3f m_Front;
+	SGL::Vector3f m_Up;
+	SGL::Vector3f m_Right;
+	SGL::Vector3f m_Front;
 };
 

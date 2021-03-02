@@ -19,11 +19,12 @@ Mesh::Mesh(INTERNAL_MESH_TYPE type)
 	case INTERNAL_MESH_TYPE::CAPSULE:
 		CreateCapsuleMeshData();
 		break;
-	default:break;
+	default:
+		break;
 	}
 }
 
-Mesh::Mesh(const std::vector<SGLVertex> &verts, const std::vector<uint32_t> &inds)
+Mesh::Mesh(const std::vector<SGL::Vertex> &verts, const std::vector<uint32_t> &inds)
 {
 }
 
@@ -31,7 +32,7 @@ Mesh::~Mesh()
 {
 }
 
-const std::vector<SGLVertex> &Mesh::GetVertices() const
+const std::vector<SGL::Vertex> &Mesh::GetVertices() const
 {
 	return m_Vertices;
 }
@@ -43,7 +44,7 @@ const std::vector<uint32_t> &Mesh::GetIndices() const
 
 void Mesh::CreateQuadMeshData()
 {
-	m_Vertices.emplace_back(SGLVertex{
+	m_Vertices.emplace_back(SGL::Vertex{
 		{-1.0f, 1.0f, 0.0f},
 		{0.0f, 1.0f},
 		{0.0f, 0.0f, 1.0f},
@@ -57,22 +58,22 @@ void Mesh::CreateSphereMeshData()
 
 	for (float latNumber = 0; latNumber <= latitudeBands; ++latNumber)
 	{
-		float theta = latNumber * SGLMath::PI / latitudeBands;
+		float theta = latNumber * SGL::Math::PI / latitudeBands;
 		float sinTheta = sin(theta);
 		float cosTheta = cos(theta);
 
 		for (float longNumber = 0; longNumber <= longitudeBands; ++longNumber)
 		{
 
-			float phi = longNumber * 2 * SGLMath::PI / longitudeBands;
+			float phi = longNumber * 2 * SGL::Math::PI / longitudeBands;
 			float sinPhi = sin(phi);
 			float cosPhi = cos(phi);
 
-			SGLVertex v;
-			v.normal = SGLVector3f(cosPhi * sinTheta, cosTheta, sinPhi * sinTheta);
-			v.position = SGLVector4f(v.normal, 1.0f);
-			v.texcoord = SGLVector2f(longNumber / longitudeBands, latNumber / latitudeBands);
-			v.color = SGLVector4f(v.normal, 1.0f);
+			SGL::Vertex v;
+			v.normal = SGL::Vector3f(cosPhi * sinTheta, cosTheta, sinPhi * sinTheta);
+			v.position = SGL::Vector4f(v.normal, 1.0f);
+			v.texcoord = SGL::Vector2f(longNumber / longitudeBands, latNumber / latitudeBands);
+			v.color = SGL::Vector4f(v.normal, 1.0f);
 
 			m_Vertices.emplace_back(v);
 		}
@@ -94,4 +95,14 @@ void Mesh::CreateSphereMeshData()
 			m_Indices.emplace_back(first + 1);
 		}
 	}
+}
+
+void Mesh::CreateTriangleMeshData()
+{
+}
+void Mesh::CreateCubeMeshData()
+{
+}
+void Mesh::CreateCapsuleMeshData()
+{
 }

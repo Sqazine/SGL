@@ -5,11 +5,11 @@
 #include "mesh/Model.h"
 #include "camera/Camera.h"
 #include "Window.h"
-#include "SGL.h"
+#include "SGL/SGL.h"
 class Application
 {
 public:
-	Application(const std::string& appName, const SGLVector2u32& frameExtent);
+	Application(const std::string& appName, const SGL::Vector2u32& frameExtent);
 	~Application();
 
 
@@ -27,9 +27,9 @@ private:
 	
 	std::shared_ptr<Window> m_Window;
 	SDL_Renderer* m_SDLRenderer;
-	std::shared_ptr<SGLRasterizer> m_Rasterizer;
+	std::shared_ptr<SGL::Rasterizer> m_Rasterizer;
 	
-	SGLVector2u32 m_FrameExtent;
+	SGL::Vector2u32 m_FrameExtent;
 	std::string m_AppName;
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <cmath>
-namespace SGLMath
+namespace SGL::Math
 {
 	constexpr float PI = 3.1415926535f;
 
@@ -36,7 +36,7 @@ namespace SGLMath
 		return ceil(value);
 	}
 
-	//×¨ÓÃÓÚÎÆÀí×ø±êÓ³Éäµ½[0,1]Çø¼ä
+	//×¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½äµ½[0,1]ï¿½ï¿½ï¿½ï¿½
 	template<typename T>
 	inline T MapNumToInterval01(const T& value)
 	{
@@ -69,13 +69,13 @@ namespace SGLMath
 		return left > right ? right : left;
 	}
 
-	//ÅÐ¶ÏÊÇ·ñÎªÆæÊý
+	//ï¿½Ð¶ï¿½ï¿½Ç·ï¿½Îªï¿½ï¿½ï¿½ï¿½
 	inline bool IsOddNumber(int value)
 	{
 		return value / 2 == 1 ? true : false;
 	}
 
-	//ÅÐ¶ÏÊÇ·ñÎªÅ¼Êý
+	//ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ÎªÅ¼ï¿½ï¿½
 	inline bool IsEvenNumber(int value)
 	{
 		return value / 2 == 0 ? true : false;

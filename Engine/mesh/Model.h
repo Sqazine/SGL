@@ -1,5 +1,5 @@
 #pragma once
-#include "SGL.h"
+#include "SGL/SGL.h"
 #include <vector>
 #include "texture/Texture.h"
 #include "Mesh.h"
@@ -16,20 +16,20 @@ public:
 
 	const std::vector<std::shared_ptr<Mesh>>& GetMeshes() const;
 
-	void SetPosition(const SGLVector3f& pos);
-	const SGLVector3f& GetPosition() const;
+	void SetPosition(const SGL::Vector3f& pos);
+	const SGL::Vector3f& GetPosition() const;
 
-	void SetRotation(const SGLVector3f& rot);
-	const SGLVector3f& GetRotation() const;
+	void SetRotation(const SGL::Vector3f& rot);
+	const SGL::Vector3f& GetRotation() const;
 
-	void SetScale(const SGLVector3f& s);
-	const SGLVector3f& GetScale() const;
+	void SetScale(const SGL::Vector3f& s);
+	const SGL::Vector3f& GetScale() const;
 
-	SGLMatrix4f GetWorldMatrix() const;
+	SGL::Matrix4f GetWorldMatrix() const;
 private:
-	SGLVector3f m_Position;
-	SGLVector3f m_Rotation;
-	SGLVector3f m_Scale;
+	SGL::Vector3f m_Position;
+	SGL::Vector3f m_Rotation;
+	SGL::Vector3f m_Scale;
 	std::vector<std::shared_ptr<Mesh>> m_Meshes;
 
 	std::vector<std::shared_ptr<Texture>> m_LoadedTextures;
@@ -37,8 +37,6 @@ private:
 	void LoadModel(const std::string& filePath);
 	void ProcessNodes(aiNode* node, const aiScene* scene);
 	std::shared_ptr<Mesh> ProcessMesh(aiMesh* aimesh, const aiScene* scene);
-
-	std::vector<std::shared_ptr<Texture>> LoadMeshTextures(aiMaterial* mat,aiTextureType type);
 
 	std::string m_ModelDirectory;
 };

@@ -31,4 +31,4 @@ find_package(Assimp CONFIG REQUIRED)
 add_executable(${EXE_NAME} ${ENGINE_DIR} ${CAMERA_DIR} ${ECS_COMPONENT_DIR} ${ECS_ENTITY_DIR} ${ECS_SYSTEM_DIR} ${MESH_DIR} ${RENDERER_DIR} ${SCENE_DIR} ${SHADER_DIR} ${SYSTEM_DIR} ${TEXTURE_DIR} ${UTILITIES_DIR})
 
 target_link_libraries(${EXE_NAME} PRIVATE SGL SDL2::SDL2 assimp::assimp)
-target_include_directories(${EXE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/SGL ${CMAKE_SOURCE_DIR}/Engine)
+target_include_directories(${EXE_NAME} PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Engine)
