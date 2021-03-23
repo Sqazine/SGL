@@ -6,6 +6,7 @@
 #include "camera/Camera.h"
 #include "Window.h"
 #include "SGL/SGL.h"
+#include "InputSystem.h"
 class Application
 {
 public:
@@ -27,6 +28,7 @@ private:
 	
 	std::shared_ptr<Window> m_Window;
 	std::shared_ptr<SGL::Rasterizer> m_Rasterizer;
+	std::shared_ptr<InputSystem> m_InputSystem;
 	
 	SGL::Vector2u32 m_FrameExtent;
 	std::string m_AppName;

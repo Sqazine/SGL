@@ -33,32 +33,33 @@ void Application::Init()
 	SDL_Init(SDL_INIT_VIDEO);
 
 	m_Window = std::make_shared<Window>(m_AppName, m_FrameExtent);
+	m_Rasterizer = std::make_shared<SGL::Rasterizer>(m_FrameExtent);
+
+	m_InputSystem = std::make_shared<InputSystem>();
 
 	m_SDLRenderer = SDL_CreateRenderer(m_Window->GetHandle(), -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 	m_DefaultRenderTexture = SDL_CreateTexture(m_SDLRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, m_FrameExtent.x, m_FrameExtent.y);
-
-	m_Rasterizer = std::make_shared<SGL::Rasterizer>(m_FrameExtent);
 }
 
 void Application::ProcessInput()
 {
 	SDL_Event event;
 	SDL_PollEvent(&event);
-	switch (event.type)
-	{
-	case SDL_QUIT:
+	m_InputSystem->ProcessInput(event);
+	if (m_InputSystem->GetEventType() == SDL_QUIT)
 		m_IsRunning = false;
-	}
-
-	const uint8_t *keyboardState = SDL_GetKeyboardState(nullptr);
-	if (keyboardState[SDL_SCANCODE_ESCAPE])
+	if (m_InputSystem->GetKeyboard()->GetKeyState(SDL_SCANCODE_ESCAPE) == BUTTON_STATE::PRESS)
 		m_IsRunning = false;
 }
 
 void Application::Update()
 {
+	m_InputSystem->PreUpdate();
+
 	m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
 	m_Rasterizer->ClearDepth();
+
+	m_InputSystem->PostUpdate();
 }
 
 void Application::Draw()
