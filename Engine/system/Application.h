@@ -26,10 +26,13 @@ private:
 	bool m_IsRunning;
 	
 	std::shared_ptr<Window> m_Window;
-	SDL_Renderer* m_SDLRenderer;
 	std::shared_ptr<SGL::Rasterizer> m_Rasterizer;
 	
 	SGL::Vector2u32 m_FrameExtent;
 	std::string m_AppName;
+
+
+	SDL_Renderer* m_SDLRenderer;
+	SDL_Texture* m_DefaultRenderTexture;
 };
 

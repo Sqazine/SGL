@@ -3,10 +3,9 @@
 #include "utilities/Timer.h"
 #include "camera/FPSCamera.h"
 
-Application::Application(const std::string& appName, const SGL::Vector2u32& frameExtent)
-	:m_IsRunning(true),m_AppName(appName),m_FrameExtent(frameExtent)
+Application::Application(const std::string &appName, const SGL::Vector2u32 &frameExtent)
+	: m_IsRunning(true), m_AppName(appName), m_FrameExtent(frameExtent)
 {
-
 }
 
 Application::~Application()
@@ -35,9 +34,10 @@ void Application::Init()
 
 	m_Window = std::make_shared<Window>(m_AppName, m_FrameExtent);
 
-	m_SDLRenderer =SDL_CreateRenderer(m_Window->GetHandle(), -1, SDL_RENDERER_PRESENTVSYNC|SDL_RENDERER_ACCELERATED);
+	m_SDLRenderer = SDL_CreateRenderer(m_Window->GetHandle(), -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+	m_DefaultRenderTexture = SDL_CreateTexture(m_SDLRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, m_FrameExtent.x, m_FrameExtent.y);
+
 	m_Rasterizer = std::make_shared<SGL::Rasterizer>(m_FrameExtent);
-	
 }
 
 void Application::ProcessInput()
@@ -46,26 +46,24 @@ void Application::ProcessInput()
 	SDL_PollEvent(&event);
 	switch (event.type)
 	{
-	case  SDL_QUIT:
+	case SDL_QUIT:
 		m_IsRunning = false;
 	}
 
-	const uint8_t* keyboardState = SDL_GetKeyboardState(nullptr);
+	const uint8_t *keyboardState = SDL_GetKeyboardState(nullptr);
 	if (keyboardState[SDL_SCANCODE_ESCAPE])
 		m_IsRunning = false;
 }
 
 void Application::Update()
 {
-	m_Rasterizer->ClearColor(0.5f,0.6f,0.7f,1.0f);
+	m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
 	m_Rasterizer->ClearDepth();
 }
 
 void Application::Draw()
 {
-	
 }
-	
 
 void Application::CleanUp()
 {
@@ -73,17 +71,9 @@ void Application::CleanUp()
 	SDL_Quit();
 }
 
-
 void Application::GenerateFrame()
 {
-	for (uint32_t x = 0; x < m_FrameExtent.x; ++x)
-	{
-		for (uint32_t y = 0; y < m_FrameExtent.y; ++y)
-		{
-			SGL::Vector4u8 color = m_Rasterizer->GetFramebuffer()->GetColorbuffer()->GetValue(x, y);
-			SDL_SetRenderDrawColor(m_SDLRenderer, color.x, color.y, color.z, color.w);
-			SDL_RenderDrawPoint(m_SDLRenderer, x, m_FrameExtent.y - 1 - y);
-		}
-	}
+	SDL_UpdateTexture(m_DefaultRenderTexture, nullptr, m_Rasterizer->GetFramebuffer()->GetColorbuffer()->GetBuffer(), m_FrameExtent.x * 4);
+	SDL_RenderCopy(m_SDLRenderer, m_DefaultRenderTexture, NULL, NULL);
 	SDL_RenderPresent(m_SDLRenderer);
 }
