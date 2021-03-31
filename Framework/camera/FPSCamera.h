@@ -11,7 +11,7 @@ public:
 	void ProcessInput(SDL_Event event, const uint8_t* keyboardState) override;
 	void Update() override;
 private:
-	float m_Yaw, m_Pitch, m_Roll;
+	float m_Yaw, m_Pitch;
 	float m_MoveSpeed, m_RotateSpeed, m_BoostSpeed;
 
 	SGL::Vector3f m_Up;

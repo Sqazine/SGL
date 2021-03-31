@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS ON)
 
 add_subdirectory(SGL)
-add_subdirectory(Engine)
-
+add_subdirectory(Framework)
+add_subdirectory(Example/ClearScreen)
 
 

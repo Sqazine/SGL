@@ -4,7 +4,7 @@
 #include "camera/FPSCamera.h"
 
 Application::Application(const std::string &appName, const SGL::Vector2u32 &frameExtent)
-	: m_IsRunning(true), m_AppName(appName), m_FrameExtent(frameExtent)
+	: m_Status(ApplicationStatus::INIT), m_FrameExtent(frameExtent), m_AppName(appName)
 {
 }
 
@@ -15,8 +15,9 @@ Application::~Application()
 void Application::Run()
 {
 	Init();
-	while (m_IsRunning)
+	while (m_Status != ApplicationStatus::EXIT)
 	{
+		m_Status = ApplicationStatus::RUN;
 		//计算增量时间
 		Timer::CalcDeltaTime();
 		ProcessInput();
@@ -29,6 +30,7 @@ void Application::Run()
 
 void Application::Init()
 {
+	m_Status = ApplicationStatus::INIT;
 	//初始化SDL
 	SDL_Init(SDL_INIT_VIDEO);
 
@@ -46,19 +48,19 @@ void Application::ProcessInput()
 	SDL_Event event;
 	SDL_PollEvent(&event);
 	m_InputSystem->ProcessInput(event);
-	if (m_InputSystem->GetEventType() == SDL_QUIT)
-		m_IsRunning = false;
-	if (m_InputSystem->GetKeyboard()->GetKeyState(SDL_SCANCODE_ESCAPE) == BUTTON_STATE::PRESS)
-		m_IsRunning = false;
+}
+
+void Application::PreUpdate()
+{
+	m_InputSystem->PreUpdate();
 }
 
 void Application::Update()
 {
-	m_InputSystem->PreUpdate();
+}
 
-	m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-	m_Rasterizer->ClearDepth();
-
+void Application::PostUpdate()
+{
 	m_InputSystem->PostUpdate();
 }
 
@@ -68,6 +70,7 @@ void Application::Draw()
 
 void Application::CleanUp()
 {
+	m_Status = ApplicationStatus::EXIT;
 	SDL_DestroyRenderer(m_SDLRenderer);
 	SDL_Quit();
 }
