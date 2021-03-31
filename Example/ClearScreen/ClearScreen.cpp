@@ -10,7 +10,7 @@ public:
 	void ProcessInput() override
 	{
 		Application::ProcessInput();
-		if (m_InputSystem->GetEventType() == SDL_QUIT || m_InputSystem->GetKeyboard()->GetKeyState(SDL_SCANCODE_ESCAPE) == BUTTON_STATE::PRESS)
+		if (m_InputSystem->GetEventType() == SDL_QUIT || m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_ESCAPE) == BUTTON_STATE::PRESS)
 			m_Status = ApplicationStatus::EXIT;
 	}
 	void Draw() override

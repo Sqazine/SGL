@@ -1,5 +1,6 @@
 #include "FPSCamera.h"
 #include "utilities/Timer.h"
+#include "system/InputSystem.h"
 FPSCamera::FPSCamera(float fov, float aspect, float znear, float zfar)
 	:Camera(fov, aspect, znear, zfar), m_MoveSpeed(10.0f), m_RotateSpeed(5.0f), m_BoostSpeed(10.0f),
 	m_Yaw(SGL::Math::ToRadian(-90.0f)), m_Pitch(0.0f),m_Front(SGL::Vector3f(0.0f,0.0f,-1.0f)),m_Up(SGL::Vector3f::UNIT_Y),m_Right(SGL::Vector3f::UNIT_X)
@@ -13,21 +14,21 @@ FPSCamera::~FPSCamera()
 void FPSCamera::ProcessInput(SDL_Event event, const uint8_t* keyboardState)
 {
 	float speed = 0.0f;
-	if (keyboardState[SDL_SCANCODE_LSHIFT])
+	if (keyboardState[KEYCODE_LSHIFT])
 		speed = (m_MoveSpeed + m_BoostSpeed) * Timer::deltaTime;
 	else speed = m_MoveSpeed * Timer::deltaTime;
 
-	if (keyboardState[SDL_SCANCODE_W])
+	if (keyboardState[KEYCODE_W])
 		m_Position += m_Front * speed;
-	if (keyboardState[SDL_SCANCODE_S])
+	if (keyboardState[KEYCODE_S])
 		m_Position -= m_Front * speed;
-	if (keyboardState[SDL_SCANCODE_A])
+	if (keyboardState[KEYCODE_A])
 		m_Position -= m_Right * speed;
-	if (keyboardState[SDL_SCANCODE_D])
+	if (keyboardState[KEYCODE_D])
 		m_Position += m_Right * speed;
-	if (keyboardState[SDL_SCANCODE_E])
+	if (keyboardState[KEYCODE_E])
 		m_Position += m_Up * speed;
-	if (keyboardState[SDL_SCANCODE_Q])
+	if (keyboardState[KEYCODE_Q])
 		m_Position -= m_Up * speed;
 
 	if (event.type == SDL_MOUSEMOTION)

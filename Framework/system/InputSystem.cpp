@@ -7,12 +7,12 @@ KeyboardState::KeyboardState()
 KeyboardState::~KeyboardState()
 {
 }
-bool KeyboardState::GetKeyValue(SDL_Scancode keyCode) const
+bool KeyboardState::GetKeyValue(KeyCode keyCode) const
 {
 	return m_CurKeyState[keyCode] == 1 ? true : false;
 }
 
-BUTTON_STATE KeyboardState::GetKeyState(SDL_Scancode keyCode) const
+BUTTON_STATE KeyboardState::GetKeyState(KeyCode keyCode) const
 {
 	if (m_PreKeyState[keyCode] == 0)
 	{
