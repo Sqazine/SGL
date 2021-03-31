@@ -4,7 +4,8 @@
 #include "Shader.h"
 #include <array>
 #include <iostream>
-
+#include "Error.h"
+#include <cassert>
 namespace SGL
 {
 
@@ -148,6 +149,7 @@ namespace SGL
 
 	void Rasterizer::DrawPoint(const Vertex &model_p)
 	{
+		CheckShader();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
 		Vertex clip_p = m_Shader->VertexShader(model_p);
 		Vector3f ndc_position = ToNDCSpace(clip_p.position);
@@ -176,6 +178,7 @@ namespace SGL
 
 	void Rasterizer::DrawLine(const Vertex &model_p0, const Vertex &model_p1)
 	{
+		CheckShader();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
 		Vertex clip_p0 = m_Shader->VertexShader(model_p0);
 		Vector3f ndc_position_p0 = ToNDCSpace(clip_p0.position);
@@ -246,6 +249,7 @@ namespace SGL
 
 	void Rasterizer::DrawTriangle_WireFrame(const Vertex &model_p0, const Vertex &model_p1, const Vertex &model_p2)
 	{
+		CheckShader();
 		DrawLine(model_p0, model_p1);
 		DrawLine(model_p1, model_p2);
 		DrawLine(model_p2, model_p0);
@@ -253,6 +257,7 @@ namespace SGL
 
 	void Rasterizer::DrawTriangle_Solid(const Vertex &model_p0, const Vertex &model_p1, const Vertex &model_p2)
 	{
+		CheckShader();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
 		Vertex clip_p0 = m_Shader->VertexShader(model_p0);
 		Vector3f ndc_position_p0 = ToNDCSpace(clip_p0.position);
@@ -336,5 +341,13 @@ namespace SGL
 		int32_t screen_x = Math::Round(m_BufferExtent.x * ((v.x + 1.0f) / 2.0f));
 		int32_t screen_y = Math::Round(m_BufferExtent.y * ((v.y + 1.0f) / 2.0f));
 		return Vector2i32(screen_x, screen_y);
+	}
+
+	void Rasterizer::CheckShader()
+	{
+		if(m_Shader != nullptr)
+			return;
+		ERROR_OUTPUT_LN("Current binding shader is null!");
+		assert(m_Shader!=nullptr);
 	}
 }

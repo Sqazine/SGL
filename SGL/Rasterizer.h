@@ -77,6 +77,8 @@ namespace SGL
 		void DrawElements(RENDER_MODE mode, uint32_t index, const std::vector<struct Vertex> &vertices, const std::vector<uint32_t> &indices);
 
 	private:
+		void CheckShader();
+
 		Vector3f BaryCenteric(const Vector2i32 &p0, const Vector2i32 &p1, const Vector2i32 &p2, const Vector2i32 &p);
 
 		Vector3f ToNDCSpace(const Vector4f &v);
