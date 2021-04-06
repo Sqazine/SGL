@@ -78,6 +78,6 @@ void Application::CleanUp()
 void Application::GenerateFrame()
 {
 	SDL_UpdateTexture(m_DefaultRenderTexture, nullptr, m_Rasterizer->GetFramebuffer()->GetColorbuffer()->GetBuffer(), m_FrameExtent.x * 4);
-	SDL_RenderCopy(m_SDLRenderer, m_DefaultRenderTexture, NULL, NULL);
+	SDL_RenderCopyEx(m_SDLRenderer, m_DefaultRenderTexture, nullptr, nullptr,0.0f,nullptr,SDL_FLIP_VERTICAL);
 	SDL_RenderPresent(m_SDLRenderer);
 }

@@ -16,7 +16,7 @@ public:
     }
     SGL::Vector4f FragmentShader(const SGL::Vertex &screenVertex, const SGL::Vector2u32 &bufferExtent) override
     {
-        return SGL::Vector4f(0.1f,0.2f,0.5f,1.0f);
+        return screenVertex.color;
     }
 };
 
@@ -32,16 +32,21 @@ public:
         Application::Init();
         SGL::Vertex v1;
         v1.position = SGL::Vector3(0.0f, 0.5f, 0.0f);
+        v1.color = SGL::Vector3f(0.0f, 0.0f, 1.0f);
         SGL::Vertex v2;
         v2.position = SGL::Vector3(-0.5f, -0.5f, 0.0f);
+        v2.color = SGL::Vector3f(0.0f, 1.0f, 0.0f);
         SGL::Vertex v3;
         v3.position = SGL::Vector3(0.5f, -0.5f, 0.0f);
+        v3.color = SGL::Vector3f(1.0f, 0.0f, 0.0f);
 
         vertices.emplace_back(v1);
         vertices.emplace_back(v2);
         vertices.emplace_back(v3);
 
-        m_Rasterizer->SetShader(std::make_shared<ColorShader>());
+        auto shader = std::make_shared<ColorShader>();
+
+        m_Rasterizer->SetShader(shader);
     }
 
     void ProcessInput() override

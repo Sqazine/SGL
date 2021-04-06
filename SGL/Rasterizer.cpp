@@ -298,6 +298,7 @@ namespace SGL
 				screen_vertex.normal = model_p0.normal * screen_bc_coord.x + model_p1.normal * screen_bc_coord.y + model_p2.normal * screen_bc_coord.z;
 				screen_vertex.tangent = model_p0.tangent.x * screen_bc_coord.x + model_p1.tangent.x * screen_bc_coord.y + model_p2.tangent.x * screen_bc_coord.z;
 				screen_vertex.bitangent = model_p0.bitangent.x * screen_bc_coord.x + model_p1.bitangent.x * screen_bc_coord.y + model_p2.bitangent.x * screen_bc_coord.z;
+				screen_vertex.color=model_p0.color* screen_bc_coord.x + model_p1.color * screen_bc_coord.y + model_p2.color * screen_bc_coord.z;
 				//如果当前片元在三角形内且通过深度测试则渲染到颜色缓存中，否则丢弃该片元(这里使用提前深度测试)
 				if (screen_bc_coord.x >= 0.0f && screen_bc_coord.y >= 0.0f && screen_bc_coord.z >= 0.0f &&
 					m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_vertex.position.z && screen_vertex.position.z >= -1.0f)
