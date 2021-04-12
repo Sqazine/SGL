@@ -26,30 +26,34 @@ public:
     }
 };
 
-class ExampleTriangleWithTexture : public Application
+class ExampleQuadWithTexture : public Application
 {
 
 public:
-    ExampleTriangleWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
-    ~ExampleTriangleWithTexture() {}
+    ExampleQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
+    ~ExampleQuadWithTexture() {}
 
     void Init() override
     {
         Application::Init();
         SGL::Vertex v0;
-        v0.position = SGL::Vector3(0.0f, 0.5f, 0.0f);
-        v0.texcoord = SGL::Vector2f(0.5f, 1.0f);
-        v0.color = SGL::Vector3f(0.0f, 0.0f, 1.0f);
+        v0.position = SGL::Vector3(-0.5f, 0.5f, 0.0f);
+        v0.texcoord = SGL::Vector2f(0.0f, 1.0f);
+        v0.color = SGL::Vector3f(1.0f, 0.0f, 0.0f);
         SGL::Vertex v1;
         v1.position = SGL::Vector3(-0.5f, -0.5f, 0.0f);
         v1.texcoord = SGL::Vector2f(0.0f, 0.0f);
-        v1.color = SGL::Vector3f(0.0f, 1.0f, 0.0f);
+        v1.color = SGL::Vector3f(1.0f, 1.0f, 1.0f);
         SGL::Vertex v2;
         v2.position = SGL::Vector3(0.5f, -0.5f, 0.0f);
         v2.texcoord = SGL::Vector2f(1.0f, 0.0f);
-        v2.color = SGL::Vector3f(1.0f, 0.0f, 0.0f);
+        v2.color = SGL::Vector3f(0.0f, 1.0f, 0.0f);
+        SGL::Vertex v3;
+        v3.position = SGL::Vector3(0.5f, 0.5f, 0.0f);
+        v3.texcoord = SGL::Vector2f(1.0f, 1.0f);
+        v3.color = SGL::Vector3f(0.0f, 0.0f, 1.0f);
 
-        vertices = {v0, v1, v2};
+        vertices = {v0, v1, v2, v0, v2, v3};
 
         //image from https://pixabay.com/photos/statue-sculpture-figure-1275469/
         std::string filePath = ASSET_DIR;
@@ -93,7 +97,7 @@ private:
 #undef main
 int main(int argc, char **argv)
 {
-    std::unique_ptr<Application> app = std::make_unique<ExampleTriangleWithTexture>("Example Triangle", SGL::Vector2u32(800, 600));
+    std::unique_ptr<Application> app = std::make_unique<ExampleQuadWithTexture>("Example Triangle", SGL::Vector2u32(800, 600));
     app->Run();
     return 0;
 }

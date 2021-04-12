@@ -30,19 +30,17 @@ public:
     void Init() override
     {
         Application::Init();
+        SGL::Vertex v0;
+        v0.position = SGL::Vector3(0.0f, 0.5f, 0.0f);
+        v0.color = SGL::Vector3f(0.0f, 0.0f, 1.0f);
         SGL::Vertex v1;
-        v1.position = SGL::Vector3(0.0f, 0.5f, 0.0f);
-        v1.color = SGL::Vector3f(0.0f, 0.0f, 1.0f);
+        v1.position = SGL::Vector3(-0.5f, -0.5f, 0.0f);
+        v1.color = SGL::Vector3f(0.0f, 1.0f, 0.0f);
         SGL::Vertex v2;
-        v2.position = SGL::Vector3(-0.5f, -0.5f, 0.0f);
-        v2.color = SGL::Vector3f(0.0f, 1.0f, 0.0f);
-        SGL::Vertex v3;
-        v3.position = SGL::Vector3(0.5f, -0.5f, 0.0f);
-        v3.color = SGL::Vector3f(1.0f, 0.0f, 0.0f);
+        v2.position = SGL::Vector3(0.5f, -0.5f, 0.0f);
+        v2.color = SGL::Vector3f(1.0f, 0.0f, 0.0f);
 
-        vertices.emplace_back(v1);
-        vertices.emplace_back(v2);
-        vertices.emplace_back(v3);
+        vertices = {v0, v1, v2};
 
         auto shader = std::make_shared<ColorShader>();
 
