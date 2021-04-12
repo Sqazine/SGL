@@ -13,5 +13,6 @@ add_subdirectory(SGL)
 add_subdirectory(Framework)
 add_subdirectory(Example/ClearScreen)
 add_subdirectory(Example/Triangle)
+add_subdirectory(Example/TriangleWithTexture)
 
 

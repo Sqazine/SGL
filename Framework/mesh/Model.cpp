@@ -91,7 +91,7 @@ std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* aimesh, const aiScene* scene)
 	{
 		SGL::Vertex tmpVert;
 		tmpVert.position = SGL::Vector4f(aimesh->mVertices[i].x, aimesh->mVertices[i].y, aimesh->mVertices[i].z, 1.0f);
-		tmpVert.texcoord = SGL::Vector2f(SGL::Math::MapNumToInterval01(aimesh->mTextureCoords[0][i].x), SGL::Math::MapNumToInterval01(aimesh->mTextureCoords[0][i].y));
+		tmpVert.texcoord = SGL::Vector2f(aimesh->mTextureCoords[0][i].x, aimesh->mTextureCoords[0][i].y);
 		tmpVert.normal = SGL::Vector3f(aimesh->mNormals[i].x, aimesh->mNormals[i].y, aimesh->mNormals[i].z);
 		tmpVert.tangent = SGL::Vector3f(aimesh->mTangents[i].x, aimesh->mTangents[i].y, aimesh->mTangents[i].z);
 		tmpVert.bitangent = SGL::Vector3f(aimesh->mBitangents[i].x, aimesh->mBitangents[i].y, aimesh->mBitangents[i].z);

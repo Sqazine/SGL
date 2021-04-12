@@ -7,7 +7,7 @@ namespace SGL
 	{
 	}
 	Texture2D::Texture2D(const std::vector<uint8_t> &data, int width, int height, int channel)
-		: m_Width(width), m_Height(height), m_Channel(channel), m_TextureWrapMode(TextureWrapMode::REPEAT)
+		: m_Data(std::move(data)), m_Width(width), m_Height(height), m_Channel(channel), m_TextureWrapMode(TextureWrapMode::REPEAT)
 	{
 	}
 
@@ -47,8 +47,9 @@ namespace SGL
 			}
 		}
 
-		int texel_coord_u = static_cast<int>(u * m_Width);
-		int texel_coord_v = static_cast<int>(v * m_Height);
+		int texel_coord_u = static_cast<int>((tmp[0] * m_Width - 0.5f))%m_Width;
+		int texel_coord_v = static_cast<int>((tmp[1] * m_Height - 0.5f))%m_Height;
+
 		int texel_coord = texel_coord_u + texel_coord_v * m_Width;
 
 		float r = m_Data[texel_coord * m_Channel + 0] / 255.0f;

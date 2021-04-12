@@ -36,14 +36,11 @@ namespace SGL::Math
 		return ceil(value);
 	}
 
-	//ר������������ӳ�䵽[0,1]����
 	template<typename T>
 	inline T MapNumToInterval01(const T& value)
 	{
 		return 1.0f / (Ceil(value) - Floor(value)) * (value - Floor(value));
 	}
-
-	
 
 	template<typename T>
 	inline T Round(const T& value)
