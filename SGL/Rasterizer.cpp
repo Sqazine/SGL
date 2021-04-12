@@ -2,9 +2,9 @@
 #include "Vertex.h"
 #include "Math.h"
 #include "Shader.h"
+#include "Macros.h"
 #include <array>
 #include <iostream>
-#include "Error.h"
 #include <cassert>
 namespace SGL
 {

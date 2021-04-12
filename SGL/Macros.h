@@ -8,3 +8,5 @@
 
 #define NORMAL_OUTPUT(v) std::cout << v
 #define NORMAL_OUTPUT_LN(v) NORMAL_OUTPUT(v) << std::endl
+
+#define uniform public:

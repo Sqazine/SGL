@@ -5,7 +5,6 @@
 #include "Vector4.h"
 #include "Vertex.h"
 
-#define uniform public:
 namespace SGL
 {
 	class Shader
