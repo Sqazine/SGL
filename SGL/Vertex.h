@@ -13,5 +13,7 @@ namespace SGL
 		SGL::Vector3f tangent;
 		SGL::Vector3f bitangent;
 		SGL::Vector4f color;
+
+		SGL::Vector3f posWS;
 	};
 }
