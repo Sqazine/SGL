@@ -6,12 +6,12 @@
 #include "Framework/Framework.h"
 #include "SGL/SGL.h"
 
-class TextureShader
-    : public SGL::Shader
+class TextureShaderProgram
+    : public SGL::GraphicsShaderProgram
 {
 public:
-    TextureShader() {}
-    ~TextureShader() {}
+    TextureShaderProgram() {}
+    ~TextureShaderProgram() {}
 
     SGL::Vertex VertexShader(const SGL::Vertex &modelVertex) override
     {
@@ -25,7 +25,6 @@ public:
         return texture.GetTexel(screenVertex.texcoord);
     }
 };
-
 class ExampleQuadWithTexture : public Application
 {
 
@@ -69,10 +68,10 @@ public:
         assert(pixels != nullptr);
         auto texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
 
-        auto shader = std::make_shared<TextureShader>();
+        auto shader = std::make_shared<TextureShaderProgram>();
         shader->texture = texture;
 
-        m_Rasterizer->SetShader(shader);
+        m_Rasterizer->SetGraphicsShaderProgram(shader);
     }
 
     void ProcessInput() override

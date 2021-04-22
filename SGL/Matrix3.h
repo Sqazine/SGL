@@ -51,13 +51,6 @@ namespace SGL
 	};
 
 	typedef Matrix3<float> Matrix3f;
-	typedef Matrix3<double> Matrix3d;
-	typedef Matrix3<int32_t> Matrix3i32;
-	typedef Matrix3<uint32_t> Matrix3u32;
-	typedef Matrix3<int16_t> Matrix3i16;
-	typedef Matrix3<uint16_t> Matrix3u16;
-	typedef Matrix3<int8_t> Matrix3i8;
-	typedef Matrix3<uint8_t> Matrix3u8;
 
 	template <typename T>
 	const Matrix3<T> Matrix3<T>::IDENTITY = Matrix3();

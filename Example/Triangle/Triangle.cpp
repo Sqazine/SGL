@@ -3,12 +3,12 @@
 #include "Framework/Framework.h"
 #include "SGL/SGL.h"
 
-class ColorShader
-    : public SGL::Shader
+class ColorShaderProgram
+    : public SGL::GraphicsShaderProgram
 {
 public:
-    ColorShader() {}
-    ~ColorShader() {}
+    ColorShaderProgram() {}
+    ~ColorShaderProgram() {}
 
     SGL::Vertex VertexShader(const SGL::Vertex &modelVertex) override
     {
@@ -42,9 +42,9 @@ public:
 
         vertices = {v0, v1, v2};
 
-        auto shader = std::make_shared<ColorShader>();
+        auto shader = std::make_shared<ColorShaderProgram>();
 
-        m_Rasterizer->SetShader(shader);
+        m_Rasterizer->SetGraphicsShaderProgram(shader);
     }
 
     void ProcessInput() override

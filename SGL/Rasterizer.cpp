@@ -10,7 +10,7 @@ namespace SGL
 {
 
 	Rasterizer::Rasterizer(const Vector2u32 bufferExtent)
-		: m_Framebuffer(std::make_shared<Framebuffer>(bufferExtent)), m_BufferExtent(bufferExtent), m_Shader(nullptr),
+		: m_Framebuffer(std::make_shared<Framebuffer>(bufferExtent)), m_BufferExtent(bufferExtent), m_GraphicsShaderProgram(nullptr),
 		  m_PointSize(1), m_LineWidth(1), m_BlendMode(BLEND_MODE::ONE)
 	{
 	}
@@ -149,9 +149,9 @@ namespace SGL
 
 	void Rasterizer::DrawPoint(const Vertex &model_p)
 	{
-		CheckShader();
+		CheckGraphicsShaderProgram();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
-		Vertex clip_p = m_Shader->VertexShader(model_p);
+		Vertex clip_p = m_GraphicsShaderProgram->VertexShader(model_p);
 		Vector3f ndc_position = ToNDCSpace(clip_p.position);
 		Vector2i32 screen_position = ToScreenSpace(ndc_position);
 
@@ -171,20 +171,20 @@ namespace SGL
 						if (m_Framebuffer->GetDepthbuffer()->GetValue(i, j) > screen_vertex.position.z)
 						{
 							m_Framebuffer->GetDepthbuffer()->SetValue(i, j, screen_vertex.position.z);
-							m_Framebuffer->GetColorbuffer()->SetValue(i, j, m_Shader->FragmentShader(screen_vertex, m_BufferExtent));
+							m_Framebuffer->GetColorbuffer()->SetValue(i, j, m_GraphicsShaderProgram->FragmentShader(screen_vertex, m_BufferExtent));
 						}
 		}
 	}
 
 	void Rasterizer::DrawLine(const Vertex &model_p0, const Vertex &model_p1)
 	{
-		CheckShader();
+		CheckGraphicsShaderProgram();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
-		Vertex clip_p0 = m_Shader->VertexShader(model_p0);
+		Vertex clip_p0 = m_GraphicsShaderProgram->VertexShader(model_p0);
 		Vector3f ndc_position_p0 = ToNDCSpace(clip_p0.position);
 		Vector2i32 screen_position_p0 = ToScreenSpace(ndc_position_p0);
 
-		Vertex clip_p1 = m_Shader->VertexShader(model_p1);
+		Vertex clip_p1 = m_GraphicsShaderProgram->VertexShader(model_p1);
 		Vector3f ndc_position_p1 = ToNDCSpace(clip_p1.position);
 		Vector2i32 screen_position_p1 = ToScreenSpace(ndc_position_p1);
 
@@ -230,7 +230,7 @@ namespace SGL
 				if (m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_vertex.position.z)
 				{
 					m_Framebuffer->GetDepthbuffer()->SetValue(x, y, screen_vertex.position.z);
-					m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_Shader->FragmentShader(screen_vertex, m_BufferExtent));
+					m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(screen_vertex, m_BufferExtent));
 				}
 
 				//继续下一步的计算
@@ -249,7 +249,7 @@ namespace SGL
 
 	void Rasterizer::DrawTriangle_WireFrame(const Vertex &model_p0, const Vertex &model_p1, const Vertex &model_p2)
 	{
-		CheckShader();
+		CheckGraphicsShaderProgram();
 		DrawLine(model_p0, model_p1);
 		DrawLine(model_p1, model_p2);
 		DrawLine(model_p2, model_p0);
@@ -257,17 +257,17 @@ namespace SGL
 
 	void Rasterizer::DrawTriangle_Solid(const Vertex &model_p0, const Vertex &model_p1, const Vertex &model_p2)
 	{
-		CheckShader();
+		CheckGraphicsShaderProgram();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
-		Vertex clip_p0 = m_Shader->VertexShader(model_p0);
+		Vertex clip_p0 = m_GraphicsShaderProgram->VertexShader(model_p0);
 		Vector3f ndc_position_p0 = ToNDCSpace(clip_p0.position);
 		Vector2i32 screen_position_p0 = ToScreenSpace(ndc_position_p0);
 
-		Vertex clip_p1 = m_Shader->VertexShader(model_p1);
+		Vertex clip_p1 = m_GraphicsShaderProgram->VertexShader(model_p1);
 		Vector3f ndc_position_p1 = ToNDCSpace(clip_p1.position);
 		Vector2i32 screen_position_p1 = ToScreenSpace(ndc_position_p1);
 
-		Vertex clip_p2 = m_Shader->VertexShader(model_p2);
+		Vertex clip_p2 = m_GraphicsShaderProgram->VertexShader(model_p2);
 		Vector3f ndc_position_p2 = ToNDCSpace(clip_p2.position);
 		Vector2i32 screen_position_p2 = ToScreenSpace(ndc_position_p2);
 
@@ -299,26 +299,25 @@ namespace SGL
 				screen_vertex.tangent = model_p0.tangent.x * screen_bc_coord.x + model_p1.tangent.x * screen_bc_coord.y + model_p2.tangent.x * screen_bc_coord.z;
 				screen_vertex.bitangent = model_p0.bitangent.x * screen_bc_coord.x + model_p1.bitangent.x * screen_bc_coord.y + model_p2.bitangent.x * screen_bc_coord.z;
 				screen_vertex.color=model_p0.color* screen_bc_coord.x + model_p1.color * screen_bc_coord.y + model_p2.color * screen_bc_coord.z;
-				screen_vertex.posWS=model_p0.posWS* screen_bc_coord.x + model_p1.posWS * screen_bc_coord.y + model_p2.posWS * screen_bc_coord.z;
 				//如果当前片元在三角形内且通过深度测试则渲染到颜色缓存中，否则丢弃该片元(这里使用提前深度测试)
 				if (screen_bc_coord.x >= 0.0f && screen_bc_coord.y >= 0.0f && screen_bc_coord.z >= 0.0f &&
 					m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_vertex.position.z && screen_vertex.position.z >= -1.0f)
 				{
 					m_Framebuffer->GetDepthbuffer()->SetValue(x, y, screen_vertex.position.z);
-					m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_Shader->FragmentShader(screen_vertex, m_BufferExtent));
+					m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(screen_vertex, m_BufferExtent));
 				}
 			}
 		}
 	}
 
-	void Rasterizer::SetShader(const std::shared_ptr<Shader> &s)
+	void Rasterizer::SetGraphicsShaderProgram(const std::shared_ptr<GraphicsShaderProgram> &s)
 	{
-		m_Shader = s;
+		m_GraphicsShaderProgram = s;
 	}
 
-	const std::shared_ptr<Shader> &Rasterizer::GetShader() const
+	const std::shared_ptr<GraphicsShaderProgram> &Rasterizer::GetGraphicsShaderProgram() const
 	{
-		return m_Shader;
+		return m_GraphicsShaderProgram;
 	}
 
 	Vector3f Rasterizer::BaryCenteric(const Vector2i32 &p0, const Vector2i32 &p1, const Vector2i32 &p2, const Vector2i32 &p)
@@ -345,11 +344,11 @@ namespace SGL
 		return Vector2i32(screen_x, screen_y);
 	}
 
-	void Rasterizer::CheckShader()
+	void Rasterizer::CheckGraphicsShaderProgram()
 	{
-		if(m_Shader != nullptr)
+		if(m_GraphicsShaderProgram != nullptr)
 			return;
 		ERROR_OUTPUT_LN("Current binding shader is null!");
-		assert(m_Shader!=nullptr);
+		assert(m_GraphicsShaderProgram!=nullptr);
 	}
 }

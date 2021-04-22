@@ -56,8 +56,8 @@ namespace SGL
 
 		const std::shared_ptr<Framebuffer> &GetFramebuffer() const;
 
-		void SetShader(const std::shared_ptr<class Shader> &s);
-		const std::shared_ptr<class Shader> &GetShader() const;
+		void SetGraphicsShaderProgram(const std::shared_ptr<class GraphicsShaderProgram> &s);
+		const std::shared_ptr<class GraphicsShaderProgram> &GetGraphicsShaderProgram() const;
 
 		void SetPointSize(uint32_t size);
 		uint32_t GetPointSize() const;
@@ -77,7 +77,7 @@ namespace SGL
 		void DrawElements(RENDER_MODE mode, uint32_t index, const std::vector<struct Vertex> &vertices, const std::vector<uint32_t> &indices);
 
 	private:
-		void CheckShader();
+		void CheckGraphicsShaderProgram();
 
 		Vector3f BaryCenteric(const Vector2i32 &p0, const Vector2i32 &p1, const Vector2i32 &p2, const Vector2i32 &p);
 
@@ -95,7 +95,7 @@ namespace SGL
 
 		bool m_IsDepthTest;
 
-		std::shared_ptr<class Shader> m_Shader;
+		std::shared_ptr<class GraphicsShaderProgram> m_GraphicsShaderProgram;
 		uint32_t m_PointSize;
 		uint32_t m_LineWidth;
 		BLEND_MODE m_BlendMode;

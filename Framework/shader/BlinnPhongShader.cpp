@@ -1,14 +1,14 @@
 #include "BlinnPhongShader.h"
 #include "SGL/SGL.h"
-BlinnPhongShader::BlinnPhongShader()
+BlinnPhongShaderProgram::BlinnPhongShaderProgram()
 {
 }
 
-BlinnPhongShader::~BlinnPhongShader()
+BlinnPhongShaderProgram::~BlinnPhongShaderProgram()
 {
 }
 
-SGL::Vertex BlinnPhongShader::VertexShader(const SGL::Vertex& modelVertex)
+SGL::Vertex BlinnPhongShaderProgram::VertexShader(const SGL::Vertex& modelVertex)
 {
 	SGL::Vertex tmpVertex;
 	tmpVertex.position = m_ProjectionMatrix * m_ViewMatrix * m_WorldMatrix * modelVertex.position;
@@ -16,7 +16,7 @@ SGL::Vertex BlinnPhongShader::VertexShader(const SGL::Vertex& modelVertex)
 	return tmpVertex;
 }
 
-SGL::Vector4f BlinnPhongShader::FragmentShader(const SGL::Vertex& screenVertex,const SGL::Vector2u32& bufferExtent)
+SGL::Vector4f BlinnPhongShaderProgram::FragmentShader(const SGL::Vertex& screenVertex,const SGL::Vector2u32& bufferExtent)
 {
 	SGL::Vector3f normalVS = SGL::Vector3f::Normalize(SGL::Vector4f::ToVector3(m_NormalTexture->GetTexel(screenVertex.texcoord))*2.0f-1.0f);
 

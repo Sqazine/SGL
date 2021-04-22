@@ -47,6 +47,8 @@ namespace SGL
 
 	typedef Vector4<float> Vector4f;
 	typedef Vector4<double> Vector4d;
+	typedef Vector4<int64_t> Vector4i64;
+	typedef Vector4<uint64_t> Vector4u64;
 	typedef Vector4<int32_t> Vector4i32;
 	typedef Vector4<uint32_t> Vector4u32;
 	typedef Vector4<int16_t> Vector4i16;

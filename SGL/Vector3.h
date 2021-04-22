@@ -58,6 +58,8 @@ namespace SGL
 
 	typedef Vector3<float> Vector3f;
 	typedef Vector3<double> Vector3d;
+	typedef Vector3<int64_t> Vector3i64;
+	typedef Vector3<uint64_t> Vector3u64;
 	typedef Vector3<int32_t> Vector3i32;
 	typedef Vector3<uint32_t> Vector3u32;
 	typedef Vector3<int16_t> Vector3i16;

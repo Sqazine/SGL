@@ -1,12 +1,12 @@
 #pragma once
 #include "SGL/SGL.h"
 #include "texture/Texture.h"
-class BlinnPhongShader
-	: SGL::Shader
+class BlinnPhongShaderProgram
+	: SGL::GraphicsShaderProgram
 {
 public:
-	BlinnPhongShader();
-	~BlinnPhongShader();
+	BlinnPhongShaderProgram();
+	~BlinnPhongShaderProgram();
 
 	SGL::Vertex VertexShader(const SGL::Vertex &modelVertex) override;
 	SGL::Vector4f FragmentShader(const SGL::Vertex &screenVertex, const SGL::Vector2u32 &bufferExtent) override;

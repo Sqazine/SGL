@@ -6,12 +6,12 @@
 #include "Framework/Framework.h"
 #include "SGL/SGL.h"
 
-class TextureShader
-    : public SGL::Shader
+class TextureShaderProgram
+    : public SGL::GraphicsShaderProgram
 {
 public:
-    TextureShader() {}
-    ~TextureShader() {}
+    TextureShaderProgram() {}
+    ~TextureShaderProgram() {}
 
     SGL::Vertex VertexShader(const SGL::Vertex &modelVertex) override
     {
@@ -78,7 +78,7 @@ public:
         viewMatrix = SGL::Matrix4f::Translate(SGL::Vector3f(0.0f, 0.0f, -3.0f));
         projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
 
-        shader = std::make_shared<TextureShader>();
+        shader = std::make_shared<TextureShaderProgram>();
     }
 
     void ProcessInput() override
@@ -108,7 +108,7 @@ public:
         shader->modelMatrix = modelMatrix;
         shader->viewMatrix = viewMatrix;
         shader->projectionMatrix = projectionMatrix;
-        m_Rasterizer->SetShader(shader);
+        m_Rasterizer->SetGraphicsShaderProgram(shader);
         m_Rasterizer->DrawElements(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, vertices, indices);
     }
 
@@ -119,7 +119,7 @@ private:
     SGL::Matrix4f modelMatrix;
     SGL::Matrix4f viewMatrix;
     SGL::Matrix4f projectionMatrix;
-    std::shared_ptr<TextureShader> shader;
+    std::shared_ptr<TextureShaderProgram> shader;
     SGL::Texture2D texture;
 };
 

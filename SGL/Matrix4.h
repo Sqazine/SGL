@@ -71,8 +71,6 @@ namespace SGL
 	};
 
 	typedef Matrix4<float> Matrix4f;
-	typedef Matrix4<int32_t> Matrix4i32;
-	typedef Matrix4<uint32_t> Matrix4u32;
 
 	template <typename T>
 	const Matrix4<T> Matrix4<T>::IDENTITY = Matrix4<T>();

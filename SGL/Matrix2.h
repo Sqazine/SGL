@@ -55,8 +55,6 @@ namespace SGL
 	};
 
 	typedef Matrix2<float> Matrix2f;
-	typedef Matrix2<int32_t> Vectori32;
-	typedef Matrix2<uint32_t> Matrix2u32;
 
 	template <typename T>
 	const Matrix2<T> Matrix2<T>::IDENTITY = Matrix2<T>();

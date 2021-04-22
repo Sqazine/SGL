@@ -19,12 +19,12 @@ struct PhongMaterial
     float shiness;
 };
 
-class PhongShader
-    : public SGL::Shader
+class PhongShaderProgram
+    : public SGL::GraphicsShaderProgram
 {
 public:
-    PhongShader() {}
-    ~PhongShader() {}
+    PhongShaderProgram() {}
+    ~PhongShaderProgram() {}
 
     uniform SGL::Matrix4f modelMatrix;
     uniform SGL::Matrix4f viewMatrix;
@@ -32,11 +32,10 @@ public:
 
     SGL::Vertex VertexShader(const SGL::Vertex &modelVertex) override
     {
-        SGL::Vertex v=modelVertex;
+        SGL::Vertex v = modelVertex;
 
-        v.position= projectionMatrix*viewMatrix*modelMatrix*v.position;
-        v.posWS=SGL::Vector4f::ToVector3(modelMatrix*v.position);
-        v.normal=SGL::Matrix4f::ToMatrix3(SGL::Matrix4f::Transpose(SGL::Matrix4f::Inverse(modelMatrix)))*v.normal;
+        v.position = projectionMatrix * viewMatrix * modelMatrix * v.position;
+        v.normal = SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(SGL::Matrix4f::Transpose(SGL::Matrix4f::Inverse(viewMatrix * modelMatrix))) * v.normal);
         return v;
     }
 
@@ -45,16 +44,19 @@ public:
     uniform SGL::Vector3f viewPosWS;
     SGL::Vector4f FragmentShader(const SGL::Vertex &screenVertex, const SGL::Vector2u32 &bufferExtent) override
     {
+        SGL::Vector3f fragPosNDC((screenVertex.position.x / bufferExtent.x * 2.0f) - 1.0f, (screenVertex.position.y / bufferExtent.y * 2.0f) - 1.0f, screenVertex.position.z);
+        SGL::Vector4f fragPosCS = SGL::Vector4f(fragPosNDC, 1.0f) * screenVertex.position.w;
+        SGL::Vector3f fragPosVS = SGL::Vector4f::ToVector3(fragPosCS * SGL::Matrix4f::Inverse(projectionMatrix));
 
-        auto normal=SGL::Vector3f::Normalize(screenVertex.normal);
-        auto lightDir=SGL::Vector3f::Normalize(light.position-screenVertex.posWS);
-        auto viewDir=SGL::Vector3f::Normalize(viewPosWS-screenVertex.posWS);
-        auto reflectDir=Reflect(-lightDir,normal);
+        auto normalVS = SGL::Vector3f::Normalize(screenVertex.normal);
+        auto lightDirVS = SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(viewMatrix) * light.position);
+        auto viewDirVS = SGL::Vector3f::Normalize(-fragPosVS);
+        auto reflectDir = Reflect(-lightDirVS, normalVS);
 
-        auto ambientPart=light.ambient*material.ambient;
-        auto diffusePart=light.diffuse*material.diffuse*SGL::Math::Max(SGL::Vector3f::Dot(normal,lightDir),0.0f);
-        auto specularPart=light.specular*material.specular*SGL::Math::Pow(SGL::Math::Max(SGL::Vector3f::Dot(viewDir,reflectDir),0.0f),material.shiness);
-        return SGL::Vector4f(ambientPart+diffusePart+specularPart,1.0);
+        auto ambientPart = light.ambient * material.ambient;
+        auto diffusePart = light.diffuse * material.diffuse * SGL::Math::Max(SGL::Vector3f::Dot(normalVS, lightDirVS), 0.0f);
+        auto specularPart = light.specular * material.specular * SGL::Math::Pow(SGL::Math::Max(SGL::Vector3f::Dot(viewDirVS, reflectDir), 0.0f), material.shiness);
+        return SGL::Vector4f(ambientPart + diffusePart + specularPart, 1.0);
     }
 };
 
@@ -68,24 +70,24 @@ public:
     void Init() override
     {
         Application::Init();
-        sphere=std::make_shared<Mesh>(INTERNAL_MESH_TYPE::SPHERE);
+        sphere = std::make_shared<Mesh>(INTERNAL_MESH_TYPE::SPHERE);
 
-        auto shader = std::make_shared<PhongShader>();
-        shader->modelMatrix= SGL::Matrix4f();
-        shader->viewMatrix= SGL::Matrix4f::Translate(SGL::Vector3f(0.0f, 0.0f, -3.0f));
-        shader->projectionMatrix=SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
+        auto shader = std::make_shared<PhongShaderProgram>();
+        shader->modelMatrix = SGL::Matrix4f();
+        shader->viewMatrix = SGL::Matrix4f::Translate(SGL::Vector3f(0.0f, 0.0f, -3.0f));
+        shader->projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
         //parameter from http://devernay.free.fr/cours/opengl/materials.html
-        shader->material.ambient=SGL::Vector3f(1.0f,0.5f,0.31f);
-        shader->material.diffuse=SGL::Vector3f(1.0f,0.5f,0.31f);
-        shader->material.specular=SGL::Vector3f(0.5f);
-        shader->material.shiness=32.0f;
-        shader->light.position=SGL::Vector3f(1.0f,1.0f,1.0f);
-        shader->light.ambient=SGL::Vector3f(0.2f);
-        shader->light.diffuse=SGL::Vector3f(0.5f);
-        shader->light.specular=SGL::Vector3f(1.0f);
-        shader->viewPosWS=SGL::Vector3f(0.0f, 0.0f, 3.0f);
+        shader->material.ambient = SGL::Vector3f(1.0f, 0.5f, 0.31f);
+        shader->material.diffuse = SGL::Vector3f(1.0f, 0.5f, 0.31f);
+        shader->material.specular = SGL::Vector3f(0.5f);
+        shader->material.shiness = 32.0f;
+        shader->light.position = SGL::Vector3f(1.0f, 1.0f, 1.0f);
+        shader->light.ambient = SGL::Vector3f(0.2f);
+        shader->light.diffuse = SGL::Vector3f(0.5f);
+        shader->light.specular = SGL::Vector3f(1.0f);
+        shader->viewPosWS = SGL::Vector3f(0.0f, 0.0f, 3.0f);
 
-        m_Rasterizer->SetShader(shader);
+        m_Rasterizer->SetGraphicsShaderProgram(shader);
     }
 
     void ProcessInput() override
@@ -104,7 +106,7 @@ public:
         m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->ClearDepth();
 
-        m_Rasterizer->DrawElements(SGL::RENDER_MODE::SOLID_TRIANGLE, 0,sphere->GetVertices(),sphere->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, sphere->GetVertices(), sphere->GetIndices());
     }
 
 private:
