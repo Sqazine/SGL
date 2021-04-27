@@ -9,7 +9,7 @@ public:
 	~BlinnPhongShaderProgram();
 
 	SGL::Vector4f VertexShader(const SGL::Vertex &vertex, SGL::Varyings &varyings) override;
-	SGL::Vector4f FragmentShader(SGL::Varyings varyings) override;
+	SGL::Vector4f FragmentShader(const SGL::Varyings& varyings) override;
 
 	SGL::Matrix4f m_WorldMatrix;
 	SGL::Matrix4f m_ViewMatrix;

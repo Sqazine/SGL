@@ -16,7 +16,7 @@ SGL::Vector4f BlinnPhongShaderProgram::VertexShader(const SGL::Vertex &vertex, S
 	return m_ProjectionMatrix * m_ViewMatrix * m_WorldMatrix * vertex.position;
 }
 
-SGL::Vector4f BlinnPhongShaderProgram::FragmentShader(SGL::Varyings varyings)
+SGL::Vector4f BlinnPhongShaderProgram::FragmentShader(const SGL::Varyings& varyings)
 {
 	SGL::Vector2f vTexcoordVS = varyings.GetVector2fVarying("vTexcoordVS");
 	SGL::Vector3f vPositionVS = varyings.GetVector3fVarying("vPositionVS");

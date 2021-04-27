@@ -6,6 +6,7 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Vertex.h"
+#include "Shader.h"
 
 namespace SGL
 {
@@ -56,8 +57,8 @@ namespace SGL
 
 		const std::shared_ptr<Framebuffer> &GetFramebuffer() const;
 
-		void SetGraphicsShaderProgram(const std::shared_ptr<class GraphicsShaderProgram> &s);
-		const std::shared_ptr<class GraphicsShaderProgram> &GetGraphicsShaderProgram() const;
+		void SetGraphicsShaderProgram(const std::shared_ptr<GraphicsShaderProgram> &s);
+		const std::shared_ptr<GraphicsShaderProgram> &GetGraphicsShaderProgram() const;
 
 		void SetPointSize(uint32_t size);
 		uint32_t GetPointSize() const;
@@ -98,15 +99,20 @@ namespace SGL
 
 		bool m_IsDepthTest;
 
-		std::shared_ptr<class GraphicsShaderProgram> m_GraphicsShaderProgram;
+		std::shared_ptr<GraphicsShaderProgram> m_GraphicsShaderProgram;
 		uint32_t m_PointSize;
 		uint32_t m_LineWidth;
 		BLEND_MODE m_BlendMode;
+
+		Varyings varyings0;
+		Varyings varyings1;
+		Varyings varyings2;
+		Varyings interpolatedVaryings;
 	};
 
 	template <typename T>
 	T Rasterizer::InterpolateVaryingBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter)
 	{
-		return v0*barycenter.x+v1*barycenter.y+v2*barycenter.z;
+		return v0 * barycenter.x + v1 * barycenter.y + v2 * barycenter.z;
 	}
 }

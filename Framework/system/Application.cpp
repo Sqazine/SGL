@@ -2,7 +2,7 @@
 #include "shader/BlinnPhongShader.h"
 #include "utilities/Timer.h"
 #include "camera/FPSCamera.h"
-
+#include <chrono>
 Application::Application(const std::string &appName, const SGL::Vector2u32 &frameExtent)
 	: m_Status(ApplicationStatus::INIT), m_FrameExtent(frameExtent), m_AppName(appName)
 {
@@ -14,7 +14,11 @@ Application::~Application()
 
 void Application::Run()
 {
+	auto start = std::chrono::system_clock::now();
 	Init();
+	auto end = std::chrono::system_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+	NORMAL_OUTPUT("Init Elspaed Time:" + std::to_string(duration.count()));
 	while (m_Status != ApplicationStatus::EXIT)
 	{
 		m_Status = ApplicationStatus::RUN;
@@ -22,8 +26,16 @@ void Application::Run()
 		Timer::CalcDeltaTime();
 		ProcessInput();
 		Update();
+		start = std::chrono::system_clock::now();
 		Draw();
+		end = std::chrono::system_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+		NORMAL_OUTPUT(",Draw Elspaed Time:" + std::to_string(duration.count()));
+		start = std::chrono::system_clock::now();
 		GenerateFrame();
+		end = std::chrono::system_clock::now();
+		duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+		NORMAL_OUTPUT_LN(",Generate Frame Elspaed Time:" + std::to_string(duration.count()));
 	}
 	CleanUp();
 }
@@ -78,6 +90,6 @@ void Application::CleanUp()
 void Application::GenerateFrame()
 {
 	SDL_UpdateTexture(m_DefaultRenderTexture, nullptr, m_Rasterizer->GetFramebuffer()->GetColorbuffer()->GetBuffer(), m_FrameExtent.x * 4);
-	SDL_RenderCopyEx(m_SDLRenderer, m_DefaultRenderTexture, nullptr, nullptr,0.0f,nullptr,SDL_FLIP_VERTICAL);
+	SDL_RenderCopyEx(m_SDLRenderer, m_DefaultRenderTexture, nullptr, nullptr, 0.0f, nullptr, SDL_FLIP_VERTICAL);
 	SDL_RenderPresent(m_SDLRenderer);
 }

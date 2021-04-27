@@ -15,7 +15,7 @@ public:
         varyings.CommitVector4fVarying("vColor",vertex.color);
         return vertex.position;
     }
-    SGL::Vector4f FragmentShader(SGL::Varyings varyings) override
+    SGL::Vector4f FragmentShader(const SGL::Varyings& varyings) override
     {
         return varyings.GetVector4fVarying("vColor");
     }

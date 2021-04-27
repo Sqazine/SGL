@@ -21,7 +21,7 @@ public:
 
     uniform SGL::Texture2D texture;
 
-    SGL::Vector4f FragmentShader(SGL::Varyings varyings) override
+    SGL::Vector4f FragmentShader(const SGL::Varyings& varyings) override
     {
         return texture.GetTexel(varyings.GetVector2fVarying("vTexcoord"));
     }

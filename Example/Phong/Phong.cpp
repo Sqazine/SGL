@@ -33,9 +33,9 @@ public:
     SGL::Vector4f VertexShader(const SGL::Vertex &vertex, SGL::Varyings &varyings) override
     {
 
-        varyings.CommitVector3fVarying("vNormalVS", SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(SGL::Matrix4f::Transpose(SGL::Matrix4f::Inverse(viewMatrix * modelMatrix))) * vertex.normal));
-            varyings.CommitVector3fVarying("vPositionVS", SGL::Vector4f::ToVector3(viewMatrix * modelMatrix * vertex.position));
-	varyings.CommitVector2fVarying("vTexcoordVS",vertex.texcoord);
+        varyings.CommitVector3fVarying("vNormalWS", SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(SGL::Matrix4f::Transpose(SGL::Matrix4f::Inverse( modelMatrix))) * vertex.normal));
+        varyings.CommitVector3fVarying("vPositionWS", SGL::Vector3f::Normalize(SGL::Vector4f::ToVector3( modelMatrix * vertex.position)));
+        varyings.CommitVector2fVarying("vTexcoord", vertex.texcoord);
         return projectionMatrix * viewMatrix * modelMatrix * vertex.position;
     }
 
@@ -43,18 +43,18 @@ public:
     uniform Light light;
     uniform SGL::Vector3f viewPosWS;
 
-    SGL::Vector4f FragmentShader(SGL::Varyings varyings) override
+    SGL::Vector4f FragmentShader(const SGL::Varyings& varyings) override
     {
-        SGL::Vector3f normalVS = varyings.GetVector3fVarying("vNormalVS");
-        SGL::Vector2f vTexcoordVS = varyings.GetVector2fVarying("vTexcoordVS");
-        SGL::Vector3f vPositionVS = varyings.GetVector3fVarying("vPositionVS");
-        SGL::Vector3f viewDirVS = -vPositionVS;
-        auto lightDirVS = SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(viewMatrix) * light.position);
-        auto reflectDir = Reflect(-lightDirVS, normalVS);
+        SGL::Vector3f vNormalWS = varyings.GetVector3fVarying("vNormalWS");
+        SGL::Vector2f vTexcoord = varyings.GetVector2fVarying("vTexcoord");
+        SGL::Vector3f vPositionWS = varyings.GetVector3fVarying("vPositionWS");
+        SGL::Vector3f viewDirWS =SGL::Vector3f::Normalize(viewPosWS-vPositionWS);
+        auto lightDirWS = SGL::Vector3f::Normalize(light.position-vPositionWS);
+        auto reflectDir = Reflect(-lightDirWS, vNormalWS);
 
         auto ambientPart = light.ambient * material.ambient;
-        auto diffusePart = light.diffuse * material.diffuse * SGL::Math::Max(SGL::Vector3f::Dot(normalVS, lightDirVS), 0.0f);
-        auto specularPart = light.specular * material.specular * SGL::Math::Pow(SGL::Math::Max(SGL::Vector3f::Dot(viewDirVS, reflectDir), 0.0f), material.shiness);
+        auto diffusePart = light.diffuse * material.diffuse * SGL::Math::Max(SGL::Vector3f::Dot(vNormalWS, lightDirWS), 0.0f);
+        auto specularPart = light.specular * material.specular * SGL::Math::Pow(SGL::Math::Max(SGL::Vector3f::Dot(viewDirWS, reflectDir), 0.0f), material.shiness);
         return SGL::Vector4f(ambientPart + diffusePart + specularPart, 1.0);
     }
 };
