@@ -14,11 +14,7 @@ Application::~Application()
 
 void Application::Run()
 {
-	auto start = std::chrono::system_clock::now();
 	Init();
-	auto end = std::chrono::system_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
-	NORMAL_OUTPUT("Init Elspaed Time:" + std::to_string(duration.count()));
 	while (m_Status != ApplicationStatus::EXIT)
 	{
 		m_Status = ApplicationStatus::RUN;
@@ -26,16 +22,8 @@ void Application::Run()
 		Timer::CalcDeltaTime();
 		ProcessInput();
 		Update();
-		start = std::chrono::system_clock::now();
 		Draw();
-		end = std::chrono::system_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
-		NORMAL_OUTPUT(",Draw Elspaed Time:" + std::to_string(duration.count()));
-		start = std::chrono::system_clock::now();
 		GenerateFrame();
-		end = std::chrono::system_clock::now();
-		duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
-		NORMAL_OUTPUT_LN(",Generate Frame Elspaed Time:" + std::to_string(duration.count()));
 	}
 	CleanUp();
 }

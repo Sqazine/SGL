@@ -4,28 +4,23 @@
 #include "Macros.h"
 namespace SGL
 {
-#define Commit(name, value, container) \
-	container[name] = value;
-
-#define Get(name, container)                                                      \
-	auto iter = container.find(name);                                             \
-	if (iter == container.end())                                                  \
-	{                                                                             \
-		ERROR_OUTPUT_LN("varying '" + name + "' not exits in varying container"); \
-		assert(iter != container.end());                                          \
-	}                                                                             \
-	return iter->second;
 
 #define CommitVarying(type, actualType, container)                           \
 	void Varyings::Commit##type##Varying(std::string name, actualType value) \
 	{                                                                        \
-		Commit(name, value, container);                                      \
+		container[name] = value;                                             \
 	}
 
-#define GetVarying(type, actualType, container)                     \
-	actualType Varyings::Get##type##Varying(std::string name) const \
-	{                                                               \
-		Get(name, container);                                       \
+#define GetVarying(type, actualType, container)                                       \
+	actualType Varyings::Get##type##Varying(std::string name) const                   \
+	{                                                                                 \
+		auto iter = container.find(name);                                             \
+		if (iter == container.end())                                                  \
+		{                                                                             \
+			ERROR_OUTPUT_LN("varying '" + name + "' not exits in varying container"); \
+			assert(iter != container.end());                                          \
+		}                                                                             \
+		return iter->second;                                                          \
 	}
 
 #define CommitAndGetVarying(type, actualType, container) \
@@ -79,6 +74,10 @@ namespace SGL
 	CommitAndGetVarying(Matrix2f, Matrix2f, m_Matrix2fVaryings);
 	CommitAndGetVarying(Matrix3f, Matrix3f, m_Matrix3fVaryings);
 	CommitAndGetVarying(Matrix4f, Matrix4f, m_Matrix4fVaryings);
+
+#undef CommitAndGetVarying
+#undef GetVarying
+#undef CommitVarying
 
 	Vector3f ShaderProgram::Reflect(SGL::Vector3f i, SGL::Vector3f n)
 	{

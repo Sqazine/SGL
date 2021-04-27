@@ -129,6 +129,7 @@ namespace SGL
 			else if (w < 0)
 				return m_Data[5]->GetTexel(1.0f - (u + 1.0f) / 2.0f, (v + 1.0f) / 2.0f);
 		}
+		return Vector4f(0.0);
 	}
 
 	Vector4f TextureCube::GetTexel(const Vector3f &pos) const

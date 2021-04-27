@@ -337,6 +337,8 @@ namespace SGL
 				VARYING_INTERPOLATION(m_Matrix3fVaryings);
 				VARYING_INTERPOLATION(m_Matrix4fVaryings);
 
+#undef VARYING_INTERPOLATION
+
 				Vector4f screen_position = Vector4f(x, y, InterpolateVaryingBarycenteric(ndc_position_p0.z, ndc_position_p1.z, ndc_position_p2.z, screen_bc_coord), InterpolateVaryingBarycenteric(clip_position0.w, clip_position1.w, clip_position2.w, screen_bc_coord));
 				//如果当前片元在三角形内且通过深度测试则渲染到颜色缓存中，否则丢弃该片元(这里使用提前深度测试)
 				if (screen_bc_coord.x >= 0.0f && screen_bc_coord.y >= 0.0f && screen_bc_coord.z >= 0.0f &&
