@@ -11,8 +11,6 @@
 #include "renderer/ForwardRenderer.h"
 #include "renderer/DefferedRenderer.h"
 #include "scene/Scene.h"
-#include "shader/BlinnPhongShader.h"
-#include "shader/BlinnPhongShader.h"
 #include "system/Application.h"
 #include "system/InputSystem.h"
 #include "system/Window.h"

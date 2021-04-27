@@ -94,7 +94,7 @@ private:
 #undef main
 int main(int argc, char **argv)
 {
-    std::unique_ptr<Application> app = std::make_unique<ExampleTriangleWithTexture>("Example Triangle", SGL::Vector2u32(800, 600));
+    std::unique_ptr<Application> app = std::make_unique<ExampleTriangleWithTexture>("Example Triangle With Texture", SGL::Vector2u32(800, 600));
     app->Run();
     return 0;
 }

@@ -30,12 +30,12 @@ public:
     }
 };
 
-class ExampleQuadWithTexture : public Application
+class ExampleRotateQuadWithTexture : public Application
 {
 
 public:
-    ExampleQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
-    ~ExampleQuadWithTexture() {}
+    ExampleRotateQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
+    ~ExampleRotateQuadWithTexture() {}
 
     void Init() override
     {
@@ -125,7 +125,7 @@ private:
 #undef main
 int main(int argc, char **argv)
 {
-    std::unique_ptr<Application> app = std::make_unique<ExampleQuadWithTexture>("Example Triangle", SGL::Vector2u32(800, 600));
+    std::unique_ptr<Application> app = std::make_unique<ExampleRotateQuadWithTexture>("Example Rotate Quad With Texture", SGL::Vector2u32(800, 600));
     app->Run();
     return 0;
 }

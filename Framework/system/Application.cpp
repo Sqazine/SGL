@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "shader/BlinnPhongShader.h"
 #include "utilities/Timer.h"
 #include "camera/FPSCamera.h"
 #include <chrono>

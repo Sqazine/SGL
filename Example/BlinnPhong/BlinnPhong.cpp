@@ -11,7 +11,7 @@ struct Light
     SGL::Vector3f specular;
 };
 
-struct PhongMaterial
+struct BlinnPhongMaterial
 {
     SGL::Vector3f ambient;
     SGL::Vector3f diffuse;
@@ -19,12 +19,12 @@ struct PhongMaterial
     float shiness;
 };
 
-class PhongShaderProgram
+class BlinnPhongShaderProgram
     : public SGL::GraphicsShaderProgram
 {
 public:
-    PhongShaderProgram() {}
-    ~PhongShaderProgram() {}
+    BlinnPhongShaderProgram() {}
+    ~BlinnPhongShaderProgram() {}
 
     uniform SGL::Matrix4f modelMatrix;
     uniform SGL::Matrix4f viewMatrix;
@@ -39,7 +39,7 @@ public:
         return projectionMatrix * viewMatrix * vPositionWS;
     }
 
-    uniform PhongMaterial material;
+    uniform BlinnPhongMaterial material;
     uniform Light light;
     uniform SGL::Vector3f viewPosWS;
 
@@ -50,28 +50,29 @@ public:
         SGL::Vector3f vPositionWS = varyings.GetVector3fVarying("vPositionWS");
         SGL::Vector3f viewDirWS = SGL::Vector3f::Normalize(viewPosWS - vPositionWS);
         SGL::Vector3f lightDirWS = SGL::Vector3f::Normalize(light.position);
-        SGL::Vector3f reflectDir = Reflect(-lightDirWS, vNormalWS);
+    
+        SGL::Vector3f halfDirWS=SGL::Vector3f::Normalize(lightDirWS+viewDirWS);
 
         SGL::Vector3f ambientPart = light.ambient * material.ambient;
-        SGL::Vector3f diffusePart = light.diffuse * material.diffuse * SGL::Math::Max(SGL::Vector3f::Dot(vNormalWS, lightDirWS), 0.0f);//lambertian
-        SGL::Vector3f specularPart = light.specular * material.specular * SGL::Math::Pow(SGL::Math::Max(SGL::Vector3f::Dot(viewDirWS, reflectDir), 0.0f), material.shiness);//phong specular
+        SGL::Vector3f diffusePart = light.diffuse * material.diffuse * (SGL::Vector3f::Dot(vNormalWS, lightDirWS)*0.5f+0.5f);//half-lambertian
+        SGL::Vector3f specularPart = light.specular * material.specular * SGL::Math::Pow(SGL::Math::Max(SGL::Vector3f::Dot(vNormalWS, halfDirWS), 0.0f), material.shiness);//blinn-phong specular
         return SGL::Vector4f(ambientPart+diffusePart+specularPart, 1.0);
     }
 };
 
-class ExamplePhong : public Application
+class ExampleBlinnPhong : public Application
 {
 
 public:
-    ExamplePhong(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
-    ~ExamplePhong() {}
+    ExampleBlinnPhong(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
+    ~ExampleBlinnPhong() {}
 
     void Init() override
     {
         Application::Init();
         sphere = std::make_shared<Mesh>(INTERNAL_MESH_TYPE::SPHERE);
 
-        auto shader = std::make_shared<PhongShaderProgram>();
+        auto shader = std::make_shared<BlinnPhongShaderProgram>();
         shader->modelMatrix = SGL::Matrix4f();
         shader->viewMatrix = SGL::Matrix4f::Translate(SGL::Vector3f(0.0f, 0.0f, -3.0f));
         shader->projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
@@ -115,7 +116,7 @@ private:
 #undef main
 int main(int argc, char **argv)
 {
-    std::unique_ptr<Application> app = std::make_unique<ExamplePhong>("Example Phong", SGL::Vector2u32(800, 600));
+    std::unique_ptr<Application> app = std::make_unique<ExampleBlinnPhong>("Example Blinn Phong", SGL::Vector2u32(800, 600));
     app->Run();
     return 0;
 }

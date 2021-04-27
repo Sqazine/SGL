@@ -53,8 +53,8 @@ void Mesh::CreateQuadMeshData()
 
 void Mesh::CreateSphereMeshData()
 {
-	float latitudeBands = 20.0f;
-	float longitudeBands = 20.0f;
+	float latitudeBands = 64.0f;
+	float longitudeBands = 64.0f;
 
 	for (float latNumber = 0; latNumber <= latitudeBands; ++latNumber)
 	{
