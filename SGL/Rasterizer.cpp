@@ -11,7 +11,7 @@ namespace SGL
 
 	Rasterizer::Rasterizer(const Vector2u32 bufferExtent)
 		: m_Framebuffer(std::make_shared<Framebuffer>(bufferExtent)), m_BufferExtent(bufferExtent), m_GraphicsShaderProgram(nullptr),
-		  m_PointSize(1), m_LineWidth(1), m_BlendMode(BLEND_MODE::ONE)
+		m_PointSize(1), m_LineWidth(1), m_BlendMode(BLEND_MODE::ONE)
 	{
 	}
 
@@ -19,12 +19,12 @@ namespace SGL
 	{
 	}
 
-	const std::shared_ptr<Framebuffer> &Rasterizer::GetFramebuffer() const
+	const std::shared_ptr<Framebuffer>& Rasterizer::GetFramebuffer() const
 	{
 		return m_Framebuffer;
 	}
 
-	void Rasterizer::ClearColor(const Vector4f &color)
+	void Rasterizer::ClearColor(const Vector4f& color)
 	{
 		for (uint32_t i = 0; i < m_Framebuffer->GetColorbuffer()->GetBufferExtent().x; ++i)
 			for (uint32_t j = 0; j < m_Framebuffer->GetColorbuffer()->GetBufferExtent().y; ++j)
@@ -48,7 +48,7 @@ namespace SGL
 		m_BlendMode = mode;
 	}
 
-	const BLEND_MODE &Rasterizer::GetBlendMode() const
+	const BLEND_MODE& Rasterizer::GetBlendMode() const
 	{
 		return m_BlendMode;
 	}
@@ -73,7 +73,7 @@ namespace SGL
 		return m_LineWidth;
 	}
 
-	void Rasterizer::DrawArrays(RENDER_MODE mode, uint32_t index, const std::vector<Vertex> &vertices)
+	void Rasterizer::DrawArrays(RENDER_MODE mode, uint32_t index, const std::vector<Vertex>& vertices)
 	{
 		switch (mode)
 		{
@@ -110,7 +110,7 @@ namespace SGL
 		}
 	}
 
-	void Rasterizer::DrawElements(RENDER_MODE mode, uint32_t index, const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices)
+	void Rasterizer::DrawElements(RENDER_MODE mode, uint32_t index, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
 	{
 		switch (mode)
 		{
@@ -147,107 +147,103 @@ namespace SGL
 		}
 	}
 
-	void Rasterizer::DrawPoint(const Vertex &model_p)
+	void Rasterizer::DrawPoint(const Vertex& model_p)
 	{
 		CheckGraphicsShaderProgram();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
-		Vertex clip_p = m_GraphicsShaderProgram->VertexShader(model_p);
-		Vector3f ndc_position = ToNDCSpace(clip_p.position);
+		Varyings varyings;
+		Vector4f clip_position = m_GraphicsShaderProgram->VertexShader(model_p, varyings);
+		Vector3f ndc_position = ToNDCSpace(clip_position);
 		Vector2i32 screen_position = ToScreenSpace(ndc_position);
 
 		if (0 <= screen_position.x && screen_position.x < m_BufferExtent.x && 0 <= screen_position.y && screen_position.y < m_BufferExtent.y)
 		{
-			Vertex screen_vertex;
-			screen_vertex.position = Vector4f(Vector3f(screen_position.x, screen_position.y, ndc_position.z), clip_p.position.w);
-			screen_vertex.texcoord = model_p.texcoord;
-			screen_vertex.normal = model_p.normal;
-			screen_vertex.tangent = model_p.tangent;
-			screen_vertex.bitangent = model_p.bitangent;
-
 			//根据指定的顶点绘制像素
 			for (uint32_t i = screen_position.x - m_PointSize / 2; i <= screen_position.x + m_PointSize / 2; ++i)
 				for (uint32_t j = screen_position.y - m_PointSize / 2; j <= screen_position.y + m_PointSize / 2; ++j)
 					if (i >= 0 && i < m_BufferExtent.x && j >= 0 && j < m_BufferExtent.y)
-						if (m_Framebuffer->GetDepthbuffer()->GetValue(i, j) > screen_vertex.position.z)
+						if (m_Framebuffer->GetDepthbuffer()->GetValue(i, j) > ndc_position.z)
 						{
-							m_Framebuffer->GetDepthbuffer()->SetValue(i, j, screen_vertex.position.z);
-							m_Framebuffer->GetColorbuffer()->SetValue(i, j, m_GraphicsShaderProgram->FragmentShader(screen_vertex, m_BufferExtent));
+							m_Framebuffer->GetDepthbuffer()->SetValue(i, j, ndc_position.z);
+							m_Framebuffer->GetColorbuffer()->SetValue(i, j, m_GraphicsShaderProgram->FragmentShader(varyings));
 						}
 		}
 	}
 
-	void Rasterizer::DrawLine(const Vertex &model_p0, const Vertex &model_p1)
+	void Rasterizer::DrawLine(const Vertex& model_p0, const Vertex& model_p1)
 	{
-		CheckGraphicsShaderProgram();
-		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
-		Vertex clip_p0 = m_GraphicsShaderProgram->VertexShader(model_p0);
-		Vector3f ndc_position_p0 = ToNDCSpace(clip_p0.position);
-		Vector2i32 screen_position_p0 = ToScreenSpace(ndc_position_p0);
+		// CheckGraphicsShaderProgram();
+		// //模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
+		// Varyings varyings0;
+		// Vector4f clip_position0 = m_GraphicsShaderProgram->VertexShader(model_p0, varyings0);
+		// Vector3f ndc_position_p0 = ToNDCSpace(clip_position0);
+		// Vector2i32 screen_position_p0 = ToScreenSpace(ndc_position_p0);
 
-		Vertex clip_p1 = m_GraphicsShaderProgram->VertexShader(model_p1);
-		Vector3f ndc_position_p1 = ToNDCSpace(clip_p1.position);
-		Vector2i32 screen_position_p1 = ToScreenSpace(ndc_position_p1);
+		// Varyings varyings1;
+		// Vector4f clip_position1 = m_GraphicsShaderProgram->VertexShader(model_p1, varyings1);
+		// Vector3f ndc_position_p1 = ToNDCSpace(clip_position1);
+		// Vector2i32 screen_position_p1 = ToScreenSpace(ndc_position_p1);
 
-		//Bresenham画线算法
-		bool reverse = false;
-		if (Math::Abs(static_cast<int>(screen_position_p1.x - screen_position_p0.x)) < Math::Abs(static_cast<int>(screen_position_p1.y - screen_position_p0.y)))
-		{
-			std::swap(screen_position_p0.x, screen_position_p0.y);
-			std::swap(screen_position_p1.x, screen_position_p1.y);
-			reverse = true;
-		}
-		if (screen_position_p0.x > screen_position_p1.x)
-		{
-			std::swap(screen_position_p0.x, screen_position_p1.x);
-			std::swap(screen_position_p0.y, screen_position_p1.y);
-		}
+		// //Bresenham画线算法
+		// bool reverse = false;
+		// if (Math::Abs(static_cast<int>(screen_position_p1.x - screen_position_p0.x)) < Math::Abs(static_cast<int>(screen_position_p1.y - screen_position_p0.y)))
+		// {
+		// 	std::swap(screen_position_p0.x, screen_position_p0.y);
+		// 	std::swap(screen_position_p1.x, screen_position_p1.y);
+		// 	reverse = true;
+		// }
+		// if (screen_position_p0.x > screen_position_p1.x)
+		// {
+		// 	std::swap(screen_position_p0.x, screen_position_p1.x);
+		// 	std::swap(screen_position_p0.y, screen_position_p1.y);
+		// }
 
-		int dx = static_cast<int>(screen_position_p1.x - screen_position_p0.x);
-		int dy = static_cast<int>(screen_position_p1.y - screen_position_p0.y);
+		// int dx = static_cast<int>(screen_position_p1.x - screen_position_p0.x);
+		// int dy = static_cast<int>(screen_position_p1.y - screen_position_p0.y);
 
-		int pk0 = std::abs(dy) * 2;
-		int pk = 0;
-		uint32_t y = screen_position_p0.y;
+		// int pk0 = std::abs(dy) * 2;
+		// int pk = 0;
+		// uint32_t y = screen_position_p0.y;
 
-		float screen_pos_len = (screen_position_p1 - screen_position_p0).Length();
-		Vector3f ndc_dir = ndc_position_p1 - ndc_position_p0;
-		for (uint32_t x = screen_position_p0.x; x <= screen_position_p1.x; ++x)
-		{
-			if (0 <= x && x < m_BufferExtent.x && 0 <= y && y < m_BufferExtent.y)
-			{
-				////将直线映射回原来的区域
-				if (reverse)
-					std::swap(x, y);
+		// float screen_pos_len = (screen_position_p1 - screen_position_p0).Length();
+		// Vector3f ndc_dir = ndc_position_p1 - ndc_position_p0;
+		// for (uint32_t x = screen_position_p0.x; x <= screen_position_p1.x; ++x)
+		// {
+		// 	if (0 <= x && x < m_BufferExtent.x && 0 <= y && y < m_BufferExtent.y)
+		// 	{
+		// 		////将直线映射回原来的区域
+		// 		if (reverse)
+		// 			std::swap(x, y);
 
-				//对每个像素进行着色
-				float factor = Vector2f(x - screen_position_p0.x, y - screen_position_p0.y).Length() / screen_pos_len;
+		// 		//对每个像素进行着色
+		// 		float factor = Vector2f(x - screen_position_p0.x, y - screen_position_p0.y).Length() / screen_pos_len;
 
-				Vertex screen_vertex;
-				screen_vertex.position = Vector3f(x, y, ndc_position_p0.z * (1 - factor) + ndc_position_p1.z * factor);
-				screen_vertex.texcoord = model_p0.texcoord * (1 - factor) + model_p1.texcoord * factor;
+		// 		Vertex screen_vertex;
+		// 		screen_vertex.position = Vector3f(x, y, ndc_position_p0.z * (1 - factor) + ndc_position_p1.z * factor);
+		// 		screen_vertex.texcoord = model_p0.texcoord * (1 - factor) + model_p1.texcoord * factor;
 
-				//进行深度测试
-				if (m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_vertex.position.z)
-				{
-					m_Framebuffer->GetDepthbuffer()->SetValue(x, y, screen_vertex.position.z);
-					m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(screen_vertex, m_BufferExtent));
-				}
+		// 		//进行深度测试
+		// 		if (m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_vertex.position.z)
+		// 		{
+		// 			m_Framebuffer->GetDepthbuffer()->SetValue(x, y, screen_vertex.position.z);
+		// 			m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(screen_vertex, m_BufferExtent));
+		// 		}
 
-				//继续下一步的计算
-				if (reverse)
-					std::swap(x, y);
+		// 		//继续下一步的计算
+		// 		if (reverse)
+		// 			std::swap(x, y);
 
-				pk += pk0;
-				if (pk > dx)
-				{
-					y += (screen_position_p1.y > screen_position_p0.y ? 1 : -1);
-					pk -= dx * 2;
-				}
-			}
-		}
+		// 		pk += pk0;
+		// 		if (pk > dx)
+		// 		{
+		// 			y += (screen_position_p1.y > screen_position_p0.y ? 1 : -1);
+		// 			pk -= dx * 2;
+		// 		}
+		// 	}
+		// }
 	}
 
-	void Rasterizer::DrawTriangle_WireFrame(const Vertex &model_p0, const Vertex &model_p1, const Vertex &model_p2)
+	void Rasterizer::DrawTriangle_WireFrame(const Vertex& model_p0, const Vertex& model_p1, const Vertex& model_p2)
 	{
 		CheckGraphicsShaderProgram();
 		DrawLine(model_p0, model_p1);
@@ -255,20 +251,23 @@ namespace SGL
 		DrawLine(model_p2, model_p0);
 	}
 
-	void Rasterizer::DrawTriangle_Solid(const Vertex &model_p0, const Vertex &model_p1, const Vertex &model_p2)
+	void Rasterizer::DrawTriangle_Solid(const Vertex& model_p0, const Vertex& model_p1, const Vertex& model_p2)
 	{
 		CheckGraphicsShaderProgram();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
-		Vertex clip_p0 = m_GraphicsShaderProgram->VertexShader(model_p0);
-		Vector3f ndc_position_p0 = ToNDCSpace(clip_p0.position);
+		Varyings varyings0;
+		Vector4f clip_position0 = m_GraphicsShaderProgram->VertexShader(model_p0, varyings0);
+		Vector3f ndc_position_p0 = ToNDCSpace(clip_position0);
 		Vector2i32 screen_position_p0 = ToScreenSpace(ndc_position_p0);
 
-		Vertex clip_p1 = m_GraphicsShaderProgram->VertexShader(model_p1);
-		Vector3f ndc_position_p1 = ToNDCSpace(clip_p1.position);
+		Varyings varyings1;
+		Vector4f clip_position1 = m_GraphicsShaderProgram->VertexShader(model_p1, varyings1);
+		Vector3f ndc_position_p1 = ToNDCSpace(clip_position1);
 		Vector2i32 screen_position_p1 = ToScreenSpace(ndc_position_p1);
 
-		Vertex clip_p2 = m_GraphicsShaderProgram->VertexShader(model_p2);
-		Vector3f ndc_position_p2 = ToNDCSpace(clip_p2.position);
+		Varyings varyings2;
+		Vector4f clip_position2 = m_GraphicsShaderProgram->VertexShader(model_p2, varyings2);
+		Vector3f ndc_position_p2 = ToNDCSpace(clip_position2);
 		Vector2i32 screen_position_p2 = ToScreenSpace(ndc_position_p2);
 
 		//三角形光栅化部分
@@ -292,35 +291,119 @@ namespace SGL
 			{
 				Vector3f screen_bc_coord = BaryCenteric(screen_position_p0, screen_position_p1, screen_position_p2, Vector2i32(x, y));
 
-				Vertex screen_vertex;
-				screen_vertex.position = Vector4f(x, y, ndc_position_p0.z * screen_bc_coord.x + ndc_position_p1.z * screen_bc_coord.y + ndc_position_p2.z * screen_bc_coord.z, clip_p0.position.w * screen_bc_coord.x + clip_p1.position.w * screen_bc_coord.y + clip_p2.position.w * screen_bc_coord.z);
-				screen_vertex.texcoord = model_p0.texcoord * screen_bc_coord.x + model_p1.texcoord * screen_bc_coord.y + model_p2.texcoord * screen_bc_coord.z;
-				screen_vertex.normal = model_p0.normal * screen_bc_coord.x + model_p1.normal * screen_bc_coord.y + model_p2.normal * screen_bc_coord.z;
-				screen_vertex.tangent = model_p0.tangent.x * screen_bc_coord.x + model_p1.tangent.x * screen_bc_coord.y + model_p2.tangent.x * screen_bc_coord.z;
-				screen_vertex.bitangent = model_p0.bitangent.x * screen_bc_coord.x + model_p1.bitangent.x * screen_bc_coord.y + model_p2.bitangent.x * screen_bc_coord.z;
-				screen_vertex.color=model_p0.color* screen_bc_coord.x + model_p1.color * screen_bc_coord.y + model_p2.color * screen_bc_coord.z;
+				Varyings interpolatedVaryings=varyings0;
+
+				//varyings0 varyings1,varyings2中对应容器的个数一样
+				for (size_t i = 0; i < varyings0.m_DVaryings.size(); ++i)
+					interpolatedVaryings.m_DVaryings[i]=InterpolateVaryingBarycenteric(varyings0.m_DVaryings[i], varyings1.m_DVaryings[i], varyings2.m_DVaryings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_FVaryings.size(); ++i)
+					interpolatedVaryings.m_FVaryings[i]=InterpolateVaryingBarycenteric(varyings0.m_FVaryings[i], varyings1.m_FVaryings[i], varyings2.m_FVaryings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_I64Varyings.size(); ++i)
+					interpolatedVaryings.m_I64Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_I64Varyings[i], varyings1.m_I64Varyings[i], varyings2.m_I64Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_U64Varyings.size(); ++i)
+					interpolatedVaryings.m_U64Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_U64Varyings[i], varyings1.m_U64Varyings[i], varyings2.m_U64Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_I32Varyings.size(); ++i)
+					interpolatedVaryings.m_I32Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_I32Varyings[i], varyings1.m_I32Varyings[i], varyings2.m_I32Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_U32Varyings.size(); ++i)
+					interpolatedVaryings.m_U32Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_U32Varyings[i], varyings1.m_U32Varyings[i], varyings2.m_U32Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_I16Varyings.size(); ++i)
+					interpolatedVaryings.m_I16Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_I16Varyings[i], varyings1.m_I16Varyings[i], varyings2.m_I16Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_U16Varyings.size(); ++i)
+					interpolatedVaryings.m_U16Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_U16Varyings[i], varyings1.m_U16Varyings[i], varyings2.m_U16Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_I8Varyings.size(); ++i)
+					interpolatedVaryings.m_I8Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_I8Varyings[i], varyings1.m_I8Varyings[i], varyings2.m_I8Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_U8Varyings.size(); ++i)
+					interpolatedVaryings.m_U8Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_U8Varyings[i], varyings1.m_U8Varyings[i], varyings2.m_U8Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector2fVaryings.size(); ++i)
+					interpolatedVaryings.m_Vector2fVaryings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector2fVaryings[i], varyings1.m_Vector2fVaryings[i], varyings2.m_Vector2fVaryings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector2dVaryings.size(); ++i)
+					interpolatedVaryings.m_Vector2dVaryings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector2dVaryings[i], varyings1.m_Vector2dVaryings[i], varyings2.m_Vector2dVaryings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector2i64Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector2i64Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector2i64Varyings[i], varyings1.m_Vector2i64Varyings[i], varyings2.m_Vector2i64Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector2u64Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector2u64Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector2u64Varyings[i], varyings1.m_Vector2u64Varyings[i], varyings2.m_Vector2u64Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector2i32Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector2i32Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector2i32Varyings[i], varyings1.m_Vector2i32Varyings[i], varyings2.m_Vector2i32Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector2u32Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector2u32Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector2u32Varyings[i], varyings1.m_Vector2u32Varyings[i], varyings2.m_Vector2u32Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector2i16Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector2i16Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector2i16Varyings[i], varyings1.m_Vector2i16Varyings[i], varyings2.m_Vector2i16Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector2u16Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector2u16Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector2u16Varyings[i], varyings1.m_Vector2u16Varyings[i], varyings2.m_Vector2u16Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector2i8Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector2i8Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector2i8Varyings[i], varyings1.m_Vector2i8Varyings[i], varyings2.m_Vector2i8Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector2u8Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector2u8Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector2u8Varyings[i], varyings1.m_Vector2u8Varyings[i], varyings2.m_Vector2u8Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector3fVaryings.size(); ++i)
+					interpolatedVaryings.m_Vector3fVaryings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector3fVaryings[i], varyings1.m_Vector3fVaryings[i], varyings2.m_Vector3fVaryings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector3dVaryings.size(); ++i)
+					interpolatedVaryings.m_Vector3dVaryings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector3dVaryings[i], varyings1.m_Vector3dVaryings[i], varyings2.m_Vector3dVaryings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector3i64Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector3i64Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector3i64Varyings[i], varyings1.m_Vector3i64Varyings[i], varyings2.m_Vector3i64Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector3u64Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector3u64Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector3u64Varyings[i], varyings1.m_Vector3u64Varyings[i], varyings2.m_Vector3u64Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector3i32Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector3i32Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector3i32Varyings[i], varyings1.m_Vector3i32Varyings[i], varyings2.m_Vector3i32Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector3u32Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector3u32Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector3u32Varyings[i], varyings1.m_Vector3u32Varyings[i], varyings2.m_Vector3u32Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector3i16Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector3i16Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector3i16Varyings[i], varyings1.m_Vector3i16Varyings[i], varyings2.m_Vector3i16Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector3u16Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector3u16Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector3u16Varyings[i], varyings1.m_Vector3u16Varyings[i], varyings2.m_Vector3u16Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector3i8Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector3i8Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector3i8Varyings[i], varyings1.m_Vector3i8Varyings[i], varyings2.m_Vector3i8Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector3u8Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector3u8Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector3u8Varyings[i], varyings1.m_Vector3u8Varyings[i], varyings2.m_Vector3u8Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector4fVaryings.size(); ++i)
+					interpolatedVaryings.m_Vector4fVaryings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector4fVaryings[i], varyings1.m_Vector4fVaryings[i], varyings2.m_Vector4fVaryings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector4dVaryings.size(); ++i)
+					interpolatedVaryings.m_Vector4dVaryings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector4dVaryings[i], varyings1.m_Vector4dVaryings[i], varyings2.m_Vector4dVaryings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector4i64Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector4i64Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector4i64Varyings[i], varyings1.m_Vector4i64Varyings[i], varyings2.m_Vector4i64Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector4u64Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector4u64Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector4u64Varyings[i], varyings1.m_Vector4u64Varyings[i], varyings2.m_Vector4u64Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector4i32Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector4i32Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector4i32Varyings[i], varyings1.m_Vector4i32Varyings[i], varyings2.m_Vector4i32Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector4u32Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector4u32Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector4u32Varyings[i], varyings1.m_Vector4u32Varyings[i], varyings2.m_Vector4u32Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector4i16Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector4i16Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector4i16Varyings[i], varyings1.m_Vector4i16Varyings[i], varyings2.m_Vector4i16Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector4u16Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector4u16Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector4u16Varyings[i], varyings1.m_Vector4u16Varyings[i], varyings2.m_Vector4u16Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector4i8Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector4i8Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector4i8Varyings[i], varyings1.m_Vector4i8Varyings[i], varyings2.m_Vector4i8Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Vector4u8Varyings.size(); ++i)
+					interpolatedVaryings.m_Vector4u8Varyings[i]=InterpolateVaryingBarycenteric(varyings0.m_Vector4u8Varyings[i], varyings1.m_Vector4u8Varyings[i], varyings2.m_Vector4u8Varyings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Matrix2fVaryings.size(); ++i)
+					interpolatedVaryings.m_Matrix2fVaryings[i]=InterpolateVaryingBarycenteric(varyings0.m_Matrix2fVaryings[i], varyings1.m_Matrix2fVaryings[i], varyings2.m_Matrix2fVaryings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Matrix3fVaryings.size(); ++i)
+					interpolatedVaryings.m_Matrix3fVaryings[i]=InterpolateVaryingBarycenteric(varyings0.m_Matrix3fVaryings[i], varyings1.m_Matrix3fVaryings[i], varyings2.m_Matrix3fVaryings[i], screen_bc_coord);
+				for (size_t i = 0; i < varyings0.m_Matrix4fVaryings.size(); ++i)
+					interpolatedVaryings.m_Matrix4fVaryings[i]=InterpolateVaryingBarycenteric(varyings0.m_Matrix4fVaryings[i], varyings1.m_Matrix4fVaryings[i], varyings2.m_Matrix4fVaryings[i], screen_bc_coord);
+
+				Vector4f screen_position = Vector4f(x, y, InterpolateVaryingBarycenteric(ndc_position_p0.z, ndc_position_p1.z, ndc_position_p2.z, screen_bc_coord), InterpolateVaryingBarycenteric(clip_position0.w, clip_position1.w, clip_position2.w, screen_bc_coord));
 				//如果当前片元在三角形内且通过深度测试则渲染到颜色缓存中，否则丢弃该片元(这里使用提前深度测试)
 				if (screen_bc_coord.x >= 0.0f && screen_bc_coord.y >= 0.0f && screen_bc_coord.z >= 0.0f &&
-					m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_vertex.position.z && screen_vertex.position.z >= -1.0f)
+					m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_position.z && screen_position.z >= -1.0f)
 				{
-					m_Framebuffer->GetDepthbuffer()->SetValue(x, y, screen_vertex.position.z);
-					m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(screen_vertex, m_BufferExtent));
+					m_Framebuffer->GetDepthbuffer()->SetValue(x, y, screen_position.z);
+					m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(interpolatedVaryings));
 				}
 			}
 		}
 	}
 
-	void Rasterizer::SetGraphicsShaderProgram(const std::shared_ptr<GraphicsShaderProgram> &s)
+	void Rasterizer::SetGraphicsShaderProgram(const std::shared_ptr<GraphicsShaderProgram>& s)
 	{
 		m_GraphicsShaderProgram = s;
 	}
 
-	const std::shared_ptr<GraphicsShaderProgram> &Rasterizer::GetGraphicsShaderProgram() const
+	const std::shared_ptr<GraphicsShaderProgram>& Rasterizer::GetGraphicsShaderProgram() const
 	{
 		return m_GraphicsShaderProgram;
 	}
 
-	Vector3f Rasterizer::BaryCenteric(const Vector2i32 &p0, const Vector2i32 &p1, const Vector2i32 &p2, const Vector2i32 &p)
+	Vector3f Rasterizer::BaryCenteric(const Vector2i32& p0, const Vector2i32& p1, const Vector2i32& p2, const Vector2i32& p)
 	{
 		Vector2i32 p1p0 = p1 - p0;
 		Vector2i32 p2p0 = p2 - p0;
@@ -332,12 +415,12 @@ namespace SGL
 		return Vector3f(-1.0f, -1.0f, -1.0f);
 	}
 
-	Vector3f Rasterizer::ToNDCSpace(const Vector4f &v)
+	Vector3f Rasterizer::ToNDCSpace(const Vector4f& v)
 	{
 		return Vector4f::ToVector3(Vector4f::DivideByW(v));
 	}
 
-	Vector2i32 Rasterizer::ToScreenSpace(const Vector3f &v)
+	Vector2i32 Rasterizer::ToScreenSpace(const Vector3f& v)
 	{
 		int32_t screen_x = Math::Round(m_BufferExtent.x * ((v.x + 1.0f) / 2.0f));
 		int32_t screen_y = Math::Round(m_BufferExtent.y * ((v.y + 1.0f) / 2.0f));
@@ -346,9 +429,9 @@ namespace SGL
 
 	void Rasterizer::CheckGraphicsShaderProgram()
 	{
-		if(m_GraphicsShaderProgram != nullptr)
+		if (m_GraphicsShaderProgram != nullptr)
 			return;
 		ERROR_OUTPUT_LN("Current binding shader is null!");
-		assert(m_GraphicsShaderProgram!=nullptr);
+		assert(m_GraphicsShaderProgram != nullptr);
 	}
 }

@@ -32,12 +32,24 @@ namespace SGL
 		Vector4(const T &x, const T &y, const T &z, const T &w = static_cast<T>(1.0f));
 		Vector4(const Vector3<T> &vec, const T &w = 1.0f);
 
-		inline Vector4<T> &operator+=(const T &value);
-		inline Vector4<T> &operator+=(const Vector4<T> &right);
-		inline Vector4<T> &operator-=(const T &value);
-		inline Vector4<T> &operator-=(const Vector4<T> &right);
-		inline Vector4<T> &operator/=(const T &value);
-		inline Vector4<T> &operator=(const Vector4<T> &right);
+		template <typename T2>
+		inline Vector4<T> &operator+=(const T2 &value);
+		template <typename T2>
+		inline Vector4<T> &operator+=(const Vector4<T2> &right);
+		template <typename T2>
+		inline Vector4<T> &operator-=(const T2 &value);
+		template <typename T2>
+		inline Vector4<T> &operator-=(const Vector4<T2> &right);
+		template <typename T2>
+		inline Vector4<T> &operator*=(const T2 &value);
+		template <typename T2>
+		inline Vector4<T> &operator*=(const Vector4<T2> &right);
+		template <typename T2>
+		inline Vector4<T> &operator/=(const T2 &value);
+		template <typename T2>
+		inline Vector4<T> &operator/=(const Vector4<T2> &right);
+		template <typename T2>
+		inline Vector4<T> &operator=(const Vector4<T2> &right);
 
 		static Vector4<T> DivideByW(const Vector4<T> &vec);
 		static Vector3<T> ToVector3(const Vector4<T> &vec);
@@ -122,20 +134,20 @@ namespace SGL
 		return Vector4<T>(-right.x, -right.y, -right.z, -right.w);
 	}
 
-	template <typename T>
-	inline Vector4<T> operator*(const Vector4<T> &left, const Vector4<T> &right)
+	template <typename T,typename T2>
+	inline Vector4<T> operator*(const Vector4<T> &left, const Vector4<T2> &right)
 	{
 		return Vector4<T>(left.x * right.x, left.y * right.y, left.z * right.z, left.w * right.w);
 	}
 
-	template <typename T>
-	inline Vector4<T> operator*(const T &value, const Vector4<T> &right)
+	template <typename T,typename T2>
+	inline Vector4<T> operator*(const T2 &value, const Vector4<T> &right)
 	{
 		return Vector4<T>(value * right.x, value * right.y, value * right.z, value * right.w);
 	}
 
-	template <typename T>
-	inline Vector4<T> operator*(const Vector4<T> &left, T value)
+	template <typename T,typename T2>
+	inline Vector4<T> operator*(const Vector4<T> &left, T2 value)
 	{
 		return value * left;
 	}
@@ -176,7 +188,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector4<T> &Vector4<T>::operator+=(const T &value)
+	template <typename T2>
+	inline Vector4<T> &Vector4<T>::operator+=(const T2 &value)
 	{
 
 		x += value;
@@ -187,7 +200,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector4<T> &Vector4<T>::operator+=(const Vector4<T> &right)
+	template <typename T2>
+	inline Vector4<T> &Vector4<T>::operator+=(const Vector4<T2> &right)
 	{
 
 		x += right.x;
@@ -198,7 +212,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector4<T> &Vector4<T>::operator-=(const T &value)
+	template <typename T2>
+	inline Vector4<T> &Vector4<T>::operator-=(const T2 &value)
 	{
 
 		x -= value;
@@ -209,7 +224,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector4<T> &Vector4<T>::operator-=(const Vector4<T> &right)
+	template <typename T2>
+	inline Vector4<T> &Vector4<T>::operator-=(const Vector4<T2> &right)
 	{
 
 		x -= right.x;
@@ -220,7 +236,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector4<T> &Vector4<T>::operator/=(const T &value)
+	template <typename T2>
+	inline Vector4<T> &Vector4<T>::operator/=(const T2 &value)
 	{
 
 		if (!Math::IsNearZero(value))
@@ -234,7 +251,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector4<T> &Vector4<T>::operator=(const Vector4<T> &right)
+	template <typename T2>
+	inline Vector4<T> &Vector4<T>::operator=(const Vector4<T2> &right)
 	{
 
 		x = right.x;

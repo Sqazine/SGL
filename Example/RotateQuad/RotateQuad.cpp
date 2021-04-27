@@ -13,11 +13,10 @@ public:
     TextureShaderProgram() {}
     ~TextureShaderProgram() {}
 
-    SGL::Vertex VertexShader(const SGL::Vertex &modelVertex) override
+     SGL::Vector4f VertexShader(const SGL::Vertex& vertex,SGL::Varyings &varyings) override
     {
-        SGL::Vertex v = modelVertex;
-        v.position = projectionMatrix * viewMatrix * modelMatrix * v.position;
-        return v;
+        varyings.CommitVector2fVarying("vTexcoord",vertex.texcoord);
+        return projectionMatrix * viewMatrix * modelMatrix * vertex.position;
     }
 
     uniform SGL::Texture2D texture;
@@ -25,9 +24,9 @@ public:
     uniform SGL::Matrix4f viewMatrix;
     uniform SGL::Matrix4f projectionMatrix;
 
-    SGL::Vector4f FragmentShader(const SGL::Vertex &screenVertex, const SGL::Vector2u32 &bufferExtent) override
+     SGL::Vector4f FragmentShader(SGL::Varyings varyings) override
     {
-        return texture.GetTexel(screenVertex.texcoord);
+        return texture.GetTexel(varyings.GetVector2fVarying("vTexcoord"));
     }
 };
 

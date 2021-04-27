@@ -240,8 +240,8 @@ namespace SGL
 		return left;
 	}
 
-	template <typename T>
-	inline Matrix4<T> operator*(const T &value, const Matrix4<T> &right)
+	template <typename T,typename T2>
+	inline Matrix4<T> operator*(const T &value, const Matrix4<T2> &right)
 	{
 		Matrix4<T> tmp;
 		for (uint8_t i = 0; i < 4; ++i)
@@ -249,8 +249,8 @@ namespace SGL
 		return tmp;
 	}
 
-	template <typename T>
-	inline Matrix4<T> operator*(const Matrix4<T> &left, const T &value)
+	template <typename T,typename T2>
+	inline Matrix4<T> operator*(const Matrix4<T> &left, const T2 &value)
 	{
 		return value * left;
 	}

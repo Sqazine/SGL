@@ -33,14 +33,24 @@ namespace SGL
 		Vector3(const T &value);
 		Vector3(const Vector2<T> &value, const T &zValue);
 
-		inline Vector3<T> &operator+=(const T &value);
-		inline Vector3<T> &operator+=(const Vector3<T> &right);
-		inline Vector3<T> &operator-=(const T &value);
-		inline Vector3<T> &operator-=(const Vector3<T> &right);
-		inline Vector3<T> &operator*=(const T &value);
-		inline Vector3<T> &operator*=(const Vector3<T> &right);
-		inline Vector3<T> &operator/=(const T &value);
-		inline Vector3<T> &operator=(const Vector3<T> &right);
+		template <typename T2>
+		inline Vector3<T> &operator+=(const T2 &value);
+		template <typename T2>
+		inline Vector3<T> &operator+=(const Vector3<T2> &right);
+		template <typename T2>
+		inline Vector3<T> &operator-=(const T2 &value);
+		template <typename T2>
+		inline Vector3<T> &operator-=(const Vector3<T2> &right);
+		template <typename T2>
+		inline Vector3<T> &operator*=(const T2 &value);
+		template <typename T2>
+		inline Vector3<T> &operator*=(const Vector3<T2> &right);
+		template <typename T2>
+		inline Vector3<T> &operator/=(const T2 &value);
+		template <typename T2>
+		inline Vector3<T> &operator/=(const Vector3<T2> &right);
+		template <typename T2>
+		inline Vector3<T> &operator=(const Vector3<T2> &right);
 
 		static T Dot(const Vector3<T> &left, const Vector3<T> &right);
 		static Vector3<T> Cross(const Vector3<T> &left, const Vector3<T> &right);
@@ -97,38 +107,38 @@ namespace SGL
 	{
 	}
 
-	template <typename T>
-	inline Vector3<T> operator+(const Vector3<T> &left, const Vector3<T> &right)
+	template <typename T, typename T2>
+	inline Vector3<T> operator+(const Vector3<T> &left, const Vector3<T2> &right)
 	{
 		return Vector3<T>(left.x + right.x, left.y + right.y, left.z + right.z);
 	}
 
-	template <typename T>
-	inline Vector3<T> operator+(const Vector3<T> &left, const T &value)
+	template <typename T, typename T2>
+	inline Vector3<T> operator+(const Vector3<T> &left, const T2 &value)
 	{
 		return Vector3<T>(left.x + value, left.y + value, left.z + value);
 	}
 
-	template <typename T>
-	inline Vector3<T> operator+(const T &value, const Vector3<T> &right)
+	template <typename T, typename T2>
+	inline Vector3<T> operator+(const T &value, const Vector3<T2> &right)
 	{
 		return right + value;
 	}
 
-	template <typename T>
-	inline Vector3<T> operator-(const Vector3<T> &left, const Vector3<T> &right)
+	template <typename T, typename T2>
+	inline Vector3<T> operator-(const Vector3<T> &left, const Vector3<T2> &right)
 	{
 		return Vector3<T>(left.x - right.x, left.y - right.y, left.z - right.z);
 	}
 
-	template <typename T>
-	inline Vector3<T> operator-(const Vector3<T> &left, const T &value)
+	template <typename T, typename T2>
+	inline Vector3<T> operator-(const Vector3<T> &left, const T2 &value)
 	{
 		return Vector3<T>(left.x - value, left.y - value, left.z - value);
 	}
 
-	template <typename T>
-	inline Vector3<T> operator-(const T &value, const Vector3<T> &right)
+	template <typename T, typename T2>
+	inline Vector3<T> operator-(const T &value, const Vector3<T2> &right)
 	{
 		return Vector3<T>(value - right.x, value - right.y, value - right.z);
 	}
@@ -139,42 +149,42 @@ namespace SGL
 		return Vector3<T>(-right.x, -right.y, -right.z);
 	}
 
-	template <typename T>
-	inline Vector3<T> operator*(const Vector3<T> &left, const T &value)
+	template <typename T, typename T2>
+	inline Vector3<T> operator*(const Vector3<T> &left, const T2 &value)
 	{
 		return Vector3<T>(left.x * value, left.y * value, left.z * value);
 	}
 
-	template <typename T>
-	inline Vector3<T> operator*(const T &value, const Vector3<T> &right)
+	template <typename T, typename T2>
+	inline Vector3<T> operator*(const T2 &value, const Vector3<T> &right)
 	{
 		return right * value;
 	}
 
-	template <typename T>
-	inline Vector3<T> operator*(const Vector3<T> &left, const Vector3<T> &right)
+	template <typename T, typename T2>
+	inline Vector3<T> operator*(const Vector3<T> &left, const Vector3<T2> &right)
 	{
 		return Vector3<T>(left.x * right.x, left.y * right.y, left.z * right.z);
 	}
 
-	template <typename T>
-	inline Vector3<T> operator/(const Vector3<T> &left, const T &value)
+	template <typename T, typename T2>
+	inline Vector3<T> operator/(const Vector3<T> &left, const T2 &value)
 	{
 		if (value)
 			return Vector3<T>(left.x / value, left.y / value, left.z / value);
 		return left;
 	}
 
-	template <typename T>
-	inline Vector3<T> operator/(const Vector3<T> &left, const Vector3<T> &right)
+	template <typename T, typename T2>
+	inline Vector3<T> operator/(const Vector3<T> &left, const Vector3<T2> &right)
 	{
 		if (right.x && right.y && right.z)
 			return Vector3<T>(left.x / right.x, left.y / right.y, left.z / right.z);
 		return left;
 	}
 
-	template <typename T>
-	inline bool operator==(const Vector3<T> &left, const Vector3<T> &right)
+	template <typename T, typename T2>
+	inline bool operator==(const Vector3<T> &left, const Vector3<T2> &right)
 	{
 		return left.x == right.x && left.y == right.y && left.z == right.z;
 	}
@@ -187,8 +197,8 @@ namespace SGL
 		return stream;
 	}
 
-	template <typename T>
-	inline Vector3<T> operator*(const Matrix3<T> &matrix, const Vector3<T> &vec)
+	template <typename T, typename T2>
+	inline Vector3<T> operator*(const Matrix3<T> &matrix, const Vector3<T2> &vec)
 	{
 		T x = matrix.elements[0] * vec.x + matrix.elements[3] * vec.y + matrix.elements[6] * vec.z;
 		T y = matrix.elements[1] * vec.x + matrix.elements[4] * vec.y + matrix.elements[7] * vec.z;
@@ -196,8 +206,8 @@ namespace SGL
 		return Vector3<T>(x, y, z);
 	}
 
-	template <typename T>
-	inline Vector3<T> operator*(const Vector3<T> &vec, const Matrix3<T> &matrix)
+	template <typename T, typename T2>
+	inline Vector3<T> operator*(const Vector3<T> &vec, const Matrix3<T2> &matrix)
 	{
 		T x = vec.x * matrix.elements[0] + vec.y * matrix.elements[1] + vec.z * matrix.elements[2];
 		T y = vec.x * matrix.elements[3] + vec.y * matrix.elements[4] + vec.z * matrix.elements[5];
@@ -206,9 +216,10 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector3<T> &Vector3<T>::operator+=(const T &value)
+	template <typename T2>
+	inline Vector3<T> &Vector3<T>::operator+=(const T2 &value)
 	{
-		
+
 		x += value;
 		y += value;
 		z += value;
@@ -216,9 +227,10 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector3<T> &Vector3<T>::operator+=(const Vector3<T> &right)
+	template <typename T2>
+	inline Vector3<T> &Vector3<T>::operator+=(const Vector3<T2> &right)
 	{
-		
+
 		x += right.x;
 		y += right.y;
 		z += right.z;
@@ -226,9 +238,10 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector3<T> &Vector3<T>::operator-=(const T &value)
+	template <typename T2>
+	inline Vector3<T> &Vector3<T>::operator-=(const T2 &value)
 	{
-		
+
 		x -= value;
 		y -= value;
 		z -= value;
@@ -236,9 +249,10 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector3<T> &Vector3<T>::operator-=(const Vector3<T> &right)
+	template <typename T2>
+	inline Vector3<T> &Vector3<T>::operator-=(const Vector3<T2> &right)
 	{
-		
+
 		x -= right.x;
 		y -= right.y;
 		z -= right.z;
@@ -246,9 +260,10 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector3<T> &Vector3<T>::operator*=(const T &value)
+	template <typename T2>
+	inline Vector3<T> &Vector3<T>::operator*=(const T2 &value)
 	{
-		
+
 		x *= value;
 		y *= value;
 		z *= value;
@@ -256,9 +271,10 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector3<T> &Vector3<T>::operator*=(const Vector3<T> &right)
+	template <typename T2>
+	inline Vector3<T> &Vector3<T>::operator*=(const Vector3<T2> &right)
 	{
-		
+
 		x *= right.x;
 		y *= right.y;
 		z *= right.z;
@@ -266,9 +282,10 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector3<T> &Vector3<T>::operator/=(const T &value)
+	template <typename T2>
+	inline Vector3<T> &Vector3<T>::operator/=(const T2 &value)
 	{
-		
+
 		if (!Math::IsNearZero(value))
 		{
 			x /= value;
@@ -279,9 +296,10 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Vector3<T> &Vector3<T>::operator=(const Vector3<T> &right)
+	template <typename T2>
+	inline Vector3<T> &Vector3<T>::operator=(const Vector3<T2> &right)
 	{
-		
+
 		x = right.x;
 		y = right.y;
 		z = right.z;

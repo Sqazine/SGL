@@ -293,8 +293,8 @@ namespace SGL
 		return left;
 	}
 
-	template <typename T>
-	inline Matrix3<T> operator*(const Matrix3<T> &left, const T &value)
+	template <typename T,typename T2>
+	inline Matrix3<T> operator*(const Matrix3<T> &left, const T2 &value)
 	{
 		Matrix3<T> tmp;
 		for (uint8_t i = 0; i < 9; ++i)
@@ -302,14 +302,14 @@ namespace SGL
 		return tmp;
 	}
 
-	template <typename T>
-	inline Matrix3<T> operator*(const T &value, const Matrix3<T> &right)
+	template <typename T,typename T2>
+	inline Matrix3<T> operator*(const T &value, const Matrix3<T2> &right)
 	{
 		return right * value;
 	}
 
-	template <typename T>
-	inline bool operator==(const Matrix3<T> &left, const Matrix3<T> &right)
+	template <typename T,typename T2>
+	inline bool operator==(const Matrix3<T> &left, const Matrix3<T2> &right)
 	{
 		for (uint8_t i = 0; i < 9; ++i)
 			if (left.elements[i] != right.elements[i])

@@ -79,6 +79,9 @@ namespace SGL
 	private:
 		void CheckGraphicsShaderProgram();
 
+		template <typename T>
+		T InterpolateVaryingBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter);
+
 		Vector3f BaryCenteric(const Vector2i32 &p0, const Vector2i32 &p1, const Vector2i32 &p2, const Vector2i32 &p);
 
 		Vector3f ToNDCSpace(const Vector4f &v);
@@ -100,4 +103,10 @@ namespace SGL
 		uint32_t m_LineWidth;
 		BLEND_MODE m_BlendMode;
 	};
+
+	template <typename T>
+	T Rasterizer::InterpolateVaryingBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter)
+	{
+		return v0*barycenter.x+v1*barycenter.y+v2*barycenter.z;
+	}
 }

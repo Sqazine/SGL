@@ -8,8 +8,8 @@ public:
 	BlinnPhongShaderProgram();
 	~BlinnPhongShaderProgram();
 
-	SGL::Vertex VertexShader(const SGL::Vertex &modelVertex) override;
-	SGL::Vector4f FragmentShader(const SGL::Vertex &screenVertex, const SGL::Vector2u32 &bufferExtent) override;
+	SGL::Vector4f VertexShader(const SGL::Vertex &vertex, SGL::Varyings &varyings) override;
+	SGL::Vector4f FragmentShader(SGL::Varyings varyings) override;
 
 	SGL::Matrix4f m_WorldMatrix;
 	SGL::Matrix4f m_ViewMatrix;

@@ -61,19 +61,19 @@ namespace SGL
 
 	template <typename T>
 	inline Matrix2<T>::Matrix2()
-		: col(static_cast<T>(1.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f))
+		: col(_mm_set_ps(static_cast<T>(1.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f)))
 	{
 	}
 
 	template <typename T>
 	inline Matrix2<T>::Matrix2(const T &value)
-		: col(value, static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f))
+		: col(_mm_set_ps(value, static_cast<T>(0.0f), static_cast<T>(0.0f),value))
 	{
 	}
 
 	template <typename T>
 	inline Matrix2<T>::Matrix2(const T &e00, const T &e01, const T &e10, const T &e11)
-		: col(e11, e10, e01, e00)
+		: col(_mm_set_ps(e11, e10, e01, e00))
 	{
 	}
 
@@ -151,16 +151,16 @@ namespace SGL
 		return left;
 	}
 
-	template <typename T>
-	inline Matrix2<T> operator*(const T &value, const Matrix2<T> &right)
+	template <typename T,typename T2>
+	inline Matrix2<T> operator*(const T &value, const Matrix2<T2> &right)
 	{
 		Matrix2<T> tmp;
 		tmp.col = _mm_mul_ps(right.col, _mm_set_ps1(value));
 		return tmp;
 	}
 
-	template <typename T>
-	inline Matrix2<T> operator*(const Matrix2<T> &left, const T &value)
+	template <typename T,typename T2>
+	inline Matrix2<T> operator*(const Matrix2<T> &left, const T2 &value)
 	{
 		return value * left;
 	}

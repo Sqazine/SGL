@@ -1,6 +1,6 @@
 #include <memory>
 #include <vector>
-#include "Framework.h"
+#include "Framework/Framework.h"
 #include "SGL/SGL.h"
 
 struct Light
@@ -30,27 +30,26 @@ public:
     uniform SGL::Matrix4f viewMatrix;
     uniform SGL::Matrix4f projectionMatrix;
 
-    SGL::Vertex VertexShader(const SGL::Vertex &modelVertex) override
+    SGL::Vector4f VertexShader(const SGL::Vertex &vertex, SGL::Varyings &varyings) override
     {
-        SGL::Vertex v = modelVertex;
 
-        v.position = projectionMatrix * viewMatrix * modelMatrix * v.position;
-        v.normal = SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(SGL::Matrix4f::Transpose(SGL::Matrix4f::Inverse(viewMatrix * modelMatrix))) * v.normal);
-        return v;
+        varyings.CommitVector3fVarying("vNormalVS", SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(SGL::Matrix4f::Transpose(SGL::Matrix4f::Inverse(viewMatrix * modelMatrix))) * vertex.normal));
+            varyings.CommitVector3fVarying("vPositionVS", SGL::Vector4f::ToVector3(viewMatrix * modelMatrix * vertex.position));
+	varyings.CommitVector2fVarying("vTexcoordVS",vertex.texcoord);
+        return projectionMatrix * viewMatrix * modelMatrix * vertex.position;
     }
 
     uniform PhongMaterial material;
     uniform Light light;
     uniform SGL::Vector3f viewPosWS;
-    SGL::Vector4f FragmentShader(const SGL::Vertex &screenVertex, const SGL::Vector2u32 &bufferExtent) override
-    {
-        SGL::Vector3f fragPosNDC((screenVertex.position.x / bufferExtent.x * 2.0f) - 1.0f, (screenVertex.position.y / bufferExtent.y * 2.0f) - 1.0f, screenVertex.position.z);
-        SGL::Vector4f fragPosCS = SGL::Vector4f(fragPosNDC, 1.0f) * screenVertex.position.w;
-        SGL::Vector3f fragPosVS = SGL::Vector4f::ToVector3(fragPosCS * SGL::Matrix4f::Inverse(projectionMatrix));
 
-        auto normalVS = SGL::Vector3f::Normalize(screenVertex.normal);
+    SGL::Vector4f FragmentShader(SGL::Varyings varyings) override
+    {
+        SGL::Vector3f normalVS = varyings.GetVector3fVarying("vNormalVS");
+        SGL::Vector2f vTexcoordVS = varyings.GetVector2fVarying("vTexcoordVS");
+        SGL::Vector3f vPositionVS = varyings.GetVector3fVarying("vPositionVS");
+        SGL::Vector3f viewDirVS = -vPositionVS;
         auto lightDirVS = SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(viewMatrix) * light.position);
-        auto viewDirVS = SGL::Vector3f::Normalize(-fragPosVS);
         auto reflectDir = Reflect(-lightDirVS, normalVS);
 
         auto ambientPart = light.ambient * material.ambient;
