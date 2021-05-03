@@ -59,7 +59,7 @@ public:
         m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->ClearDepth();
 
-        m_Rasterizer->DrawElements(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, triangle->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RenderMode::SOLID_TRIANGLE, 0, triangle->GetIndices());
     }
 
 private:

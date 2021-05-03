@@ -10,7 +10,7 @@
 namespace SGL
 {
 
-	enum class RENDER_MODE
+	enum class RenderMode
 	{
 		POINT,
 
@@ -73,8 +73,8 @@ namespace SGL
 		void SetBlendMode(BLEND_MODE mode);
 		const BLEND_MODE &GetBlendMode() const;
 
-		void DrawArrays(RENDER_MODE mode, uint32_t startIndex, size_t vertexArraySize);
-		void DrawElements(RENDER_MODE mode, uint32_t startIndex, const std::vector<uint32_t> &indices);
+		void DrawArrays(RenderMode mode, uint32_t startIndex, size_t vertexArraySize);
+		void DrawElements(RenderMode mode, uint32_t startIndex, const std::vector<uint32_t> &indices);
 
 	private:
 		void CheckGraphicsShaderProgram();

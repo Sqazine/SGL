@@ -17,8 +17,9 @@ public:
 
      SGL::Vector4f VertexShader(uint32_t vertexIndex,SGL::Varyings &varyings) override
     {
-        varyings.CommitVector2fVarying("vTexcoord",vertices[vertexIndex].texcoord);
-        return vertices[vertexIndex].position;
+        Vertex vertex=vertices[vertexIndex];
+        varyings.CommitVector2fVarying("vTexcoord",vertex.texcoord);
+        return vertex.position;
     }
 
     uniform SGL::Texture2D texture;
@@ -39,20 +40,8 @@ public:
     void Init() override
     {
         Application::Init();
-        Vertex v0;
-        v0.position = SGL::Vector3(0.0f, 0.5f, 0.0f);
-        v0.texcoord = SGL::Vector2f(0.5f, 1.0f);
-        v0.color = SGL::Vector3f(0.0f, 0.0f, 1.0f);
-        Vertex v1;
-        v1.position = SGL::Vector3(-0.5f, -0.5f, 0.0f);
-        v1.texcoord = SGL::Vector2f(0.0f, 0.0f);
-        v1.color = SGL::Vector3f(0.0f, 1.0f, 0.0f);
-        Vertex v2;
-        v2.position = SGL::Vector3(0.5f, -0.5f, 0.0f);
-        v2.texcoord = SGL::Vector2f(1.0f, 0.0f);
-        v2.color = SGL::Vector3f(1.0f, 0.0f, 0.0f);
 
-        vertices = {v0, v1, v2};
+        triangle=std::make_shared<Mesh>(MeshType::TRIANGLE);
 
         //image from https://pixabay.com/photos/statue-sculpture-figure-1275469/
         std::string filePath = ASSET_DIR;
@@ -65,7 +54,7 @@ public:
         auto texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
 
         auto shader = std::make_shared<TextureShaderProgram>();
-         shader->vertices=vertices;
+         shader->vertices=triangle->GetVertices();
         shader->texture = texture;
 
         m_Rasterizer->SetGraphicsShaderProgram(shader);
@@ -87,11 +76,11 @@ public:
         m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->ClearDepth();
 
-        m_Rasterizer->DrawArrays(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, vertices.size());
+        m_Rasterizer->DrawElements(SGL::RenderMode::SOLID_TRIANGLE, 0, triangle->GetIndices());
     }
 
 private:
-    std::vector<Vertex> vertices;
+    std::shared_ptr<Mesh> triangle;
 };
 
 #undef main
