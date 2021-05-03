@@ -14,8 +14,9 @@ public:
 
     SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
-        varyings.CommitVector4fVarying("vColor", vertices[vertexIndex].color);
-        return vertices[vertexIndex].position;
+        Vertex vertex=vertices[vertexIndex];
+        varyings.CommitVector4fVarying("vColor", vertex.color);
+        return vertex.position;
     }
     SGL::Vector4f FragmentShader(const SGL::Varyings &varyings) override
     {
@@ -33,20 +34,11 @@ public:
     void Init() override
     {
         Application::Init();
-        Vertex v0;
-        v0.position = SGL::Vector3(0.0f, 0.5f, 0.0f);
-        v0.color = SGL::Vector3f(0.0f, 0.0f, 1.0f);
-        Vertex v1;
-        v1.position = SGL::Vector3(-0.5f, -0.5f, 0.0f);
-        v1.color = SGL::Vector3f(0.0f, 1.0f, 0.0f);
-        Vertex v2;
-        v2.position = SGL::Vector3(0.5f, -0.5f, 0.0f);
-        v2.color = SGL::Vector3f(1.0f, 0.0f, 0.0f);
-
-        vertices = {v0, v1, v2};
+       
+        triangle=std::make_shared<Mesh>(MeshType::TRIANGLE);
 
         auto shader = std::make_shared<ColorShaderProgram>();
-        shader->vertices=vertices;
+        shader->vertices=triangle->GetVertices();
 
         m_Rasterizer->SetGraphicsShaderProgram(shader);
     }
@@ -67,11 +59,11 @@ public:
         m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->ClearDepth();
 
-        m_Rasterizer->DrawArrays(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, vertices.size());
+        m_Rasterizer->DrawElements(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, triangle->GetIndices());
     }
 
 private:
-    std::vector<Vertex> vertices;
+    std::shared_ptr<Mesh> triangle;
 };
 
 #undef main

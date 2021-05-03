@@ -72,7 +72,7 @@ public:
     void Init() override
     {
         Application::Init();
-        sphere = std::make_shared<Mesh>(INTERNAL_MESH_TYPE::SPHERE);
+        sphere = std::make_shared<Mesh>(MeshType::SPHERE);
 
         auto shader = std::make_shared<PhongShaderProgram>();
         shader->vertices = sphere->GetVertices();

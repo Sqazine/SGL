@@ -5,7 +5,7 @@
 #include "texture/Texture.h"
 #include <assimp/mesh.h>
 
-enum class INTERNAL_MESH_TYPE
+enum class MeshType
 {
 	TRIANGLE,
 	QUAD,
@@ -17,7 +17,7 @@ enum class INTERNAL_MESH_TYPE
 class Mesh
 {
 public:
-	Mesh(INTERNAL_MESH_TYPE type);
+	Mesh(MeshType type);
 	Mesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& inds=std::vector<uint32_t>());
 	~Mesh();
 

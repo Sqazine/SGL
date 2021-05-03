@@ -39,28 +39,8 @@ public:
     void Init() override
     {
         Application::Init();
-        Vertex v0;
-        v0.position = SGL::Vector3(-0.5f, 0.5f, 0.0f);
-        v0.texcoord = SGL::Vector2f(0.0f, 1.0f);
-        v0.color = SGL::Vector3f(1.0f, 0.0f, 0.0f);
-        Vertex v1;
-        v1.position = SGL::Vector3(-0.5f, -0.5f, 0.0f);
-        v1.texcoord = SGL::Vector2f(0.0f, 0.0f);
-        v1.color = SGL::Vector3f(1.0f, 1.0f, 1.0f);
-        Vertex v2;
-        v2.position = SGL::Vector3(0.5f, -0.5f, 0.0f);
-        v2.texcoord = SGL::Vector2f(1.0f, 0.0f);
-        v2.color = SGL::Vector3f(0.0f, 1.0f, 0.0f);
-        Vertex v3;
-        v3.position = SGL::Vector3(0.5f, 0.5f, 0.0f);
-        v3.texcoord = SGL::Vector2f(1.0f, 1.0f);
-        v3.color = SGL::Vector3f(0.0f, 0.0f, 1.0f);
-
-        vertices = {v0, v1, v2, v3};
-
-        indices = {
-            0, 1, 2,
-            0, 2, 3};
+    
+        quad=std::make_shared<Mesh>(MeshType::QUAD);
 
         //image from https://pixabay.com/photos/statue-sculpture-figure-1275469/
         std::string filePath = ASSET_DIR;
@@ -73,7 +53,7 @@ public:
         auto texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
 
         auto shader = std::make_shared<TextureShaderProgram>();
-         shader->vertices=vertices;
+         shader->vertices=quad->GetVertices();
         shader->texture = texture;
 
         m_Rasterizer->SetGraphicsShaderProgram(shader);
@@ -95,12 +75,11 @@ public:
         m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->ClearDepth();
 
-        m_Rasterizer->DrawElements(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, indices);
+        m_Rasterizer->DrawElements(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, quad->GetIndices());
     }
 
 private:
-    std::vector<Vertex> vertices;
-    std::vector<uint32_t> indices;
+    std::shared_ptr<Mesh> quad;
 };
 
 #undef main

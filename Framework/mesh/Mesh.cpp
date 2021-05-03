@@ -1,22 +1,22 @@
 #include "Mesh.h"
 
-Mesh::Mesh(INTERNAL_MESH_TYPE type)
+Mesh::Mesh(MeshType type)
 {
 	switch (type)
 	{
-	case INTERNAL_MESH_TYPE::TRIANGLE:
+	case MeshType::TRIANGLE:
 		CreateTriangleMeshData();
 		break;
-	case INTERNAL_MESH_TYPE::QUAD:
+	case MeshType::QUAD:
 		CreateQuadMeshData();
 		break;
-	case INTERNAL_MESH_TYPE::SPHERE:
+	case MeshType::SPHERE:
 		CreateSphereMeshData();
 		break;
-	case INTERNAL_MESH_TYPE::CUBE:
+	case MeshType::CUBE:
 		CreateCubeMeshData();
 		break;
-	case INTERNAL_MESH_TYPE::CAPSULE:
+	case MeshType::CAPSULE:
 		CreateCapsuleMeshData();
 		break;
 	default:
@@ -44,11 +44,17 @@ const std::vector<uint32_t> &Mesh::GetIndices() const
 
 void Mesh::CreateQuadMeshData()
 {
-	m_Vertices.emplace_back(Vertex{
-		{-1.0f, 1.0f, 0.0f},
-		{0.0f, 1.0f},
-		{0.0f, 0.0f, 1.0f},
-		{}});
+	m_Vertices =
+		{
+			{{-1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}},
+			{{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}},
+			{{1.0f, -1.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}},
+			{{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+			{1.0f, 1.0f, 1.0f, 1.0f}};
+	m_Indices =
+		{
+			0, 1, 2,
+			0, 2, 3};
 }
 
 void Mesh::CreateSphereMeshData()
@@ -99,6 +105,11 @@ void Mesh::CreateSphereMeshData()
 
 void Mesh::CreateTriangleMeshData()
 {
+	m_Vertices = {
+		{{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+		{{1.0f, -1.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+		{{0.0f, 1.0f, 0.0f}, {0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f}}};
+	m_Indices = {0, 1, 2};
 }
 void Mesh::CreateCubeMeshData()
 {
