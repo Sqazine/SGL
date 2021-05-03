@@ -28,7 +28,8 @@ source_group("utilities" FILES ${UTILITIES_DIR})
 
 find_package(SDL2 CONFIG REQUIRED)
 find_package(Assimp CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 add_library(${LIB_NAME} STATIC ${FRAMEWORK_DIR} ${CAMERA_DIR} ${ECS_COMPONENT_DIR} ${ECS_ENTITY_DIR} ${ECS_SYSTEM_DIR} ${MESH_DIR} ${RENDERER_DIR} ${SCENE_DIR} ${SHADER_DIR} ${SYSTEM_DIR} ${TEXTURE_DIR} ${UTILITIES_DIR})
 
-target_link_libraries(${LIB_NAME} PRIVATE SGL SDL2::SDL2 assimp::assimp)
+target_link_libraries(${LIB_NAME} PRIVATE SGL SDL2::SDL2 assimp::assimp imgui::imgui)
 target_include_directories(${LIB_NAME} PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Framework )
