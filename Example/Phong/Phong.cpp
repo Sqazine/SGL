@@ -26,12 +26,15 @@ public:
     PhongShaderProgram() {}
     ~PhongShaderProgram() {}
 
+    uniform std::vector<Vertex> vertices;
+
     uniform SGL::Matrix4f modelMatrix;
     uniform SGL::Matrix4f viewMatrix;
     uniform SGL::Matrix4f projectionMatrix;
 
-    SGL::Vector4f VertexShader(const SGL::Vertex &vertex, SGL::Varyings &varyings) override
+    SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
+        Vertex vertex = vertices[vertexIndex];
         SGL::Vector4f vPositionWS = modelMatrix * vertex.position;
         varyings.CommitVector3fVarying("vNormalWS", SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(SGL::Matrix4f::Transpose(SGL::Matrix4f::Inverse(modelMatrix))) * vertex.normal));
         varyings.CommitVector3fVarying("vPositionWS", SGL::Vector4f::ToVector3(vPositionWS));
@@ -53,9 +56,9 @@ public:
         SGL::Vector3f reflectDir = Reflect(-lightDirWS, vNormalWS);
 
         SGL::Vector3f ambientPart = light.ambient * material.ambient;
-        SGL::Vector3f diffusePart = light.diffuse * material.diffuse * SGL::Math::Max(SGL::Vector3f::Dot(vNormalWS, lightDirWS), 0.0f);//lambertian
-        SGL::Vector3f specularPart = light.specular * material.specular * SGL::Math::Pow(SGL::Math::Max(SGL::Vector3f::Dot(viewDirWS, reflectDir), 0.0f), material.shiness);//phong specular
-        return SGL::Vector4f(ambientPart+diffusePart+specularPart, 1.0);
+        SGL::Vector3f diffusePart = light.diffuse * material.diffuse * SGL::Math::Max(SGL::Vector3f::Dot(vNormalWS, lightDirWS), 0.0f);                                      //lambertian
+        SGL::Vector3f specularPart = light.specular * material.specular * SGL::Math::Pow(SGL::Math::Max(SGL::Vector3f::Dot(viewDirWS, reflectDir), 0.0f), material.shiness); //phong specular
+        return SGL::Vector4f(ambientPart + diffusePart + specularPart, 1.0);
     }
 };
 
@@ -72,6 +75,7 @@ public:
         sphere = std::make_shared<Mesh>(INTERNAL_MESH_TYPE::SPHERE);
 
         auto shader = std::make_shared<PhongShaderProgram>();
+        shader->vertices = sphere->GetVertices();
         shader->modelMatrix = SGL::Matrix4f();
         shader->viewMatrix = SGL::Matrix4f::Translate(SGL::Vector3f(0.0f, 0.0f, -3.0f));
         shader->projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
@@ -105,7 +109,7 @@ public:
         m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->ClearDepth();
 
-        m_Rasterizer->DrawElements(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, sphere->GetVertices(), sphere->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, sphere->GetIndices());
     }
 
 private:

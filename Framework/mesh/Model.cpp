@@ -82,14 +82,14 @@ void Model::ProcessNodes(aiNode* node, const aiScene* scene)
 
 std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* aimesh, const aiScene* scene)
 {
-	std::vector<SGL::Vertex> tmpVertices;
+	std::vector<Vertex> tmpVertices;
 	std::vector<uint32_t> tmpIndices;
 	std::vector<std::shared_ptr<Texture>> tmpTextures;
 	std::vector<aiFace*> tmpFaces;
 
 	for (uint32_t i = 0; i < aimesh->mNumVertices; ++i)
 	{
-		SGL::Vertex tmpVert;
+		Vertex tmpVert;
 		tmpVert.position = SGL::Vector4f(aimesh->mVertices[i].x, aimesh->mVertices[i].y, aimesh->mVertices[i].z, 1.0f);
 		tmpVert.texcoord = SGL::Vector2f(aimesh->mTextureCoords[0][i].x, aimesh->mTextureCoords[0][i].y);
 		tmpVert.normal = SGL::Vector3f(aimesh->mNormals[i].x, aimesh->mNormals[i].y, aimesh->mNormals[i].z);

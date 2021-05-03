@@ -1,5 +1,4 @@
 #include "Rasterizer.h"
-#include "Vertex.h"
 #include "Math.h"
 #include "Macros.h"
 #include <array>
@@ -72,85 +71,85 @@ namespace SGL
 		return m_LineWidth;
 	}
 
-	void Rasterizer::DrawArrays(RENDER_MODE mode, uint32_t index, const std::vector<Vertex> &vertices)
+	void Rasterizer::DrawArrays(RENDER_MODE mode, uint32_t startIndex, size_t vertexArraySize)
 	{
 		switch (mode)
 		{
 		case RENDER_MODE::POINT:
-			for (uint32_t i = index; i < vertices.size(); ++i)
-				DrawPoint(vertices.at(i));
+			for (uint32_t i = startIndex; i < vertexArraySize; ++i)
+				DrawPoint(i);
 			break;
 		case RENDER_MODE::LINE:
-			for (uint32_t i = index; i < vertices.size() - 1; i += 2)
-				DrawLine(vertices.at(i), vertices.at(i + 1));
+			for (uint32_t i = startIndex; i < vertexArraySize; i += 2)
+				DrawLine(i, i+1);
 			break;
 		case RENDER_MODE::LINE_STRIP:
-			for (uint32_t i = index; i < vertices.size() - 1; i++)
-				DrawLine(vertices.at(i), vertices.at(i + 1));
+			for (uint32_t i = startIndex; i < vertexArraySize; i++)
+				DrawLine(i, i+1);
 			break;
 		case RENDER_MODE::SOLID_TRIANGLE:
-			for (uint32_t i = index; i < vertices.size() - 2; i += 3)
-				DrawTriangle_Solid(vertices.at(i), vertices.at(i + 1), vertices.at(i + 2));
+			for (uint32_t i = startIndex; i < vertexArraySize - 2; i += 3)
+				DrawTriangle_Solid(i, i+1, i+2);
 			break;
 		case RENDER_MODE::SOLID_TRIANGLE_STRIP:
-			for (uint32_t i = index; i < vertices.size() - 2; ++i)
-				DrawTriangle_Solid(vertices.at(i), vertices.at(i + 1), vertices.at(i + 2));
+			for (uint32_t i = startIndex; i < vertexArraySize - 2; ++i)
+				DrawTriangle_Solid(i, i+1, i+2);
 			break;
 		case RENDER_MODE::WIRE_TRIANGLE:
-			for (uint32_t i = index; i < vertices.size() - 2; i += 3)
-				DrawTriangle_WireFrame(vertices.at(i), vertices.at(i + 1), vertices.at(i + 2));
+			for (uint32_t i = startIndex; i < vertexArraySize - 2; i += 3)
+				DrawTriangle_WireFrame(i, i+1, i+2);
 			break;
 		case RENDER_MODE::WIRE_TRIANGLE_STRIP:
-			for (uint32_t i = index; i < vertices.size() - 2; ++i)
-				DrawTriangle_WireFrame(vertices.at(i), vertices.at(i + 1), vertices.at(i + 2));
+			for (uint32_t i = startIndex; i < vertexArraySize - 2; ++i)
+				DrawTriangle_WireFrame(i, i+1, i+2);
 			break;
 		default:
 			break;
 		}
 	}
 
-	void Rasterizer::DrawElements(RENDER_MODE mode, uint32_t index, const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices)
+	void Rasterizer::DrawElements(RENDER_MODE mode, uint32_t startIndex, const std::vector<uint32_t> &indices)
 	{
 		switch (mode)
 		{
 		case RENDER_MODE::POINT:
-			for (uint32_t i = index; i < indices.size(); ++i)
-				DrawPoint(vertices.at(indices.at(i)));
+			for (uint32_t i = startIndex; i < indices.size(); ++i)
+				DrawPoint(indices.at(i));
 			break;
 		case RENDER_MODE::LINE:
-			for (uint32_t i = index; i < indices.size() - 1; i += 2)
-				DrawLine(vertices.at(indices.at(i)), vertices.at(indices.at(i + 1)));
+			for (uint32_t i = startIndex; i < indices.size() - 1; i += 2)
+				DrawLine(indices.at(i), indices.at(i + 1));
 			break;
 		case RENDER_MODE::LINE_STRIP:
-			for (uint32_t i = index; i < indices.size() - 1; ++i)
-				DrawLine(vertices.at(indices.at(i)), vertices.at(indices.at(i + 1)));
+			for (uint32_t i = startIndex; i < indices.size() - 1; ++i)
+				DrawLine(indices.at(i),indices.at(i + 1));
 			break;
 		case RENDER_MODE::SOLID_TRIANGLE:
-			for (uint32_t i = index; i < indices.size() - 2; i += 3)
-				DrawTriangle_Solid(vertices.at(indices.at(i)), vertices.at(indices.at(i + 1)), vertices.at(indices.at(i + 2)));
+			for (uint32_t i = startIndex; i < indices.size() - 2; i += 3)
+				DrawTriangle_Solid(indices.at(i), indices.at(i + 1), indices.at(i + 2));
 			break;
 		case RENDER_MODE::SOLID_TRIANGLE_STRIP:
-			for (uint32_t i = index; i < indices.size() - 2; ++i)
-				DrawTriangle_Solid(vertices.at(indices.at(i)), vertices.at(indices.at(i + 1)), vertices.at(indices.at(i + 2)));
+			for (uint32_t i = startIndex; i < indices.size() - 2; ++i)
+				DrawTriangle_Solid(indices.at(i), indices.at(i + 1), indices.at(i + 2));
 			break;
 		case RENDER_MODE::WIRE_TRIANGLE:
-			for (uint32_t i = index; i < indices.size() - 2; i += 3)
-				DrawTriangle_WireFrame(vertices.at(indices.at(i)), vertices.at(indices.at(i + 1)), vertices.at(indices.at(i + 2)));
+			for (uint32_t i = startIndex; i < indices.size() - 2; i += 3)
+				DrawTriangle_WireFrame(indices.at(i),indices.at(i + 1), indices.at(i + 2));
 			break;
 		case RENDER_MODE::WIRE_TRIANGLE_STRIP:
-			for (uint32_t i = index; i < indices.size() - 2; ++i)
-				DrawTriangle_WireFrame(vertices.at(indices.at(i)), vertices.at(indices.at(i + 1)), vertices.at(indices.at(i + 2)));
+			for (uint32_t i = startIndex; i < indices.size() - 2; ++i)
+				DrawTriangle_WireFrame(indices.at(i), indices.at(i + 1), indices.at(i + 2));
 			break;
 		default:
 			break;
 		}
 	}
 
-	void Rasterizer::DrawPoint(const Vertex &model_p)
+	void Rasterizer::DrawPoint(uint32_t vertexIndex)
 	{
 		CheckGraphicsShaderProgram();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
-		Vector4f clip_position = m_GraphicsShaderProgram->VertexShader(model_p, varyings0);
+		Vector4f clip_position = m_GraphicsShaderProgram->VertexShader(vertexIndex, varyings0);
 		Vector3f ndc_position = ToNDCSpace(clip_position);
 		Vector2i32 screen_position = ToScreenSpace(ndc_position);
 
@@ -168,7 +167,7 @@ namespace SGL
 		}
 	}
 
-	void Rasterizer::DrawLine(const Vertex &model_p0, const Vertex &model_p1)
+	void Rasterizer::DrawLine(uint32_t vertexIndex0,uint32_t vertexIndex1)
 	{
 		// CheckGraphicsShaderProgram();
 		// //模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
@@ -241,27 +240,27 @@ namespace SGL
 		// }
 	}
 
-	void Rasterizer::DrawTriangle_WireFrame(const Vertex &model_p0, const Vertex &model_p1, const Vertex &model_p2)
+	void Rasterizer::DrawTriangle_WireFrame(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2)
 	{
 		CheckGraphicsShaderProgram();
-		DrawLine(model_p0, model_p1);
-		DrawLine(model_p1, model_p2);
-		DrawLine(model_p2, model_p0);
+		// DrawLine(model_p0, model_p1);
+		// DrawLine(model_p1, model_p2);
+		// DrawLine(model_p2, model_p0);
 	}
 
-	void Rasterizer::DrawTriangle_Solid(const Vertex &model_p0, const Vertex &model_p1, const Vertex &model_p2)
+	void Rasterizer::DrawTriangle_Solid(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2)
 	{
 		CheckGraphicsShaderProgram();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
-		Vector4f clip_position0 = m_GraphicsShaderProgram->VertexShader(model_p0, varyings0);
+		Vector4f clip_position0 = m_GraphicsShaderProgram->VertexShader(vertexIndex0, varyings0);
 		Vector3f ndc_position_p0 = ToNDCSpace(clip_position0);
 		Vector2i32 screen_position_p0 = ToScreenSpace(ndc_position_p0);
 
-		Vector4f clip_position1 = m_GraphicsShaderProgram->VertexShader(model_p1, varyings1);
+		Vector4f clip_position1 = m_GraphicsShaderProgram->VertexShader(vertexIndex1, varyings1);
 		Vector3f ndc_position_p1 = ToNDCSpace(clip_position1);
 		Vector2i32 screen_position_p1 = ToScreenSpace(ndc_position_p1);
 
-		Vector4f clip_position2 = m_GraphicsShaderProgram->VertexShader(model_p2, varyings2);
+		Vector4f clip_position2 = m_GraphicsShaderProgram->VertexShader(vertexIndex2, varyings2);
 		Vector3f ndc_position_p2 = ToNDCSpace(clip_position2);
 		Vector2i32 screen_position_p2 = ToScreenSpace(ndc_position_p2);
 

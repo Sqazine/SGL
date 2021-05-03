@@ -13,8 +13,11 @@ public:
     TextureShaderProgram() {}
     ~TextureShaderProgram() {}
 
-    SGL::Vector4f VertexShader(const SGL::Vertex& vertex,SGL::Varyings &varyings) override
+        uniform std::vector<Vertex> vertices;
+
+    SGL::Vector4f VertexShader(uint32_t vertexIndex,SGL::Varyings &varyings) override
     {
+        Vertex vertex=vertices[vertexIndex];
         varyings.CommitVector2fVarying("vTexcoord",vertex.texcoord);
         return vertex.position;
     }
@@ -37,19 +40,19 @@ public:
     void Init() override
     {
         Application::Init();
-        SGL::Vertex v0;
+        Vertex v0;
         v0.position = SGL::Vector3(-0.5f, 0.5f, 0.0f);
         v0.texcoord = SGL::Vector2f(0.0f, 1.0f);
         v0.color = SGL::Vector3f(1.0f, 0.0f, 0.0f);
-        SGL::Vertex v1;
+        Vertex v1;
         v1.position = SGL::Vector3(-0.5f, -0.5f, 0.0f);
         v1.texcoord = SGL::Vector2f(0.0f, 0.0f);
         v1.color = SGL::Vector3f(1.0f, 1.0f, 1.0f);
-        SGL::Vertex v2;
+        Vertex v2;
         v2.position = SGL::Vector3(0.5f, -0.5f, 0.0f);
         v2.texcoord = SGL::Vector2f(1.0f, 0.0f);
         v2.color = SGL::Vector3f(0.0f, 1.0f, 0.0f);
-        SGL::Vertex v3;
+        Vertex v3;
         v3.position = SGL::Vector3(0.5f, 0.5f, 0.0f);
         v3.texcoord = SGL::Vector2f(1.0f, 1.0f);
         v3.color = SGL::Vector3f(0.0f, 0.0f, 1.0f);
@@ -67,6 +70,7 @@ public:
         auto texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
 
         auto shader = std::make_shared<TextureShaderProgram>();
+         shader->vertices=vertices;
         shader->texture = texture;
 
         m_Rasterizer->SetGraphicsShaderProgram(shader);
@@ -88,11 +92,11 @@ public:
         m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->ClearDepth();
 
-        m_Rasterizer->DrawArrays(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, vertices);
+        m_Rasterizer->DrawArrays(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, vertices.size());
     }
 
 private:
-    std::vector<SGL::Vertex> vertices;
+    std::vector<Vertex> vertices;
 };
 
 #undef main

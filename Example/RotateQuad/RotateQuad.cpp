@@ -13,10 +13,12 @@ public:
     TextureShaderProgram() {}
     ~TextureShaderProgram() {}
 
-     SGL::Vector4f VertexShader(const SGL::Vertex& vertex,SGL::Varyings &varyings) override
+    uniform std::vector<Vertex> vertices;
+
+     SGL::Vector4f VertexShader(uint32_t vertexIndex,SGL::Varyings &varyings) override
     {
-        varyings.CommitVector2fVarying("vTexcoord",vertex.texcoord);
-        return projectionMatrix * viewMatrix * modelMatrix * vertex.position;
+        varyings.CommitVector2fVarying("vTexcoord",vertices[vertexIndex].texcoord);
+        return projectionMatrix * viewMatrix * modelMatrix * vertices[vertexIndex].position;
     }
 
     uniform SGL::Texture2D texture;
@@ -40,19 +42,19 @@ public:
     void Init() override
     {
         Application::Init();
-        SGL::Vertex v0;
+        Vertex v0;
         v0.position = SGL::Vector3(-0.5f, 0.5f, 0.0f);
         v0.texcoord = SGL::Vector2f(0.0f, 1.0f);
         v0.color = SGL::Vector3f(1.0f, 0.0f, 0.0f);
-        SGL::Vertex v1;
+        Vertex v1;
         v1.position = SGL::Vector3(-0.5f, -0.5f, 0.0f);
         v1.texcoord = SGL::Vector2f(0.0f, 0.0f);
         v1.color = SGL::Vector3f(1.0f, 1.0f, 1.0f);
-        SGL::Vertex v2;
+        Vertex v2;
         v2.position = SGL::Vector3(0.5f, -0.5f, 0.0f);
         v2.texcoord = SGL::Vector2f(1.0f, 0.0f);
         v2.color = SGL::Vector3f(0.0f, 1.0f, 0.0f);
-        SGL::Vertex v3;
+        Vertex v3;
         v3.position = SGL::Vector3(0.5f, 0.5f, 0.0f);
         v3.texcoord = SGL::Vector2f(1.0f, 1.0f);
         v3.color = SGL::Vector3f(0.0f, 0.0f, 1.0f);
@@ -78,6 +80,7 @@ public:
         projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
 
         shader = std::make_shared<TextureShaderProgram>();
+        shader->vertices=vertices;
     }
 
     void ProcessInput() override
@@ -108,12 +111,12 @@ public:
         shader->viewMatrix = viewMatrix;
         shader->projectionMatrix = projectionMatrix;
         m_Rasterizer->SetGraphicsShaderProgram(shader);
-        m_Rasterizer->DrawElements(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, vertices, indices);
+        m_Rasterizer->DrawElements(SGL::RENDER_MODE::SOLID_TRIANGLE, 0, indices);
     }
 
 private:
     SGL::Vector3f rotation;
-    std::vector<SGL::Vertex> vertices;
+    std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
     SGL::Matrix4f modelMatrix;
     SGL::Matrix4f viewMatrix;

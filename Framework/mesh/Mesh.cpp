@@ -24,7 +24,7 @@ Mesh::Mesh(INTERNAL_MESH_TYPE type)
 	}
 }
 
-Mesh::Mesh(const std::vector<SGL::Vertex> &verts, const std::vector<uint32_t> &inds)
+Mesh::Mesh(const std::vector<Vertex> &verts, const std::vector<uint32_t> &inds)
 {
 }
 
@@ -32,7 +32,7 @@ Mesh::~Mesh()
 {
 }
 
-const std::vector<SGL::Vertex> &Mesh::GetVertices() const
+const std::vector<Vertex> &Mesh::GetVertices() const
 {
 	return m_Vertices;
 }
@@ -44,7 +44,7 @@ const std::vector<uint32_t> &Mesh::GetIndices() const
 
 void Mesh::CreateQuadMeshData()
 {
-	m_Vertices.emplace_back(SGL::Vertex{
+	m_Vertices.emplace_back(Vertex{
 		{-1.0f, 1.0f, 0.0f},
 		{0.0f, 1.0f},
 		{0.0f, 0.0f, 1.0f},
@@ -69,7 +69,7 @@ void Mesh::CreateSphereMeshData()
 			float sinPhi = sin(phi);
 			float cosPhi = cos(phi);
 
-			SGL::Vertex v;
+			Vertex v;
 			v.normal = SGL::Vector3f(cosPhi * sinTheta, cosTheta, sinPhi * sinTheta);
 			v.position = SGL::Vector4f(v.normal, 1.0f);
 			v.texcoord = SGL::Vector2f(longNumber / longitudeBands, latNumber / latitudeBands);

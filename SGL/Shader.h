@@ -1,11 +1,12 @@
 #pragma once
 #include <unordered_map>
+#include <cstdint>
 #include "Matrix4.h"
 #include "Matrix2.h"
 #include "Matrix3.h"
-#include "Vertex.h"
 #include "Vector4.h"
-#include "Vertex.h"
+#include "Vector2.h"
+#include "Vector3.h"
 
 namespace SGL
 {
@@ -131,7 +132,7 @@ namespace SGL
 		GraphicsShaderProgram() {}
 		virtual ~GraphicsShaderProgram() {}
 
-		virtual Vector4f VertexShader(const Vertex &vertex, Varyings &varyings) = 0;
+		virtual Vector4f VertexShader(uint32_t vertexIndex, Varyings &varyings) = 0;
 		virtual Vector4f FragmentShader(const Varyings &varyings) = 0;
 	};
 }

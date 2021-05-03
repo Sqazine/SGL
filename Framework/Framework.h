@@ -4,6 +4,7 @@
 #include "camera/FPSCamera.h"
 #include "ecs/component/Component.h"
 #include "ecs/entity/Entity.h"
+#include "mesh/Vertex.h"
 #include "mesh/Mesh.h"
 #include "mesh/Model.h"
 #include "renderer/MeshRenderer.h"

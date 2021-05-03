@@ -5,7 +5,6 @@
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
-#include "Vertex.h"
 #include "Shader.h"
 
 namespace SGL
@@ -74,8 +73,8 @@ namespace SGL
 		void SetBlendMode(BLEND_MODE mode);
 		const BLEND_MODE &GetBlendMode() const;
 
-		void DrawArrays(RENDER_MODE mode, uint32_t index, const std::vector<struct Vertex> &vertices);
-		void DrawElements(RENDER_MODE mode, uint32_t index, const std::vector<struct Vertex> &vertices, const std::vector<uint32_t> &indices);
+		void DrawArrays(RENDER_MODE mode, uint32_t startIndex, size_t vertexArraySize);
+		void DrawElements(RENDER_MODE mode, uint32_t startIndex, const std::vector<uint32_t> &indices);
 
 	private:
 		void CheckGraphicsShaderProgram();
@@ -88,10 +87,10 @@ namespace SGL
 		Vector3f ToNDCSpace(const Vector4f &v);
 		Vector2i32 ToScreenSpace(const Vector3f &v);
 
-		void DrawPoint(const Vertex &model_p);
-		void DrawLine(const Vertex &model_p0, const Vertex &model_p1);
-		void DrawTriangle_WireFrame(const Vertex &model_p0, const Vertex &model_p1, const struct Vertex &model_p2);
-		void DrawTriangle_Solid(const Vertex &model_p0, const Vertex &model_p1, const struct Vertex &model_p2);
+		void DrawPoint(uint32_t vertexIndex);
+		void DrawLine(uint32_t vertexIndex0,uint32_t vertexIndex1);
+		void DrawTriangle_WireFrame(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2);
+		void DrawTriangle_Solid(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2);
 
 		std::shared_ptr<Framebuffer> m_Framebuffer;
 

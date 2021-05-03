@@ -1,6 +1,5 @@
 #include <cassert>
 #include "Shader.h"
-#include "Vertex.h"
 #include "Macros.h"
 namespace SGL
 {
