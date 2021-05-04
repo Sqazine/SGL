@@ -32,18 +32,18 @@ public:
     }
 };
 
-class ExampleRotateQuadWithTexture : public Application
+class ExampleCube : public Application
 {
 
 public:
-    ExampleRotateQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
-    ~ExampleRotateQuadWithTexture() {}
+    ExampleCube(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
+    ~ExampleCube() {}
 
     void Init() override
     {
         Application::Init();
-
-        quad=std::make_shared<Mesh>(MeshType::QUAD);
+       
+       cube=std::make_shared<Mesh>(MeshType::CUBE);
 
         //image from https://pixabay.com/photos/statue-sculpture-figure-1275469/
         std::string filePath = ASSET_DIR;
@@ -56,11 +56,11 @@ public:
 
         texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
 
-        viewMatrix = SGL::Matrix4f::Translate(SGL::Vector3f(0.0f, 0.0f, -3.0f));
+        viewMatrix = SGL::Matrix4f::LookAt(SGL::Vector3f(0.0f,1.0f,3.0f),SGL::Vector3f(0.0f),SGL::Vector3f::UNIT_Y);
         projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
 
         shader = std::make_shared<TextureShaderProgram>();
-        shader->vertices=quad->GetVertices();
+        shader->vertices=cube->GetVertices();
     }
 
     void ProcessInput() override
@@ -73,7 +73,7 @@ public:
     {
         Application::Update();
 
-        rotation.x -= 100 * Timer::deltaTime;
+        rotation.y-=100*Timer::deltaTime;
 
         modelMatrix = SGL::Matrix4f();
         modelMatrix *= SGL::Matrix4f::Rotate(SGL::Vector3f(1.0f, 0.0f, 0.0f), SGL::Math::ToRadian(rotation.x));
@@ -91,12 +91,12 @@ public:
         shader->viewMatrix = viewMatrix;
         shader->projectionMatrix = projectionMatrix;
         m_Rasterizer->SetGraphicsShaderProgram(shader);
-        m_Rasterizer->DrawElements(SGL::RenderMode::SOLID_TRIANGLE, 0, quad->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RenderMode::SOLID_TRIANGLE, 0, cube->GetIndices());
     }
 
 private:
     SGL::Vector3f rotation;
-    std::shared_ptr<Mesh> quad;
+    std::shared_ptr<Mesh> cube;
     SGL::Matrix4f modelMatrix;
     SGL::Matrix4f viewMatrix;
     SGL::Matrix4f projectionMatrix;
@@ -107,7 +107,7 @@ private:
 #undef main
 int main(int argc, char **argv)
 {
-    std::unique_ptr<Application> app = std::make_unique<ExampleRotateQuadWithTexture>("Example Rotate Quad With Texture", SGL::Vector2u32(800, 600));
+    std::unique_ptr<Application> app = std::make_unique<ExampleCube>("Example Cube", SGL::Vector2u32(800, 600));
     app->Run();
     return 0;
 }

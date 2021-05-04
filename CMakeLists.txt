@@ -17,6 +17,7 @@ add_subdirectory(Example/TriangleWithTexture)
 add_subdirectory(Example/DrawArrayQuad)
 add_subdirectory(Example/DrawIndexQuad)
 add_subdirectory(Example/RotateQuad)
+add_subdirectory(Example/DrawCube)
 add_subdirectory(Example/Phong)
 add_subdirectory(Example/BlinnPhong)
 

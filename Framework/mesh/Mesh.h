@@ -11,7 +11,8 @@ enum class MeshType
 	QUAD,
 	CUBE,
 	SPHERE,
-	CAPSULE
+	CAPSULE,
+	CYLINDER
 };
 
 class Mesh
@@ -30,6 +31,7 @@ private:
 	void CreateCubeMeshData();
 	void CreateSphereMeshData();
 	void CreateCapsuleMeshData();
+	void CreateCylinderMeshData();
 
 	std::vector<Vertex> m_Vertices;
 	std::vector<uint32_t> m_Indices;
