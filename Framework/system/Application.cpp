@@ -1,6 +1,6 @@
 #include "Application.h"
 #include "utilities/Timer.h"
-#include "camera/FPSCamera.h"
+#include "camera/FPCamera.h"
 #include <chrono>
 Application::Application(const std::string &appName, const SGL::Vector2u32 &frameExtent)
 	: m_Status(ApplicationStatus::INIT), m_FrameExtent(frameExtent), m_AppName(appName)
@@ -20,7 +20,9 @@ void Application::Run()
 		//计算增量时间
 		Timer::CalcDeltaTime();
 		ProcessInput();
+		PreUpdate();
 		Update();
+		PostUpdate();
 		Draw();
 		GenerateFrame();
 	}

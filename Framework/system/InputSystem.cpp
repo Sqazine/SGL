@@ -31,7 +31,7 @@ BUTTON_STATE KeyboardState::GetKeyState(KeyCode keyCode) const
 }
 
 MouseState::MouseState()
-	: m_CurPos(glm::vec2(0.0f)), m_PrePos(glm::vec2(0.0f)), m_MouseScrollWheel(glm::vec2(0.0f)), m_CurButtons(0), m_PreButtons(0)
+	: m_CurPos(SGL::Vector2i32(0.0f)), m_PrePos(SGL::Vector2i32(0.0f)), m_MouseScrollWheel(SGL::Vector2i32(0.0f)), m_CurButtons(0), m_PreButtons(0)
 {
 }
 MouseState::~MouseState()
@@ -60,17 +60,17 @@ BUTTON_STATE MouseState::GetButtonState(int button) const
 	}
 }
 
-glm::vec2 MouseState::GetMousePos() const
+SGL::Vector2i32 MouseState::GetMousePos() const
 {
 	return m_CurPos;
 }
 
-glm::vec2 MouseState::GetReleativeMove() const
+SGL::Vector2i32 MouseState::GetReleativeMove() const
 {
 	return m_CurPos - m_PrePos;
 }
 
-glm::vec2 MouseState::GetMouseScrollWheel() const
+SGL::Vector2i32 MouseState::GetMouseScrollWheel() const
 {
 	return m_MouseScrollWheel;
 }
@@ -108,12 +108,12 @@ void InputSystem::PreUpdate()
 	memcpy_s(m_KeyboardState->m_PreKeyState, SDL_NUM_SCANCODES, m_KeyboardState->m_CurKeyState, SDL_NUM_SCANCODES);
 	m_MouseState->m_PreButtons = m_MouseState->m_CurButtons;
 	m_MouseState->m_PrePos = m_MouseState->m_CurPos;
-	m_MouseState->m_MouseScrollWheel = glm::vec2(0.0);
+	m_MouseState->m_MouseScrollWheel = SGL::Vector2i32(0);
 }
 
 void InputSystem::PostUpdate()
 {
-	glm::ivec2 p = glm::ivec2(0);
+	SGL::Vector2i32 p = SGL::Vector2i32(0);
 	//更新当前帧的鼠标按键的状态
 	if (!m_MouseState->m_IsRelative) //获取鼠标光标位置的绝对位置
 		m_MouseState->m_CurButtons = SDL_GetMouseState(&p.x, &p.y);
@@ -129,7 +129,7 @@ void InputSystem::ProcessInput(SDL_Event event)
 	{
 	case SDL_MOUSEWHEEL:
 		m_InputEventType = SDL_MOUSEWHEEL;
-		m_MouseState->m_MouseScrollWheel = glm::ivec2(event.wheel.x, static_cast<float>(event.wheel.y));
+		m_MouseState->m_MouseScrollWheel = SGL::Vector2i32(event.wheel.x, event.wheel.y);
 		break;
 	case SDL_MOUSEMOTION:
 		m_InputEventType = SDL_MOUSEMOTION;

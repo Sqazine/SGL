@@ -1,7 +1,7 @@
 #pragma once
 
 #include "camera/Camera.h"
-#include "camera/FPSCamera.h"
+#include "camera/FPCamera.h"
 #include "ecs/component/Component.h"
 #include "ecs/entity/Entity.h"
 #include "mesh/Vertex.h"

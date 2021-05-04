@@ -1,9 +1,8 @@
 #pragma once
 #include <vector>
 #include <SDL2/SDL.h>
-#include <glm/glm.hpp>
 #include <memory>
-
+#include "SGL/SGL.h"
 enum KeyCode
 {
     KEYCODE_UNKNOWN = 0,
@@ -301,9 +300,9 @@ public:
 	~MouseState();
 	bool GetButtonValue(int button) const;
 	enum BUTTON_STATE GetButtonState(int button) const;
-	glm::vec2 GetMousePos() const;
-	glm::vec2 GetReleativeMove() const;
-	glm::vec2 GetMouseScrollWheel() const;
+	SGL::Vector2i32 GetMousePos() const;
+	SGL::Vector2i32 GetReleativeMove() const;
+	SGL::Vector2i32 GetMouseScrollWheel() const;
 
 	void SetReleativeMode(bool isActive);
 	bool IsReleativeMode() const;
@@ -311,9 +310,9 @@ public:
 private:
 	friend class InputSystem;
 	bool m_IsRelative;
-	glm::ivec2 m_CurPos;
-	glm::ivec2 m_PrePos;
-	glm::ivec2 m_MouseScrollWheel;
+	SGL::Vector2i32 m_CurPos;
+	SGL::Vector2i32 m_PrePos;
+	SGL::Vector2i32 m_MouseScrollWheel;
 	uint32_t m_CurButtons;
 	uint32_t m_PreButtons;
 };

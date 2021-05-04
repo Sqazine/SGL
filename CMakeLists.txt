@@ -20,5 +20,6 @@ add_subdirectory(Example/RotateQuad)
 add_subdirectory(Example/DrawCube)
 add_subdirectory(Example/Phong)
 add_subdirectory(Example/BlinnPhong)
+add_subdirectory(Example/FPCamera)
 
 

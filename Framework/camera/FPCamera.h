@@ -2,13 +2,13 @@
 #include <cstdint>
 #include "Camera.h"
 #include "SGL/SGL.h"
-class FPSCamera:public Camera
+class FPCamera:public Camera
 {
 public:
-	FPSCamera(float fov,float aspect,float znear,float zfar);
-	~FPSCamera();
+	FPCamera(float fov,float aspect,float znear,float zfar);
+	~FPCamera();
 
-	void ProcessInput(SDL_Event event, const uint8_t* keyboardState) override;
+	void ProcessInput(const std::shared_ptr<InputSystem> &inputSystem) override;
 	void Update() override;
 private:
 	float m_Yaw, m_Pitch;

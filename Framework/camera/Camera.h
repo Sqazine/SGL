@@ -1,6 +1,7 @@
 #pragma once
 #include "SGL/SGL.h"
 #include <SDL2/SDL.h>
+#include "system/InputSystem.h"
 class Camera
 {
 public:
@@ -8,7 +9,7 @@ public:
 	Camera(float fov, float aspect, float znear, float zfar);
 	~Camera();
 
-	virtual void ProcessInput(SDL_Event event, const uint8_t* keyboardState) {}
+	virtual void ProcessInput(const std::shared_ptr<InputSystem> &inputSystem) {}
 	virtual void Update() {}
 
 	void SetPosition(const SGL::Vector3f& pos);
