@@ -13,18 +13,18 @@ public:
     TextureShaderProgram() {}
     ~TextureShaderProgram() {}
 
-     uniform std::vector<Vertex> vertices;
+    uniform std::vector<Vertex> vertices;
 
-     SGL::Vector4f VertexShader(uint32_t vertexIndex,SGL::Varyings &varyings) override
+    SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
-        Vertex vertex=vertices[vertexIndex];
-        varyings.CommitVector2fVarying("vTexcoord",vertex.texcoord);
+        Vertex vertex = vertices[vertexIndex];
+        varyings.CommitVector2fVarying("vTexcoord", vertex.texcoord);
         return vertex.position;
     }
 
     uniform SGL::Texture2D texture;
 
-    SGL::Vector4f FragmentShader(const SGL::Varyings& varyings) override
+    SGL::Vector4f FragmentShader(const SGL::Varyings &varyings) override
     {
         return texture.GetTexel(varyings.GetVector2fVarying("vTexcoord"));
     }
@@ -41,7 +41,7 @@ public:
     {
         Application::Init();
 
-        triangle=std::make_shared<Mesh>(MeshType::TRIANGLE);
+        triangle = std::make_shared<Mesh>(MeshType::TRIANGLE);
 
         //image from https://pixabay.com/photos/statue-sculpture-figure-1275469/
         std::string filePath = ASSET_DIR;
@@ -54,7 +54,7 @@ public:
         auto texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
 
         auto shader = std::make_shared<TextureShaderProgram>();
-         shader->vertices=triangle->GetVertices();
+        shader->vertices = triangle->GetVertices();
         shader->texture = texture;
 
         m_Rasterizer->SetGraphicsShaderProgram(shader);
@@ -73,8 +73,8 @@ public:
     void Draw() override
     {
         Application::Draw();
-        m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_Rasterizer->ClearDepth();
+        m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
+        m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
 
         m_Rasterizer->DrawElements(SGL::RenderMode::SOLID_TRIANGLE, 0, triangle->GetIndices());
     }

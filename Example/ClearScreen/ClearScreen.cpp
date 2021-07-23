@@ -16,8 +16,8 @@ public:
 	void Draw() override
 	{
 		Application::Draw();
-		m_Rasterizer->ClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-		m_Rasterizer->ClearDepth();
+		  m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
+        m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
 	}
 };
 

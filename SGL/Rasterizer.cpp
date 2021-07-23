@@ -9,7 +9,7 @@ namespace SGL
 
 	Rasterizer::Rasterizer(const Vector2u32 bufferExtent)
 		: m_Framebuffer(std::make_shared<Framebuffer>(bufferExtent)), m_BufferExtent(bufferExtent), m_GraphicsShaderProgram(nullptr),
-		  m_PointSize(1), m_LineWidth(1), m_BlendMode(BLEND_MODE::ONE), varyings0(Varyings()), varyings1(Varyings()), varyings2(Varyings()), interpolatedVaryings(Varyings())
+		  m_PointSize(1), m_LineWidth(1), m_BlendMode(BlendMode::ONE), varyings0(Varyings()), varyings1(Varyings()), varyings2(Varyings()), interpolatedVaryings(Varyings())
 	{
 	}
 
@@ -22,31 +22,52 @@ namespace SGL
 		return m_Framebuffer;
 	}
 
-	void Rasterizer::ClearColor(const Vector4f &color)
+	void Rasterizer::SetClearColor(const Vector4f &color)
+	{
+		m_ClearColor = color;
+	}
+
+	void Rasterizer::SetClearColor(float r, float g, float b, float a)
+	{
+		SetClearColor(Vector4f(r, g, b, a));
+	}
+
+	void Rasterizer::Clear(uint32_t type)
+	{
+		if ((type & BufferType::COLOR_BUFFER) == BufferType::COLOR_BUFFER)
+			ClearColorBuffer();
+
+		if ((type & BufferType::DEPTH_BUFFER) == BufferType::DEPTH_BUFFER)
+			ClearDepthBuffer();
+
+		if ((type & BufferType::STENCIL_BUFFER) == BufferType::STENCIL_BUFFER)
+			ClearStencilBuffer();
+	}
+
+	void Rasterizer::ClearColorBuffer()
 	{
 		for (uint32_t i = 0; i < m_Framebuffer->GetColorbuffer()->GetBufferExtent().x; ++i)
 			for (uint32_t j = 0; j < m_Framebuffer->GetColorbuffer()->GetBufferExtent().y; ++j)
-				m_Framebuffer->GetColorbuffer()->SetValue(i, j, color);
+				m_Framebuffer->GetColorbuffer()->SetValue(i, j, m_ClearColor);
 	}
 
-	void Rasterizer::ClearColor(float r, float g, float b, float a)
-	{
-		ClearColor(Vector4f(r, g, b, a));
-	}
-
-	void Rasterizer::ClearDepth()
+	void Rasterizer::ClearDepthBuffer()
 	{
 		for (uint32_t i = 0; i < m_Framebuffer->GetColorbuffer()->GetBufferExtent().x; ++i)
 			for (uint32_t j = 0; j < m_Framebuffer->GetColorbuffer()->GetBufferExtent().y; ++j)
 				m_Framebuffer->GetDepthbuffer()->SetValue(i, j, 1.0f);
 	}
 
-	void Rasterizer::SetBlendMode(BLEND_MODE mode)
+	void Rasterizer::ClearStencilBuffer()
+	{
+	}
+
+	void Rasterizer::SetBlendMode(BlendMode mode)
 	{
 		m_BlendMode = mode;
 	}
 
-	const BLEND_MODE &Rasterizer::GetBlendMode() const
+	const BlendMode &Rasterizer::GetBlendMode() const
 	{
 		return m_BlendMode;
 	}
@@ -81,27 +102,27 @@ namespace SGL
 			break;
 		case RenderMode::LINE:
 			for (uint32_t i = startIndex; i < vertexArraySize; i += 2)
-				DrawLine(i, i+1);
+				DrawLine(i, i + 1);
 			break;
 		case RenderMode::LINE_STRIP:
 			for (uint32_t i = startIndex; i < vertexArraySize; i++)
-				DrawLine(i, i+1);
+				DrawLine(i, i + 1);
 			break;
 		case RenderMode::SOLID_TRIANGLE:
 			for (uint32_t i = startIndex; i < vertexArraySize - 2; i += 3)
-				DrawTriangle_Solid(i, i+1, i+2);
+				DrawTriangle_Solid(i, i + 1, i + 2);
 			break;
 		case RenderMode::SOLID_TRIANGLE_STRIP:
 			for (uint32_t i = startIndex; i < vertexArraySize - 2; ++i)
-				DrawTriangle_Solid(i, i+1, i+2);
+				DrawTriangle_Solid(i, i + 1, i + 2);
 			break;
 		case RenderMode::WIRE_TRIANGLE:
 			for (uint32_t i = startIndex; i < vertexArraySize - 2; i += 3)
-				DrawTriangle_WireFrame(i, i+1, i+2);
+				DrawTriangle_WireFrame(i, i + 1, i + 2);
 			break;
 		case RenderMode::WIRE_TRIANGLE_STRIP:
 			for (uint32_t i = startIndex; i < vertexArraySize - 2; ++i)
-				DrawTriangle_WireFrame(i, i+1, i+2);
+				DrawTriangle_WireFrame(i, i + 1, i + 2);
 			break;
 		default:
 			break;
@@ -122,7 +143,7 @@ namespace SGL
 			break;
 		case RenderMode::LINE_STRIP:
 			for (uint32_t i = startIndex; i < indices.size() - 1; ++i)
-				DrawLine(indices.at(i),indices.at(i + 1));
+				DrawLine(indices.at(i), indices.at(i + 1));
 			break;
 		case RenderMode::SOLID_TRIANGLE:
 			for (uint32_t i = startIndex; i < indices.size() - 2; i += 3)
@@ -134,7 +155,7 @@ namespace SGL
 			break;
 		case RenderMode::WIRE_TRIANGLE:
 			for (uint32_t i = startIndex; i < indices.size() - 2; i += 3)
-				DrawTriangle_WireFrame(indices.at(i),indices.at(i + 1), indices.at(i + 2));
+				DrawTriangle_WireFrame(indices.at(i), indices.at(i + 1), indices.at(i + 2));
 			break;
 		case RenderMode::WIRE_TRIANGLE_STRIP:
 			for (uint32_t i = startIndex; i < indices.size() - 2; ++i)
@@ -167,7 +188,7 @@ namespace SGL
 		}
 	}
 
-	void Rasterizer::DrawLine(uint32_t vertexIndex0,uint32_t vertexIndex1)
+	void Rasterizer::DrawLine(uint32_t vertexIndex0, uint32_t vertexIndex1)
 	{
 		// CheckGraphicsShaderProgram();
 		// //模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间

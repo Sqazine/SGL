@@ -9,6 +9,13 @@
 
 namespace SGL
 {
+	enum BufferType
+	{
+		COLOR_BUFFER=0x0001,
+		DEPTH_BUFFER=0x0010,
+		STENCIL_BUFFER=0x0100
+	};
+
 
 	enum class RenderMode
 	{
@@ -24,7 +31,7 @@ namespace SGL
 		WIRE_TRIANGLE_STRIP
 	};
 
-	enum class BLEND_MODE
+	enum class BlendMode
 	{
 		ZERO,
 		ONE,
@@ -65,18 +72,22 @@ namespace SGL
 		void SetLineWidth(uint32_t size);
 		uint32_t GetLineWidth() const;
 
-		void ClearColor(const Vector4f &color);
-		void ClearColor(float r, float g, float b, float a);
-		void ClearDepth();
-		void ClearStencil();
+		void SetClearColor(const Vector4f &color);
+		void SetClearColor(float r, float g, float b, float a);
 
-		void SetBlendMode(BLEND_MODE mode);
-		const BLEND_MODE &GetBlendMode() const;
+		void Clear(uint32_t type);
+
+		void SetBlendMode(BlendMode mode);
+		const BlendMode &GetBlendMode() const;
 
 		void DrawArrays(RenderMode mode, uint32_t startIndex, size_t vertexArraySize);
 		void DrawElements(RenderMode mode, uint32_t startIndex, const std::vector<uint32_t> &indices);
 
 	private:
+		void ClearColorBuffer();
+		void ClearDepthBuffer();
+		void ClearStencilBuffer();
+
 		void CheckGraphicsShaderProgram();
 
 		template <typename T>
@@ -92,6 +103,8 @@ namespace SGL
 		void DrawTriangle_WireFrame(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2);
 		void DrawTriangle_Solid(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2);
 
+		Vector4f m_ClearColor;
+
 		std::shared_ptr<Framebuffer> m_Framebuffer;
 
 		Vector2u32 m_BufferExtent;
@@ -101,7 +114,7 @@ namespace SGL
 		std::shared_ptr<GraphicsShaderProgram> m_GraphicsShaderProgram;
 		uint32_t m_PointSize;
 		uint32_t m_LineWidth;
-		BLEND_MODE m_BlendMode;
+		BlendMode m_BlendMode;
 
 		Varyings varyings0;
 		Varyings varyings1;
