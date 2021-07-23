@@ -7,14 +7,13 @@ namespace SGL
 {
 
 	Colorbuffer::Colorbuffer(const Vector2u32 &bufferExtent)
-		: m_BufferExtent(bufferExtent), m_Buffer(new uint8_t[bufferExtent.x * bufferExtent.y * 4])
+		: m_BufferExtent(bufferExtent)
 	{
-		memset(m_Buffer, 0, m_BufferExtent.x * m_BufferExtent.y * 4);
+		m_Buffer.resize(bufferExtent.x * bufferExtent.y * 4);
 	}
 
 	Colorbuffer::~Colorbuffer()
 	{
-		delete[] m_Buffer;
 	}
 
 	void Colorbuffer::SetValue(uint32_t x, uint32_t y, const Vector4f &color)
@@ -45,7 +44,7 @@ namespace SGL
 		return GetValue(static_cast<int>(pos.x), static_cast<int>(pos.y));
 	}
 
-	uint8_t *Colorbuffer::GetBuffer() const
+	const std::vector<uint8_t> &Colorbuffer::GetBuffer() const
 	{
 
 		return m_Buffer;
@@ -57,14 +56,13 @@ namespace SGL
 	}
 
 	Depthbuffer::Depthbuffer(const Vector2u32 &bufferExtent)
-		: m_BufferExtent(bufferExtent), m_Buffer(new float[bufferExtent.x * bufferExtent.y])
+		: m_BufferExtent(bufferExtent)
 	{
-		memset(m_Buffer, 1, m_BufferExtent.x * m_BufferExtent.y);
+		m_Buffer.resize(bufferExtent.x * bufferExtent.y);
 	}
 
 	Depthbuffer::~Depthbuffer()
 	{
-		delete[] m_Buffer;
 	}
 
 	void Depthbuffer::SetValue(int x, int y, float value)
@@ -92,7 +90,7 @@ namespace SGL
 		return m_BufferExtent;
 	}
 
-	float *Depthbuffer::GetBuffer() const
+	const std::vector<float> &Depthbuffer::GetBuffer() const
 	{
 		return m_Buffer;
 	}

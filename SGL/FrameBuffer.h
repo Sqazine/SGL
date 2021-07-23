@@ -16,11 +16,11 @@ namespace SGL
 		Vector4u8 GetValue(uint32_t x, uint32_t y) const;
 		Vector4u8 GetValue(const Vector2u32 &pos) const;
 
-		uint8_t *GetBuffer() const;
+		const std::vector<uint8_t> &GetBuffer() const;
 		const Vector2u32 &GetBufferExtent() const;
 
 	private:
-		uint8_t *m_Buffer;
+		std::vector<uint8_t> m_Buffer;
 		Vector2u32 m_BufferExtent;
 	};
 
@@ -38,10 +38,10 @@ namespace SGL
 
 		const Vector2u32 &GetBufferExtent();
 
-		float *GetBuffer() const;
+		const std::vector<float> &GetBuffer() const;
 
 	private:
-		float *m_Buffer;
+		std::vector<float> m_Buffer;
 		Vector2u32 m_BufferExtent;
 	};
 
