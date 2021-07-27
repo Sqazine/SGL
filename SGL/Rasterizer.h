@@ -91,7 +91,10 @@ namespace SGL
 		void CheckGraphicsShaderProgram();
 
 		template <typename T>
-		T InterpolateVaryingBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter);
+		T InterpolateVaryingBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter,const Vector3f& recip_w);
+
+		template<typename T>
+		T InterpolateBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter);
 
 		Vector3f BaryCenteric(const Vector2i32 &p0, const Vector2i32 &p1, const Vector2i32 &p2, const Vector2i32 &p);
 
@@ -123,8 +126,17 @@ namespace SGL
 	};
 
 	template <typename T>
-	T Rasterizer::InterpolateVaryingBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter)
+	inline T Rasterizer::InterpolateVaryingBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter,const Vector3f& recip_w)
+	{
+
+		T value= v0 * barycenter.x*recip_w.x + v1 * barycenter.y*recip_w.y + v2 * barycenter.z*recip_w.z;
+		return value/(barycenter.x*recip_w.x + barycenter.y*recip_w.y + barycenter.z*recip_w.z);
+	}
+
+	template<typename T>
+	inline 	T Rasterizer::InterpolateBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter)
 	{
 		return v0 * barycenter.x + v1 * barycenter.y + v2 * barycenter.z;
 	}
+
 }

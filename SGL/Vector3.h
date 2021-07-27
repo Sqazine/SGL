@@ -52,10 +52,14 @@ namespace SGL
 		template <typename T2>
 		inline Vector3<T> &operator=(const Vector3<T2> &right);
 
-		static T Dot(const Vector3<T> &left, const Vector3<T> &right);
-		static Vector3<T> Cross(const Vector3<T> &left, const Vector3<T> &right);
+		template <typename T2>
+		static T Dot(const Vector3<T> &left, const Vector3<T2> &right);
+
+		template <typename T2>
+		static Vector3<T> Cross(const Vector3<T> &left, const Vector3<T2> &right);
 		static Vector3<T> Normalize(const Vector3<T> &vec);
-		static T IncludedAngle(const Vector3<T> &left, const Vector3<T> &right);
+		template <typename T2>
+		static T IncludedAngle(const Vector3<T> &left, const Vector3<T2> &right);
 		static Vector2<T> ToVector2(const Vector3<T> &right);
 		T SquareLength() const;
 		T Length() const;
@@ -307,13 +311,15 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline T Vector3<T>::Dot(const Vector3<T> &left, const Vector3<T> &right)
+	template <typename T2>
+	inline T Vector3<T>::Dot(const Vector3<T> &left, const Vector3<T2> &right)
 	{
 		return left.x * right.x + left.y * right.y + left.z * right.z;
 	}
 
 	template <typename T>
-	inline Vector3<T> Vector3<T>::Cross(const Vector3<T> &left, const Vector3<T> &right)
+	template <typename T2>
+	inline Vector3<T> Vector3<T>::Cross(const Vector3<T> &left, const Vector3<T2> &right)
 	{
 		return Vector3<T>(left.y * right.z - left.z * right.y, left.z * right.x - left.x * right.z, left.x * right.y - left.y * right.x);
 	}
@@ -330,7 +336,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline T Vector3<T>::IncludedAngle(const Vector3<T> &left, const Vector3<T> &right)
+	template <typename T2>
+	inline T Vector3<T>::IncludedAngle(const Vector3<T> &left, const Vector3<T2> &right)
 	{
 		return Math::ArcCos(Vector3<T>::Dot(Vector3<T>::Normalize(left), Vector3<T>::Normalize(right)));
 	}

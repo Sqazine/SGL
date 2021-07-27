@@ -276,14 +276,19 @@ namespace SGL
 		Vector4f clip_position0 = m_GraphicsShaderProgram->VertexShader(vertexIndex0, varyings0);
 		Vector3f ndc_position_p0 = ToNDCSpace(clip_position0);
 		Vector2i32 screen_position_p0 = ToScreenSpace(ndc_position_p0);
+		float recip_p0_w = 1.0f / clip_position0.w;
 
 		Vector4f clip_position1 = m_GraphicsShaderProgram->VertexShader(vertexIndex1, varyings1);
 		Vector3f ndc_position_p1 = ToNDCSpace(clip_position1);
 		Vector2i32 screen_position_p1 = ToScreenSpace(ndc_position_p1);
+		float recip_p1_w = 1.0f / clip_position1.w;
 
 		Vector4f clip_position2 = m_GraphicsShaderProgram->VertexShader(vertexIndex2, varyings2);
 		Vector3f ndc_position_p2 = ToNDCSpace(clip_position2);
 		Vector2i32 screen_position_p2 = ToScreenSpace(ndc_position_p2);
+		float recip_p2_w = 1.0f / clip_position2.w;
+
+		Vector3f recip_w = Vector3f(recip_p0_w, recip_p1_w, recip_p2_w);
 
 		//三角形光栅化部分
 
@@ -306,9 +311,11 @@ namespace SGL
 			{
 				Vector3f screen_bc_coord = BaryCenteric(screen_position_p0, screen_position_p1, screen_position_p2, Vector2i32(x, y));
 
-#define VARYING_INTERPOLATION(container)      \
-	for (const auto &v : varyings0.container) \
-		interpolatedVaryings.container[v.first] = InterpolateVaryingBarycenteric(varyings0.container[v.first], varyings1.container[v.first], varyings2.container[v.first], screen_bc_coord);
+#define VARYING_INTERPOLATION(container)                                                                                                                                   \
+	for (const auto &v : varyings0.container)                                                                                                                              \
+		interpolatedVaryings.container[v.first] = InterpolateVaryingBarycenteric(varyings0.container[v.first], varyings1.container[v.first], varyings2.container[v.first], \
+																				 screen_bc_coord,                                                                          \
+																				 recip_w);
 
 				//varyings0 varyings1,varyings2中对应容器的个数一样
 				VARYING_INTERPOLATION(m_DVaryings);
@@ -359,7 +366,7 @@ namespace SGL
 
 #undef VARYING_INTERPOLATION
 
-				Vector4f screen_position = Vector4f(x, y, InterpolateVaryingBarycenteric(ndc_position_p0.z, ndc_position_p1.z, ndc_position_p2.z, screen_bc_coord), InterpolateVaryingBarycenteric(clip_position0.w, clip_position1.w, clip_position2.w, screen_bc_coord));
+				Vector4f screen_position = Vector4f(x, y, InterpolateBarycenteric(ndc_position_p0.z, ndc_position_p1.z, ndc_position_p2.z, screen_bc_coord), InterpolateBarycenteric(clip_position0.w, clip_position1.w, clip_position2.w, screen_bc_coord));
 				//如果当前片元在三角形内且通过深度测试则渲染到颜色缓存中，否则丢弃该片元(这里使用提前深度测试)
 				if (screen_bc_coord.x >= 0.0f && screen_bc_coord.y >= 0.0f && screen_bc_coord.z >= 0.0f &&
 					m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_position.z && screen_position.z >= -1.0f)

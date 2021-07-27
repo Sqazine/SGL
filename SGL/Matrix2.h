@@ -38,18 +38,29 @@ namespace SGL
 		void Set(const T &d00, const T &d11);
 		void Set(const Vector2<T> &diagonal);
 
-		inline Matrix2<T> &operator+=(const Matrix2<T> &right);
-		inline Matrix2<T> &operator-=(const Matrix2<T> &right);
-		inline Matrix2<T> &operator*=(const Matrix2<T> &right);
-		inline Matrix2<T> &operator*=(const T &value);
+		template <typename T2>
+		inline Matrix2<T> &operator+=(const Matrix2<T2> &right);
+		template <typename T2>
+		inline Matrix2<T> &operator-=(const Matrix2<T2> &right);
+		template <typename T2>
+		inline Matrix2<T> &operator*=(const Matrix2<T2> &right);
+		template <typename T2>
+		inline Matrix2<T> &operator*=(const T2 &value);
 
-		static Matrix2<T> Rotate(const T &radian);
-		static Matrix2<T> Scale(const T &factor);
-		static Matrix2<T> Scale(const Vector2<T> &factor);
-		static T Determinant(const Matrix2<T> &matrix);
-		static Matrix2<T> Inverse(const Matrix2<T> &matrix);
-		static Matrix2<T> Adjoint(const Matrix2<T> &matrix);
-		static Matrix3<T> ToMatrix3(const Matrix2<T> &matrix);
+		template <typename T2>
+		static Matrix2<T> Rotate(const T2 &radian);
+		template <typename T2>
+		static Matrix2<T> Scale(const T2 &factor);
+		template <typename T2>
+		static Matrix2<T> Scale(const Vector2<T2> &factor);
+		template <typename T2>
+		static T Determinant(const Matrix2<T2> &matrix);
+		template <typename T2>
+		static Matrix2<T> Inverse(const Matrix2<T2> &matrix);
+		template <typename T2>
+		static Matrix2<T> Adjoint(const Matrix2<T2> &matrix);
+		template <typename T2>
+		static Matrix3<T> ToMatrix3(const Matrix2<T2> &matrix);
 
 		static const Matrix2<T> IDENTITY;
 	};
@@ -67,7 +78,7 @@ namespace SGL
 
 	template <typename T>
 	inline Matrix2<T>::Matrix2(const T &value)
-		: col(_mm_set_ps(value, static_cast<T>(0.0f), static_cast<T>(0.0f),value))
+		: col(_mm_set_ps(value, static_cast<T>(0.0f), static_cast<T>(0.0f), value))
 	{
 	}
 
@@ -113,23 +124,23 @@ namespace SGL
 		Set(diagonal.x, diagonal.y);
 	}
 
-	template <typename T>
-	inline Matrix2<T> operator+(const Matrix2<T> &left, const Matrix2<T> &right)
+	template <typename T,typename T2>
+	inline Matrix2<T> operator+(const Matrix2<T> &left, const Matrix2<T2> &right)
 	{
 		Matrix2<T> tmp;
 		tmp.col = _mm_add_ps(left.col, right.col);
 		return tmp;
 	}
-	template <typename T>
-	inline Matrix2<T> operator-(const Matrix2<T> &left, const Matrix2<T> &right)
+	template <typename T,typename T2>
+	inline Matrix2<T> operator-(const Matrix2<T> &left, const Matrix2<T2> &right)
 	{
 		Matrix2<T> tmp;
 		tmp.col = _mm_sub_ps(left.col, right.col);
 		return tmp;
 	}
 
-	template <typename T>
-	inline Matrix2<T> operator*(const Matrix2<T> &left, const Matrix2<T> &right)
+	template <typename T,typename T2>
+	inline Matrix2<T> operator*(const Matrix2<T> &left, const Matrix2<T2> &right)
 	{
 		Matrix2<T> tmp;
 		tmp.elements[0] = left.elements[0] * right.elements[0] + left.elements[2] * right.elements[1];
@@ -139,8 +150,8 @@ namespace SGL
 		return tmp;
 	}
 
-	template <typename T>
-	inline Matrix2<T> operator/(const Matrix2<T> &left, const T &value)
+	template <typename T,typename T2>
+	inline Matrix2<T> operator/(const Matrix2<T> &left, const T2 &value)
 	{
 		if (!Math::IsNearZero(value))
 		{
@@ -151,7 +162,7 @@ namespace SGL
 		return left;
 	}
 
-	template <typename T,typename T2>
+	template <typename T, typename T2>
 	inline Matrix2<T> operator*(const T &value, const Matrix2<T2> &right)
 	{
 		Matrix2<T> tmp;
@@ -159,7 +170,7 @@ namespace SGL
 		return tmp;
 	}
 
-	template <typename T,typename T2>
+	template <typename T, typename T2>
 	inline Matrix2<T> operator*(const Matrix2<T> &left, const T2 &value)
 	{
 		return value * left;
@@ -175,7 +186,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Matrix2<T> &Matrix2<T>::operator+=(const Matrix2<T> &right)
+	template <typename T2>
+	inline Matrix2<T> &Matrix2<T>::operator+=(const Matrix2<T2> &right)
 	{
 
 		*this = *this + right;
@@ -183,7 +195,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Matrix2<T> &Matrix2<T>::operator-=(const Matrix2<T> &right)
+	template <typename T2>
+	inline Matrix2<T> &Matrix2<T>::operator-=(const Matrix2<T2> &right)
 	{
 
 		*this = *this - right;
@@ -191,7 +204,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Matrix2<T> &Matrix2<T>::operator*=(const Matrix2<T> &right)
+	template <typename T2>
+	inline Matrix2<T> &Matrix2<T>::operator*=(const Matrix2<T2> &right)
 	{
 
 		*this = *this * right;
@@ -199,7 +213,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Matrix2<T> &Matrix2<T>::operator*=(const T &value)
+	template <typename T2>
+	inline Matrix2<T> &Matrix2<T>::operator*=(const T2 &value)
 	{
 
 		*this = *this * value;
@@ -207,7 +222,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Matrix2<T> Matrix2<T>::Rotate(const T &radian)
+	template <typename T2>
+	inline Matrix2<T> Matrix2<T>::Rotate(const T2 &radian)
 	{
 		Matrix2<T> tmp;
 		tmp.col = _mm_set_ps(Math::Cos(radian), -Math::Sin(radian), Math::Sin(radian), Math::Cos(radian));
@@ -215,7 +231,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Matrix2<T> Matrix2<T>::Scale(const T &factor)
+	template <typename T2>
+	inline Matrix2<T> Matrix2<T>::Scale(const T2 &factor)
 	{
 		Matrix2<T> tmp;
 		tmp.col = _mm_set_ps(factor, static_cast<T>(0.0f), static_cast<T>(0.0f), factor);
@@ -223,26 +240,30 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Matrix2<T> Matrix2<T>::Scale(const Vector2<T> &factor)
+	template <typename T2>
+	inline Matrix2<T> Matrix2<T>::Scale(const Vector2<T2> &factor)
 	{
 		Matrix2<T> tmp;
 		tmp.col = _mm_set_ps(factor.y, static_cast<T>(0.0f), static_cast<T>(0.0f), factor.x);
 	}
 
 	template <typename T>
-	inline T Matrix2<T>::Determinant(const Matrix2<T> &matrix)
+	template <typename T2>
+	inline T Matrix2<T>::Determinant(const Matrix2<T2> &matrix)
 	{
 		return matrix.elements[0] * matrix.elements[3] - matrix.elements[2] * matrix.elements[1];
 	}
 
 	template <typename T>
-	inline Matrix2<T> Matrix2<T>::Inverse(const Matrix2<T> &matrix)
+	template <typename T2>
+	inline Matrix2<T> Matrix2<T>::Inverse(const Matrix2<T2> &matrix)
 	{
 		return Matrix2<T>::Adjoint(matrix) / Matrix2<T>::Determinant(matrix);
 	}
 
 	template <typename T>
-	inline Matrix2<T> Matrix2<T>::Adjoint(const Matrix2<T> &matrix)
+	template <typename T2>
+	inline Matrix2<T> Matrix2<T>::Adjoint(const Matrix2<T2> &matrix)
 	{
 		Matrix2<T> tmp;
 		tmp.col = _mm_set_ps(matrix.elements[0], -matrix.elements[1], -matrix.elements[2], matrix.elements[3]);
@@ -250,7 +271,8 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Matrix3<T> Matrix2<T>::ToMatrix3(const Matrix2<T> &matrix)
+	template <typename T2>
+	inline Matrix3<T> Matrix2<T>::ToMatrix3(const Matrix2<T2> &matrix)
 	{
 		Matrix3<T> tmp;
 		tmp.elements[0] = matrix.elements[0];

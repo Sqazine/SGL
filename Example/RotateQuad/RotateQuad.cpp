@@ -47,7 +47,7 @@ public:
 
         //image from https://pixabay.com/photos/statue-sculpture-figure-1275469/
         std::string filePath = ASSET_DIR;
-        filePath.append("statue-1275469_640.jpg");
+        filePath.append("CheckBoard.jpg");
 
         int width, height, channel;
         stbi_set_flip_vertically_on_load(true);
@@ -73,7 +73,7 @@ public:
     {
         Application::Update();
 
-        rotation.x -= 100 * Timer::deltaTime;
+        rotation.x -= 60 * Timer::deltaTime;
 
         modelMatrix = SGL::Matrix4f();
         modelMatrix *= SGL::Matrix4f::Rotate(SGL::Vector3f(1.0f, 0.0f, 0.0f), SGL::Math::ToRadian(rotation.x));
