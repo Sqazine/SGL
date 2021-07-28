@@ -109,7 +109,7 @@ public:
           m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
 
-        m_Rasterizer->DrawElements(SGL::RenderMode::SOLID_TRIANGLE, 0, sphere->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, sphere->GetIndices());
     }
 
 private:

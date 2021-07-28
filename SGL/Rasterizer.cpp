@@ -9,7 +9,8 @@ namespace SGL
 
 	Rasterizer::Rasterizer(const Vector2u32 bufferExtent)
 		: m_Framebuffer(std::make_shared<Framebuffer>(bufferExtent)), m_BufferExtent(bufferExtent), m_GraphicsShaderProgram(nullptr),
-		  m_PointSize(1), m_LineWidth(1), m_BlendMode(BlendMode::ONE), varyings0(Varyings()), varyings1(Varyings()), varyings2(Varyings()), interpolatedVaryings(Varyings())
+		  m_PointSize(1), m_LineWidth(1), m_BlendType(BlendType::ONE), m_CullType(CullType::BACK), m_FrontFaceType(FrontFaceType::CCW),
+		  varyings0(Varyings()), varyings1(Varyings()), varyings2(Varyings()), interpolatedVaryings(Varyings())
 	{
 	}
 
@@ -62,14 +63,14 @@ namespace SGL
 	{
 	}
 
-	void Rasterizer::SetBlendMode(BlendMode mode)
+	void Rasterizer::SetBlendType(BlendType mode)
 	{
-		m_BlendMode = mode;
+		m_BlendType = mode;
 	}
 
-	const BlendMode &Rasterizer::GetBlendMode() const
+	const BlendType &Rasterizer::GetBlendType() const
 	{
-		return m_BlendMode;
+		return m_BlendType;
 	}
 
 	void Rasterizer::SetPointSize(uint32_t size)
@@ -92,35 +93,35 @@ namespace SGL
 		return m_LineWidth;
 	}
 
-	void Rasterizer::DrawArrays(RenderMode mode, uint32_t startIndex, size_t vertexArraySize)
+	void Rasterizer::DrawArrays(RenderType mode, uint32_t startIndex, size_t vertexArraySize)
 	{
 		switch (mode)
 		{
-		case RenderMode::POINT:
+		case RenderType::POINT:
 			for (uint32_t i = startIndex; i < vertexArraySize; ++i)
 				DrawPoint(i);
 			break;
-		case RenderMode::LINE:
+		case RenderType::LINE:
 			for (uint32_t i = startIndex; i < vertexArraySize; i += 2)
 				DrawLine(i, i + 1);
 			break;
-		case RenderMode::LINE_STRIP:
+		case RenderType::LINE_STRIP:
 			for (uint32_t i = startIndex; i < vertexArraySize; i++)
 				DrawLine(i, i + 1);
 			break;
-		case RenderMode::SOLID_TRIANGLE:
+		case RenderType::SOLID_TRIANGLE:
 			for (uint32_t i = startIndex; i < vertexArraySize - 2; i += 3)
 				DrawTriangle_Solid(i, i + 1, i + 2);
 			break;
-		case RenderMode::SOLID_TRIANGLE_STRIP:
+		case RenderType::SOLID_TRIANGLE_STRIP:
 			for (uint32_t i = startIndex; i < vertexArraySize - 2; ++i)
 				DrawTriangle_Solid(i, i + 1, i + 2);
 			break;
-		case RenderMode::WIRE_TRIANGLE:
+		case RenderType::WIRE_TRIANGLE:
 			for (uint32_t i = startIndex; i < vertexArraySize - 2; i += 3)
 				DrawTriangle_WireFrame(i, i + 1, i + 2);
 			break;
-		case RenderMode::WIRE_TRIANGLE_STRIP:
+		case RenderType::WIRE_TRIANGLE_STRIP:
 			for (uint32_t i = startIndex; i < vertexArraySize - 2; ++i)
 				DrawTriangle_WireFrame(i, i + 1, i + 2);
 			break;
@@ -129,35 +130,35 @@ namespace SGL
 		}
 	}
 
-	void Rasterizer::DrawElements(RenderMode mode, uint32_t startIndex, const std::vector<uint32_t> &indices)
+	void Rasterizer::DrawElements(RenderType mode, uint32_t startIndex, const std::vector<uint32_t> &indices)
 	{
 		switch (mode)
 		{
-		case RenderMode::POINT:
+		case RenderType::POINT:
 			for (uint32_t i = startIndex; i < indices.size(); ++i)
 				DrawPoint(indices.at(i));
 			break;
-		case RenderMode::LINE:
+		case RenderType::LINE:
 			for (uint32_t i = startIndex; i < indices.size() - 1; i += 2)
 				DrawLine(indices.at(i), indices.at(i + 1));
 			break;
-		case RenderMode::LINE_STRIP:
+		case RenderType::LINE_STRIP:
 			for (uint32_t i = startIndex; i < indices.size() - 1; ++i)
 				DrawLine(indices.at(i), indices.at(i + 1));
 			break;
-		case RenderMode::SOLID_TRIANGLE:
+		case RenderType::SOLID_TRIANGLE:
 			for (uint32_t i = startIndex; i < indices.size() - 2; i += 3)
 				DrawTriangle_Solid(indices.at(i), indices.at(i + 1), indices.at(i + 2));
 			break;
-		case RenderMode::SOLID_TRIANGLE_STRIP:
+		case RenderType::SOLID_TRIANGLE_STRIP:
 			for (uint32_t i = startIndex; i < indices.size() - 2; ++i)
 				DrawTriangle_Solid(indices.at(i), indices.at(i + 1), indices.at(i + 2));
 			break;
-		case RenderMode::WIRE_TRIANGLE:
+		case RenderType::WIRE_TRIANGLE:
 			for (uint32_t i = startIndex; i < indices.size() - 2; i += 3)
 				DrawTriangle_WireFrame(indices.at(i), indices.at(i + 1), indices.at(i + 2));
 			break;
-		case RenderMode::WIRE_TRIANGLE_STRIP:
+		case RenderType::WIRE_TRIANGLE_STRIP:
 			for (uint32_t i = startIndex; i < indices.size() - 2; ++i)
 				DrawTriangle_WireFrame(indices.at(i), indices.at(i + 1), indices.at(i + 2));
 			break;

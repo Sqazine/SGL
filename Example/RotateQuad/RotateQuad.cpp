@@ -91,7 +91,7 @@ public:
         shader->viewMatrix = viewMatrix;
         shader->projectionMatrix = projectionMatrix;
         m_Rasterizer->SetGraphicsShaderProgram(shader);
-        m_Rasterizer->DrawElements(SGL::RenderMode::SOLID_TRIANGLE, 0, quad->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, quad->GetIndices());
     }
 
 private:

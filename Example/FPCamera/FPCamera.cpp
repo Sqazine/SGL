@@ -90,7 +90,7 @@ public:
         shader->viewMatrix = fpCamera->GetViewMatrix();
         shader->projectionMatrix = fpCamera->GetProjectionMatrix();
         m_Rasterizer->SetGraphicsShaderProgram(shader);
-        m_Rasterizer->DrawElements(SGL::RenderMode::SOLID_TRIANGLE, 0, cube->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, cube->GetIndices());
     }
 
 private:

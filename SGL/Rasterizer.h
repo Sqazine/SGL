@@ -17,7 +17,20 @@ namespace SGL
 	};
 
 
-	enum class RenderMode
+	enum class CullType
+	{
+		BACK,
+		FRONT,
+		FRONT_AND_BACK
+	};
+
+	enum class FrontFaceType
+	{
+		CW,
+		CCW
+	};
+
+	enum class RenderType
 	{
 		POINT,
 
@@ -31,7 +44,7 @@ namespace SGL
 		WIRE_TRIANGLE_STRIP
 	};
 
-	enum class BlendMode
+	enum class BlendType
 	{
 		ZERO,
 		ONE,
@@ -77,11 +90,11 @@ namespace SGL
 
 		void Clear(uint32_t type);
 
-		void SetBlendMode(BlendMode mode);
-		const BlendMode &GetBlendMode() const;
+		void SetBlendType(BlendType mode);
+		const BlendType &GetBlendType() const;
 
-		void DrawArrays(RenderMode mode, uint32_t startIndex, size_t vertexArraySize);
-		void DrawElements(RenderMode mode, uint32_t startIndex, const std::vector<uint32_t> &indices);
+		void DrawArrays(RenderType mode, uint32_t startIndex, size_t vertexArraySize);
+		void DrawElements(RenderType mode, uint32_t startIndex, const std::vector<uint32_t> &indices);
 
 	private:
 		void ClearColorBuffer();
@@ -117,7 +130,9 @@ namespace SGL
 		std::shared_ptr<GraphicsShaderProgram> m_GraphicsShaderProgram;
 		uint32_t m_PointSize;
 		uint32_t m_LineWidth;
-		BlendMode m_BlendMode;
+		BlendType m_BlendType;
+		CullType m_CullType;
+		FrontFaceType m_FrontFaceType;
 
 		Varyings varyings0;
 		Varyings varyings1;
