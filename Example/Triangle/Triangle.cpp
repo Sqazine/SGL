@@ -10,13 +10,13 @@ public:
     ColorShaderProgram() {}
     ~ColorShaderProgram() {}
 
-    uniform std::vector<Vertex> vertices;
+    uniform std::vector<SGL::Vector3f> positions;
+    uniform std::vector<SGL::Vector4f> vertexColors;
 
     SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
-        Vertex vertex=vertices[vertexIndex];
-        varyings.CommitVector4fVarying("vColor", vertex.color);
-        return vertex.position;
+        varyings.CommitVector4fVarying("vColor", vertexColors[vertexIndex]);
+        return SGL::Vector4f(positions[vertexIndex],1.0f);
     }
     SGL::Vector4f FragmentShader(const SGL::Varyings &varyings) override
     {
@@ -28,17 +28,16 @@ class ExampleTriangle : public Application
 {
 
 public:
-    ExampleTriangle(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
+    ExampleTriangle(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent),triangle(Mesh(MeshType::TRIANGLE)) {}
     ~ExampleTriangle() {}
 
     void Init() override
     {
         Application::Init();
-       
-        triangle=std::make_shared<Mesh>(MeshType::TRIANGLE);
 
         auto shader = std::make_shared<ColorShaderProgram>();
-        shader->vertices=triangle->GetVertices();
+        shader->positions=triangle.GetPositions();
+        shader->vertexColors=triangle.GetVertexColors();
 
         m_Rasterizer->SetGraphicsShaderProgram(shader);
     }
@@ -58,11 +57,11 @@ public:
         Application::Draw();
          m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
-        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, triangle->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, triangle.GetIndices());
     }
 
 private:
-    std::shared_ptr<Mesh> triangle;
+    Mesh triangle;
 };
 
 #undef main

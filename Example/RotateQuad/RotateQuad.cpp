@@ -13,18 +13,20 @@ public:
     TextureShaderProgram() {}
     ~TextureShaderProgram() {}
 
-    uniform std::vector<Vertex> vertices;
+    uniform std::vector<SGL::Vector3f> positions;
+    uniform std::vector<SGL::Vector2f> texcoords;
 
-     SGL::Vector4f VertexShader(uint32_t vertexIndex,SGL::Varyings &varyings) override
-    {
-        varyings.CommitVector2fVarying("vTexcoord",vertices[vertexIndex].texcoord);
-        return projectionMatrix * viewMatrix * modelMatrix * vertices[vertexIndex].position;
-    }
-
-    uniform SGL::Texture2D texture;
     uniform SGL::Matrix4f modelMatrix;
     uniform SGL::Matrix4f viewMatrix;
     uniform SGL::Matrix4f projectionMatrix;
+
+     SGL::Vector4f VertexShader(uint32_t vertexIndex,SGL::Varyings &varyings) override
+    {
+        varyings.CommitVector2fVarying("vTexcoord",texcoords[vertexIndex]);
+        return projectionMatrix * viewMatrix * modelMatrix * SGL::Vector4f(positions[vertexIndex],1.0f);
+    }
+
+    uniform SGL::Texture2D texture;
 
      SGL::Vector4f FragmentShader(const SGL::Varyings& varyings) override
     {
@@ -36,14 +38,12 @@ class ExampleRotateQuadWithTexture : public Application
 {
 
 public:
-    ExampleRotateQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
+    ExampleRotateQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent),quad(Mesh(MeshType::QUAD)) {}
     ~ExampleRotateQuadWithTexture() {}
 
     void Init() override
     {
         Application::Init();
-
-        quad=std::make_shared<Mesh>(MeshType::QUAD);
 
         //image from https://pixabay.com/photos/statue-sculpture-figure-1275469/
         std::string filePath = ASSET_DIR;
@@ -60,7 +60,9 @@ public:
         projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
 
         shader = std::make_shared<TextureShaderProgram>();
-        shader->vertices=quad->GetVertices();
+         shader->positions=quad.GetPositions();
+        shader->texcoords=quad.GetTexcoords();
+        shader->texture=texture;
     }
 
     void ProcessInput() override
@@ -91,12 +93,12 @@ public:
         shader->viewMatrix = viewMatrix;
         shader->projectionMatrix = projectionMatrix;
         m_Rasterizer->SetGraphicsShaderProgram(shader);
-        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, quad->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, quad.GetIndices());
     }
 
 private:
     SGL::Vector3f rotation;
-    std::shared_ptr<Mesh> quad;
+    Mesh quad;
     SGL::Matrix4f modelMatrix;
     SGL::Matrix4f viewMatrix;
     SGL::Matrix4f projectionMatrix;

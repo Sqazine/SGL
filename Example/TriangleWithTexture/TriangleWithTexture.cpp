@@ -13,13 +13,14 @@ public:
     TextureShaderProgram() {}
     ~TextureShaderProgram() {}
 
-    uniform std::vector<Vertex> vertices;
+       uniform std::vector<SGL::Vector3f> positions;
+    uniform std::vector<SGL::Vector4f> vertexColors;
+
 
     SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
-        Vertex vertex = vertices[vertexIndex];
-        varyings.CommitVector2fVarying("vTexcoord", vertex.texcoord);
-        return vertex.position;
+         varyings.CommitVector4fVarying("vColor", vertexColors[vertexIndex]);
+        return SGL::Vector4f(positions[vertexIndex],1.0f);
     }
 
     uniform SGL::Texture2D texture;
@@ -34,14 +35,12 @@ class ExampleTriangleWithTexture : public Application
 {
 
 public:
-    ExampleTriangleWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
+    ExampleTriangleWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent),triangle(Mesh(MeshType::TRIANGLE)) {}
     ~ExampleTriangleWithTexture() {}
 
     void Init() override
     {
         Application::Init();
-
-        triangle = std::make_shared<Mesh>(MeshType::TRIANGLE);
 
         //image from https://pixabay.com/photos/statue-sculpture-figure-1275469/
         std::string filePath = ASSET_DIR;
@@ -54,7 +53,8 @@ public:
         auto texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
 
         auto shader = std::make_shared<TextureShaderProgram>();
-        shader->vertices = triangle->GetVertices();
+          shader->positions=triangle.GetPositions();
+        shader->vertexColors=triangle.GetVertexColors();
         shader->texture = texture;
 
         m_Rasterizer->SetGraphicsShaderProgram(shader);
@@ -76,11 +76,11 @@ public:
         m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
 
-        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, triangle->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, triangle.GetIndices());
     }
 
 private:
-    std::shared_ptr<Mesh> triangle;
+    Mesh triangle;
 };
 
 #undef main

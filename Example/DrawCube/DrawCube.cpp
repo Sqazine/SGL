@@ -4,7 +4,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include "Engine/Engine.h"
-#include "SGL/SGL.h"
 
 class TextureShaderProgram
     : public SGL::GraphicsShaderProgram
@@ -13,12 +12,13 @@ public:
     TextureShaderProgram() {}
     ~TextureShaderProgram() {}
 
-    uniform std::vector<Vertex> vertices;
+    uniform std::vector<SGL::Vector3f> positions;
+    uniform std::vector<SGL::Vector2f> texcoords;
 
-     SGL::Vector4f VertexShader(uint32_t vertexIndex,SGL::Varyings &varyings) override
+    SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
-        varyings.CommitVector2fVarying("vTexcoord",vertices[vertexIndex].texcoord);
-        return projectionMatrix * viewMatrix * modelMatrix * vertices[vertexIndex].position;
+        varyings.CommitVector2fVarying("vTexcoord", texcoords[vertexIndex]);
+        return projectionMatrix * viewMatrix * modelMatrix * SGL::Vector4f(positions[vertexIndex],1.0f);
     }
 
     uniform SGL::Texture2D texture;
@@ -26,7 +26,7 @@ public:
     uniform SGL::Matrix4f viewMatrix;
     uniform SGL::Matrix4f projectionMatrix;
 
-     SGL::Vector4f FragmentShader(const SGL::Varyings& varyings) override
+    SGL::Vector4f FragmentShader(const SGL::Varyings &varyings) override
     {
         return texture.GetTexel(varyings.GetVector2fVarying("vTexcoord"));
     }
@@ -36,14 +36,12 @@ class ExampleCube : public Application
 {
 
 public:
-    ExampleCube(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
+    ExampleCube(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent), cube(Mesh(MeshType::CUBE)) {}
     ~ExampleCube() {}
 
     void Init() override
     {
         Application::Init();
-       
-       cube=std::make_shared<Mesh>(MeshType::CUBE);
 
         //image from https://pixabay.com/photos/statue-sculpture-figure-1275469/
         std::string filePath = ASSET_DIR;
@@ -56,11 +54,12 @@ public:
 
         texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
 
-        viewMatrix = SGL::Matrix4f::LookAt(SGL::Vector3f(0.0f,1.0f,3.0f),SGL::Vector3f(0.0f),SGL::Vector3f::UNIT_Y);
+        viewMatrix = SGL::Matrix4f::LookAt(SGL::Vector3f(0.0f, 1.0f, 3.0f), SGL::Vector3f(0.0f), SGL::Vector3f::UNIT_Y);
         projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
 
         shader = std::make_shared<TextureShaderProgram>();
-        shader->vertices=cube->GetVertices();
+        shader->positions=cube.GetPositions();
+        shader->texcoords =cube.GetTexcoords();
     }
 
     void ProcessInput() override
@@ -73,7 +72,7 @@ public:
     {
         Application::Update();
 
-        rotation.y-=100*Timer::deltaTime;
+        rotation.y -= 100 * Timer::deltaTime;
 
         modelMatrix = SGL::Matrix4f();
         modelMatrix *= SGL::Matrix4f::Rotate(SGL::Vector3f(1.0f, 0.0f, 0.0f), SGL::Math::ToRadian(rotation.x));
@@ -83,20 +82,20 @@ public:
     void Draw() override
     {
         Application::Draw();
-          m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
+        m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
+        m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
 
         shader->texture = texture;
         shader->modelMatrix = modelMatrix;
         shader->viewMatrix = viewMatrix;
         shader->projectionMatrix = projectionMatrix;
         m_Rasterizer->SetGraphicsShaderProgram(shader);
-        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, cube->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, cube.GetIndices());
     }
 
 private:
     SGL::Vector3f rotation;
-    std::shared_ptr<Mesh> cube;
+    Mesh cube;
     SGL::Matrix4f modelMatrix;
     SGL::Matrix4f viewMatrix;
     SGL::Matrix4f projectionMatrix;

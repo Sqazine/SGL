@@ -10,11 +10,10 @@ class Model
 {
 public:
 	Model(const std::string& filePath);
-	Model(const std::vector<std::shared_ptr<Mesh>>& meshes);
-	Model(const std::shared_ptr<Mesh>& mesh);
+	Model(const std::vector<Mesh>& meshes);
 	~Model();
 
-	const std::vector<std::shared_ptr<Mesh>>& GetMeshes() const;
+	const std::vector<Mesh>& GetMeshes() const;
 
 	void SetPosition(const SGL::Vector3f& pos);
 	const SGL::Vector3f& GetPosition() const;
@@ -30,14 +29,10 @@ private:
 	SGL::Vector3f m_Position;
 	SGL::Vector3f m_Rotation;
 	SGL::Vector3f m_Scale;
-	std::vector<std::shared_ptr<Mesh>> m_Meshes;
-
-	std::vector<std::shared_ptr<Texture>> m_LoadedTextures;
+	std::vector<Mesh> m_Meshes;
 
 	void LoadModel(const std::string& filePath);
 	void ProcessNodes(aiNode* node, const aiScene* scene);
-	std::shared_ptr<Mesh> ProcessMesh(aiMesh* aimesh, const aiScene* scene);
-
-	std::string m_ModelDirectory;
+	Mesh ProcessMesh(aiMesh* aimesh, const aiScene* scene);
 };
 

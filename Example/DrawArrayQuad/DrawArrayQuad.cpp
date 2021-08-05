@@ -4,7 +4,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include "Engine/Engine.h"
-#include "SGL/SGL.h"
 
 class TextureShaderProgram
     : public SGL::GraphicsShaderProgram
@@ -13,18 +12,18 @@ public:
     TextureShaderProgram() {}
     ~TextureShaderProgram() {}
 
-        uniform std::vector<Vertex> vertices;
+    uniform std::vector<SGL::Vector3f> positions;
+    uniform std::vector<SGL::Vector2f> texcoords;
 
-    SGL::Vector4f VertexShader(uint32_t vertexIndex,SGL::Varyings &varyings) override
+    SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
-        Vertex vertex=vertices[vertexIndex];
-        varyings.CommitVector2fVarying("vTexcoord",vertex.texcoord);
-        return vertex.position;
+        varyings.CommitVector2fVarying("vTexcoord", texcoords[vertexIndex]);
+        return SGL::Vector4f(positions[vertexIndex]);
     }
 
     uniform SGL::Texture2D texture;
 
-    SGL::Vector4f FragmentShader(const SGL::Varyings& varyings) override
+    SGL::Vector4f FragmentShader(const SGL::Varyings &varyings) override
     {
         return texture.GetTexel(varyings.GetVector2fVarying("vTexcoord"));
     }
@@ -34,30 +33,12 @@ class ExampleArrayQuadWithTexture : public Application
 {
 
 public:
-    ExampleArrayQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
+    ExampleArrayQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent),quad(Mesh(MeshType::TRIANGLE)) {}
     ~ExampleArrayQuadWithTexture() {}
 
     void Init() override
     {
         Application::Init();
-        Vertex v0;
-        v0.position = SGL::Vector3(-0.5f, 0.5f, 0.0f);
-        v0.texcoord = SGL::Vector2f(0.0f, 1.0f);
-        v0.color = SGL::Vector3f(1.0f, 0.0f, 0.0f);
-        Vertex v1;
-        v1.position = SGL::Vector3(-0.5f, -0.5f, 0.0f);
-        v1.texcoord = SGL::Vector2f(0.0f, 0.0f);
-        v1.color = SGL::Vector3f(1.0f, 1.0f, 1.0f);
-        Vertex v2;
-        v2.position = SGL::Vector3(0.5f, -0.5f, 0.0f);
-        v2.texcoord = SGL::Vector2f(1.0f, 0.0f);
-        v2.color = SGL::Vector3f(0.0f, 1.0f, 0.0f);
-        Vertex v3;
-        v3.position = SGL::Vector3(0.5f, 0.5f, 0.0f);
-        v3.texcoord = SGL::Vector2f(1.0f, 1.0f);
-        v3.color = SGL::Vector3f(0.0f, 0.0f, 1.0f);
-
-        vertices = {v0, v1, v2, v0, v2, v3};
 
         //image from https://pixabay.com/photos/statue-sculpture-figure-1275469/
         std::string filePath = ASSET_DIR;
@@ -70,7 +51,8 @@ public:
         auto texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
 
         auto shader = std::make_shared<TextureShaderProgram>();
-         shader->vertices=vertices;
+        shader->positions=quad.GetPositions();
+        shader->texcoords=quad.GetTexcoords();
         shader->texture = texture;
 
         m_Rasterizer->SetGraphicsShaderProgram(shader);
@@ -89,14 +71,14 @@ public:
     void Draw() override
     {
         Application::Draw();
-         m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
+        m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
+        m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
 
-        m_Rasterizer->DrawArrays(SGL::RenderType::SOLID_TRIANGLE, 0, vertices.size());
+        m_Rasterizer->DrawArrays(SGL::RenderType::SOLID_TRIANGLE, 0, quad.GetPositions().size());
     }
 
 private:
-    std::vector<Vertex> vertices;
+    Mesh quad;
 };
 
 #undef main

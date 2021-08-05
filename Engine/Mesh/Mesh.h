@@ -1,8 +1,6 @@
 #pragma once
 #include <vector>
 #include "SGL/SGL.h"
-#include "Vertex.h"
-#include "Texture/Texture.h"
 #include <assimp/mesh.h>
 
 enum class MeshType
@@ -12,19 +10,38 @@ enum class MeshType
 	CUBE,
 	SPHERE,
 	CAPSULE,
-	CYLINDER
+	CYLINDER,
+	EXTERNAL
 };
 
 class Mesh
 {
 public:
-	Mesh(MeshType type);
-	Mesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& inds=std::vector<uint32_t>());
+	Mesh(MeshType type=MeshType::EXTERNAL);
+	Mesh(const std::vector<SGL::Vector3f> &positions,
+		 const std::vector<SGL::Vector3f> &normals = {},
+		 const std::vector<SGL::Vector2f> &texcoords = {},
+		 const std::vector<SGL::Vector3f> &tangents = {},
+		 const std::vector<SGL::Vector3f> &binormals = {},
+		 const std::vector<SGL::Vector4f> &vertexColors = {},
+		 const std::vector<uint32_t> &indices = {});
 	~Mesh();
 
-	const std::vector<Vertex>& GetVertices() const;
-	const std::vector<uint32_t>& GetIndices() const;
-	const Vertex& GetVertex(uint32_t index) const;
+	void SetPositions(const std::vector<SGL::Vector3f>& positions);
+	void SetNormals(const std::vector<SGL::Vector3f>& normals);
+	void SetTexcoords(const std::vector<SGL::Vector2f>& texcoords);
+	void SetTangents(const std::vector<SGL::Vector3f>& tangents);
+	void SetBinormals(const std::vector<SGL::Vector3f>& binormals);
+	void SetVertexColors(const std::vector<SGL::Vector4f>& vertexColors);
+
+	const std::vector<SGL::Vector3f> &GetPositions() const;
+	const std::vector<SGL::Vector3f> &GetNormals() const;
+	const std::vector<SGL::Vector2f> &GetTexcoords() const;
+	const std::vector<SGL::Vector3f> &GetTangents() const;
+	const std::vector<SGL::Vector3f> &GetBinormals() const;
+	const std::vector<SGL::Vector4f> &GetVertexColors() const;
+	const std::vector<uint32_t> &GetIndices() const;
+
 private:
 	void CreateTriangleMeshData();
 	void CreateQuadMeshData();
@@ -33,7 +50,11 @@ private:
 	void CreateCapsuleMeshData();
 	void CreateCylinderMeshData();
 
-	std::vector<Vertex> m_Vertices;
+	std::vector<SGL::Vector3f> m_Positions;
+	std::vector<SGL::Vector3f> m_Normals;
+	std::vector<SGL::Vector2f> m_Texcoords;
+	std::vector<SGL::Vector3f> m_Tangents;
+	std::vector<SGL::Vector3f> m_Binormals;
+	std::vector<SGL::Vector4f> m_VertexColors;
 	std::vector<uint32_t> m_Indices;
 };
-

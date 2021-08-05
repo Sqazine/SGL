@@ -4,17 +4,16 @@
 Model::Model(const std::string& filePath)
 	:m_Position(SGL::Vector3f::ZERO), m_Rotation(SGL::Vector3f::ZERO), m_Scale(SGL::Vector3f(1.0f))
 {
-	m_ModelDirectory = filePath.substr(0, filePath.find_last_of('/') + 1);
 	LoadModel(filePath);
 }
-Model::Model(const std::vector<std::shared_ptr<Mesh>>& meshes)
+Model::Model(const std::vector<Mesh>& meshes)
 	:m_Meshes(meshes)
 {
 }
 Model::~Model()
 {
 }
-const std::vector<std::shared_ptr<Mesh>>& Model::GetMeshes() const
+const std::vector<Mesh>& Model::GetMeshes() const
 {
 	return m_Meshes;
 }
@@ -80,30 +79,37 @@ void Model::ProcessNodes(aiNode* node, const aiScene* scene)
 		ProcessNodes(node->mChildren[i], scene);
 }
 
-std::shared_ptr<Mesh> Model::ProcessMesh(aiMesh* aimesh, const aiScene* scene)
+Mesh Model::ProcessMesh(aiMesh* aimesh, const aiScene* scene)
 {
-	std::vector<Vertex> tmpVertices;
+	std::vector<SGL::Vector3f> positions;
+	std::vector<SGL::Vector3f> normals;
+	std::vector<SGL::Vector2f> texcoords;
+	std::vector<SGL::Vector3f> tangents;
+	std::vector<SGL::Vector3f> binormals;
+	std::vector<SGL::Vector4f> vertexColors;
+	std::vector<uint32_t> indices;
+
 	std::vector<uint32_t> tmpIndices;
 	std::vector<std::shared_ptr<Texture>> tmpTextures;
 	std::vector<aiFace*> tmpFaces;
 
 	for (uint32_t i = 0; i < aimesh->mNumVertices; ++i)
 	{
-		Vertex tmpVert;
-		tmpVert.position = SGL::Vector4f(aimesh->mVertices[i].x, aimesh->mVertices[i].y, aimesh->mVertices[i].z, 1.0f);
-		tmpVert.texcoord = SGL::Vector2f(aimesh->mTextureCoords[0][i].x, aimesh->mTextureCoords[0][i].y);
-		tmpVert.normal = SGL::Vector3f(aimesh->mNormals[i].x, aimesh->mNormals[i].y, aimesh->mNormals[i].z);
-		tmpVert.tangent = SGL::Vector3f(aimesh->mTangents[i].x, aimesh->mTangents[i].y, aimesh->mTangents[i].z);
-		tmpVert.bitangent = SGL::Vector3f(aimesh->mBitangents[i].x, aimesh->mBitangents[i].y, aimesh->mBitangents[i].z);
-		tmpVertices.emplace_back(tmpVert);
+		positions.emplace_back(SGL::Vector3f(aimesh->mVertices[i].x, aimesh->mVertices[i].y, aimesh->mVertices[i].z));
+		texcoords.emplace_back(SGL::Vector2f(aimesh->mTextureCoords[0][i].x, aimesh->mTextureCoords[0][i].y));
+		normals.emplace_back(SGL::Vector3f(aimesh->mNormals[i].x, aimesh->mNormals[i].y, aimesh->mNormals[i].z));
+		tangents.emplace_back(SGL::Vector3f(aimesh->mTangents[i].x, aimesh->mTangents[i].y, aimesh->mTangents[i].z));
+		binormals.emplace_back(SGL::Vector3f(aimesh->mBitangents[i].x, aimesh->mBitangents[i].y, aimesh->mBitangents[i].z));
+		vertexColors.emplace_back(SGL::Vector4f(aimesh->mColors[i]->r,aimesh->mColors[i]->g,aimesh->mColors[i]->b,aimesh->mColors[i]->a));
+
 	}
 	
 	for (uint32_t i = 0; i < aimesh->mNumFaces; ++i)
 	{
 		aiFace face = aimesh->mFaces[i];
 		for (uint32_t j = 0; j < face.mNumIndices; ++j)
-			tmpIndices.emplace_back(face.mIndices[j]);
+			indices.emplace_back(face.mIndices[j]);
 	}
 
-	return std::make_shared<Mesh>(tmpVertices, tmpIndices);
+	return Mesh(positions,normals,texcoords,tangents,binormals,vertexColors,indices);
 }

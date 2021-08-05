@@ -26,7 +26,9 @@ public:
     PhongShaderProgram() {}
     ~PhongShaderProgram() {}
 
-    uniform std::vector<Vertex> vertices;
+    uniform std::vector<SGL::Vector3f> positions;
+    uniform std::vector<SGL::Vector3f> normals;
+    uniform std::vector<SGL::Vector2f> texcoords;
 
     uniform SGL::Matrix4f modelMatrix;
     uniform SGL::Matrix4f viewMatrix;
@@ -34,11 +36,10 @@ public:
 
     SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
-        Vertex vertex = vertices[vertexIndex];
-        SGL::Vector4f vPositionWS = modelMatrix * vertex.position;
-        varyings.CommitVector3fVarying("vNormalWS", SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(SGL::Matrix4f::Transpose(SGL::Matrix4f::Inverse(modelMatrix))) * vertex.normal));
+        SGL::Vector4f vPositionWS = modelMatrix * SGL::Vector4f(positions[vertexIndex]);
+        varyings.CommitVector3fVarying("vNormalWS", SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(SGL::Matrix4f::Transpose(SGL::Matrix4f::Inverse(modelMatrix))) * normals[vertexIndex]));
         varyings.CommitVector3fVarying("vPositionWS", SGL::Vector4f::ToVector3(vPositionWS));
-        varyings.CommitVector2fVarying("vTexcoord", vertex.texcoord);
+        varyings.CommitVector2fVarying("vTexcoord", texcoords[vertexIndex]);
         return projectionMatrix * viewMatrix * vPositionWS;
     }
 
@@ -66,16 +67,17 @@ class ExamplePhong : public Application
 {
 
 public:
-    ExamplePhong(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
+    ExamplePhong(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent),sphere(Mesh(MeshType::SPHERE)) {}
     ~ExamplePhong() {}
 
     void Init() override
     {
         Application::Init();
-        sphere = std::make_shared<Mesh>(MeshType::SPHERE);
 
         auto shader = std::make_shared<PhongShaderProgram>();
-        shader->vertices = sphere->GetVertices();
+        shader->positions=sphere.GetPositions();
+        shader->normals=sphere.GetNormals();
+        shader->texcoords=sphere.GetTexcoords();
         shader->modelMatrix = SGL::Matrix4f();
         shader->viewMatrix = SGL::Matrix4f::Translate(SGL::Vector3f(0.0f, 0.0f, -3.0f));
         shader->projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
@@ -109,11 +111,11 @@ public:
           m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
 
-        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, sphere->GetIndices());
+        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, sphere.GetIndices());
     }
 
 private:
-    std::shared_ptr<Mesh> sphere;
+    Mesh sphere;
 };
 
 #undef main
