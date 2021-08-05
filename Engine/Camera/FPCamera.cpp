@@ -1,6 +1,6 @@
 #include "FPCamera.h"
-#include "utilities/Timer.h"
-#include "system/InputSystem.h"
+#include "Utils/Timer.h"
+#include "System/InputSystem.h"
 FPCamera::FPCamera(float fov, float aspect, float znear, float zfar)
 	:Camera(fov, aspect, znear, zfar), m_MoveSpeed(10.0f), m_RotateSpeed(5.0f), m_BoostSpeed(10.0f),
 	m_Yaw(SGL::Math::ToRadian(-90.0f)), m_Pitch(0.0f),m_Front(SGL::Vector3f(0.0f,0.0f,-1.0f)),m_Up(SGL::Vector3f::UNIT_Y),m_Right(SGL::Vector3f::UNIT_X)

@@ -1,7 +1,7 @@
 #pragma once
 #include "SGL/SGL.h"
 #include <vector>
-#include "texture/Texture.h"
+#include "Texture/Texture.h"
 #include "Mesh.h"
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>

@@ -2,7 +2,7 @@
 #include <string>
 #include <memory>
 #include <vector>
-#include "ecs/component/Component.h"
+#include "ECS/Component/Component.h"
 class Entity
 {
 public:

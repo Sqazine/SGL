@@ -2,7 +2,7 @@
 #include <vector>
 #include "SGL/SGL.h"
 #include "Vertex.h"
-#include "texture/Texture.h"
+#include "Texture/Texture.h"
 #include <assimp/mesh.h>
 
 enum class MeshType

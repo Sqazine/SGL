@@ -2,8 +2,8 @@
 #include <unordered_map>
 #include <memory>
 #include <SDL2/SDL.h>
-#include "mesh/Model.h"
-#include "camera/Camera.h"
+#include "Mesh/Model.h"
+#include "Camera/Camera.h"
 #include "Window.h"
 #include "SGL/SGL.h"
 #include "InputSystem.h"

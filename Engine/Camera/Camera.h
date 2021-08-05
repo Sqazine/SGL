@@ -1,7 +1,6 @@
 #pragma once
 #include "SGL/SGL.h"
-#include <SDL2/SDL.h>
-#include "system/InputSystem.h"
+#include "System/InputSystem.h"
 class Camera
 {
 public:

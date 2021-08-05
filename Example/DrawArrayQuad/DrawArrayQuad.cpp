@@ -3,7 +3,7 @@
 #include <cassert>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#include "Framework/Framework.h"
+#include "Engine/Engine.h"
 #include "SGL/SGL.h"
 
 class TextureShaderProgram
