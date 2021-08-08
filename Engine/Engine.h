@@ -14,7 +14,6 @@
 #include "System/Application.h"
 #include "System/InputSystem.h"
 #include "System/Window.h"
-#include "Texture/Texture.h"
 #include "Utils/IO.h"
 #include "Utils/Timer.h"
 #include "Macros.h"

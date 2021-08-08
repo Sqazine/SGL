@@ -89,8 +89,6 @@ Mesh Model::ProcessMesh(aiMesh* aimesh, const aiScene* scene)
 	std::vector<SGL::Vector4f> vertexColors;
 	std::vector<uint32_t> indices;
 
-	std::vector<uint32_t> tmpIndices;
-	std::vector<std::shared_ptr<Texture>> tmpTextures;
 	std::vector<aiFace*> tmpFaces;
 
 	for (uint32_t i = 0; i < aimesh->mNumVertices; ++i)
