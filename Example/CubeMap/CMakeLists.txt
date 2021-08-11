@@ -1,4 +1,4 @@
-set(EXE_NAME DrawArrayQuad)
+set(EXE_NAME CubeMap)
 file(GLOB SRC "*.h" "*.cpp")
 source_group("" FILES ${SRC})
 

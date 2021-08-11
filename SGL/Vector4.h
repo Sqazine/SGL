@@ -69,6 +69,9 @@ namespace SGL
 	typedef Vector4<uint8_t> Vector4u8;
 
 	template <typename T>
+	const Vector4<T> Vector4<T>::ZERO = Vector4<T>();
+
+	template <typename T>
 	inline Vector4<T>::Vector4()
 		: values({static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(0.0f), static_cast<T>(1.0f)})
 	{

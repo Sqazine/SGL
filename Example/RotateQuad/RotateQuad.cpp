@@ -20,15 +20,15 @@ public:
     uniform SGL::Matrix4f viewMatrix;
     uniform SGL::Matrix4f projectionMatrix;
 
-     SGL::Vector4f VertexShader(uint32_t vertexIndex,SGL::Varyings &varyings) override
+    SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
-        varyings.CommitVector2fVarying("vTexcoord",texcoords[vertexIndex]);
-        return projectionMatrix * viewMatrix * modelMatrix * SGL::Vector4f(positions[vertexIndex],1.0f);
+        varyings.CommitVector2fVarying("vTexcoord", texcoords[vertexIndex]);
+        return projectionMatrix * viewMatrix * modelMatrix * SGL::Vector4f(positions[vertexIndex], 1.0f);
     }
 
     uniform SGL::Texture2D texture;
 
-     SGL::Vector4f FragmentShader(const SGL::Varyings& varyings) override
+    SGL::Vector4f FragmentShader(const SGL::Varyings &varyings) override
     {
         return texture.GetTexel(varyings.GetVector2fVarying("vTexcoord"));
     }
@@ -38,7 +38,7 @@ class ExampleRotateQuadWithTexture : public Application
 {
 
 public:
-    ExampleRotateQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent),quad(Mesh(MeshType::QUAD)) {}
+    ExampleRotateQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent), quad(Mesh(MeshType::QUAD)) {}
     ~ExampleRotateQuadWithTexture() {}
 
     void Init() override
@@ -54,15 +54,26 @@ public:
         uint8_t *pixels = stbi_load(filePath.c_str(), &width, &height, &channel, STBI_default);
         assert(pixels != nullptr);
 
-        texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
+        SGL::Texture2DCreateInfo texture2DCreateInfo{};
+        if (channel == STBI_rgb)
+            texture2DCreateInfo.channelMode = SGL::TextureChannelMode::RGB8;
+        else if (channel == STBI_rgb_alpha)
+            texture2DCreateInfo.channelMode = SGL::TextureChannelMode::RGBA8;
+        texture2DCreateInfo.width = width;
+        texture2DCreateInfo.height = height;
+        texture2DCreateInfo.wrapModeS = SGL::TextureWrapMode::REPEAT;
+        texture2DCreateInfo.wrapModeT = SGL::TextureWrapMode::REPEAT;
+        texture2DCreateInfo.data = pixels;
+
+        texture = SGL::Texture2D(texture2DCreateInfo);
 
         viewMatrix = SGL::Matrix4f::Translate(SGL::Vector3f(0.0f, 0.0f, -3.0f));
         projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
 
         shader = std::make_shared<TextureShaderProgram>();
-         shader->positions=quad.GetPositions();
-        shader->texcoords=quad.GetTexcoords();
-        shader->texture=texture;
+        shader->positions = quad.GetPositions();
+        shader->texcoords = quad.GetTexcoords();
+        shader->texture = texture;
     }
 
     void ProcessInput() override
@@ -85,8 +96,8 @@ public:
     void Draw() override
     {
         Application::Draw();
-         m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
+        m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
+        m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
 
         shader->texture = texture;
         shader->modelMatrix = modelMatrix;

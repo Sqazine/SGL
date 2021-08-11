@@ -4,6 +4,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include "Engine/Engine.h"
+#include "SGL/SGL.h"
 
 class TextureShaderProgram
     : public SGL::GraphicsShaderProgram
@@ -18,7 +19,7 @@ public:
     SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
         varyings.CommitVector2fVarying("vTexcoord", texcoords[vertexIndex]);
-        return SGL::Vector4f(positions[vertexIndex]);
+        return SGL::Vector4f(positions[vertexIndex], 1.0f);
     }
 
     uniform SGL::Texture2D texture;
@@ -28,13 +29,12 @@ public:
         return texture.GetTexel(varyings.GetVector2fVarying("vTexcoord"));
     }
 };
-
-class ExampleArrayQuadWithTexture : public Application
+class ExampleIndexQuadWithTexture : public Application
 {
 
 public:
-    ExampleArrayQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent),quad(Mesh(MeshType::TRIANGLE)) {}
-    ~ExampleArrayQuadWithTexture() {}
+    ExampleIndexQuadWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent), quad(Mesh(MeshType::QUAD)) {}
+    ~ExampleIndexQuadWithTexture() {}
 
     void Init() override
     {
@@ -48,11 +48,22 @@ public:
         stbi_set_flip_vertically_on_load(true);
         uint8_t *pixels = stbi_load(filePath.c_str(), &width, &height, &channel, STBI_default);
         assert(pixels != nullptr);
-        auto texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
 
+        SGL::Texture2DCreateInfo texture2DCreateInfo{};
+        if (channel == STBI_rgb)
+            texture2DCreateInfo.channelMode = SGL::TextureChannelMode::RGB8;
+        else if (channel == STBI_rgb_alpha)
+            texture2DCreateInfo.channelMode = SGL::TextureChannelMode::RGBA8;
+        texture2DCreateInfo.width = width;
+        texture2DCreateInfo.height = height;
+        texture2DCreateInfo.wrapModeS = SGL::TextureWrapMode::REPEAT;
+        texture2DCreateInfo.wrapModeT = SGL::TextureWrapMode::REPEAT;
+        texture2DCreateInfo.data = pixels;
+
+        auto texture = SGL::Texture2D(texture2DCreateInfo);
         auto shader = std::make_shared<TextureShaderProgram>();
-        shader->positions=quad.GetPositions();
-        shader->texcoords=quad.GetTexcoords();
+        shader->positions = quad.GetPositions();
+        shader->texcoords = quad.GetTexcoords();
         shader->texture = texture;
 
         m_Rasterizer->SetGraphicsShaderProgram(shader);
@@ -74,7 +85,7 @@ public:
         m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
         m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
 
-        m_Rasterizer->DrawArrays(SGL::RenderType::SOLID_TRIANGLE, 0, quad.GetPositions().size());
+        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, quad.GetIndices());
     }
 
 private:
@@ -84,7 +95,7 @@ private:
 #undef main
 int main(int argc, char **argv)
 {
-    std::unique_ptr<Application> app = std::make_unique<ExampleArrayQuadWithTexture>("Example Array Quad With Texture", SGL::Vector2u32(800, 600));
+    std::unique_ptr<Application> app = std::make_unique<ExampleIndexQuadWithTexture>("Example Quad With Texture", SGL::Vector2u32(800, 600));
     app->Run();
     return 0;
 }

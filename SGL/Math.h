@@ -66,13 +66,11 @@ namespace SGL::Math
 		return left > right ? right : left;
 	}
 
-	//�ж��Ƿ�Ϊ����
 	inline bool IsOddNumber(int value)
 	{
 		return value / 2 == 1 ? true : false;
 	}
 
-	//�ж��Ƿ�Ϊż��
 	inline bool IsEvenNumber(int value)
 	{
 		return value / 2 == 0 ? true : false;

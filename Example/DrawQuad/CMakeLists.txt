@@ -1,4 +1,4 @@
-set(EXE_NAME DrawIndexQuad)
+set(EXE_NAME DrawQuad)
 file(GLOB SRC "*.h" "*.cpp")
 source_group("" FILES ${SRC})
 

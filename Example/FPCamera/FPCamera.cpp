@@ -55,7 +55,18 @@ public:
         uint8_t *pixels = stbi_load(filePath.c_str(), &width, &height, &channel, STBI_default);
         assert(pixels != nullptr);
 
-        texture = SGL::Texture2D(std::vector<uint8_t>(pixels, pixels + (width * height * channel)), width, height, channel);
+       SGL::Texture2DCreateInfo texture2DCreateInfo{};
+        if (channel == STBI_rgb)
+            texture2DCreateInfo.channelMode = SGL::TextureChannelMode::RGB8;
+        else if (channel == STBI_rgb_alpha)
+            texture2DCreateInfo.channelMode = SGL::TextureChannelMode::RGBA8;
+        texture2DCreateInfo.width = width;
+        texture2DCreateInfo.height = height;
+        texture2DCreateInfo.wrapModeS = SGL::TextureWrapMode::REPEAT;
+        texture2DCreateInfo.wrapModeT = SGL::TextureWrapMode::REPEAT;
+        texture2DCreateInfo.data = pixels;
+
+        texture = SGL::Texture2D(texture2DCreateInfo);
 
         shader = std::make_shared<TextureShaderProgram>();
         shader->positions = cube.GetPositions();
