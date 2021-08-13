@@ -32,7 +32,7 @@ protected:
 
 	ApplicationStatus m_Status;
 	std::shared_ptr<Window> m_Window;
-	std::shared_ptr<SGL::Rasterizer> m_Rasterizer;
+	std::shared_ptr<SGL::GraphicsPipeline> m_GraphicsPipeline;
 	std::shared_ptr<InputSystem> m_InputSystem;
 
 	SGL::Vector2u32 m_FrameExtent;

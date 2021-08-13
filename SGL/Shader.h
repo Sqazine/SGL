@@ -65,7 +65,7 @@ namespace SGL
 		CommitAndGet(Matrix4f, Matrix4f);
 
 	private:
-		friend class Rasterizer;
+		friend class GraphicsPipeline;
 		std::unordered_map<std::string, float> m_FVaryings;
 		std::unordered_map<std::string, double> m_DVaryings;
 		std::unordered_map<std::string, int64_t> m_I64Varyings;

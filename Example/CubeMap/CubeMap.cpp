@@ -105,13 +105,13 @@ public:
     void Draw() override
     {
         Application::Draw();
-        m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
+        m_GraphicsPipeline->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
+        m_GraphicsPipeline->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
 
         shader->viewMatrix = fpCamera->GetViewMatrix();
         shader->projectionMatrix = fpCamera->GetProjectionMatrix();
-        m_Rasterizer->SetGraphicsShaderProgram(shader);
-        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, cube.GetIndices());
+        m_GraphicsPipeline->SetGraphicsShaderProgram(shader);
+        m_GraphicsPipeline->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, cube.GetIndices());
     }
 
 private:

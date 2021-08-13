@@ -5,6 +5,44 @@
 #include "Vector4.h"
 namespace SGL
 {
+	template <typename T>
+	class Buffer2D
+	{
+	public:
+		Buffer2D();
+		~Buffer2D();
+
+		void SetValue(uint32_t x, uint32_t y, const T &data);
+		void SetValue(const Vector2u32 &pos, const T &data);
+		T GetValue(uint32_t x, uint32_t y) const;
+		T GetValue(const Vector2u32 &pos) const;
+
+		const std::vector<T> &GetBufferData() const;
+		const Vector2u32 &GetBufferExtent() const;
+
+	private:
+		std::vector<T> m_BufferData;
+		Vector2u32 m_Extent;
+	};
+
+	template <typename T>
+	class Buffer1D
+	{
+	public:
+		Buffer1D();
+		~Buffer1D();
+
+		void SetValue(uint32_t pos, const T &data);
+		T GetValue(uint32_t pos) const;
+
+		const std::vector<T> &GetBufferData() const;
+		const uint32_t &GetBufferExtent() const;
+
+	private:
+		std::vector<T> m_BufferData;
+		uint32_t m_Extent;
+	};
+
 	class Colorbuffer
 	{
 	public:

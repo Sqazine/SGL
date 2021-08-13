@@ -1,4 +1,4 @@
-#include "Rasterizer.h"
+#include "GraphicsPipeline.h"
 #include "Math.h"
 #include "Macros.h"
 #include <array>
@@ -7,33 +7,33 @@
 namespace SGL
 {
 
-	Rasterizer::Rasterizer(const Vector2u32 bufferExtent)
+	GraphicsPipeline::GraphicsPipeline(const Vector2u32 bufferExtent)
 		: m_Framebuffer(std::make_shared<Framebuffer>(bufferExtent)), m_BufferExtent(bufferExtent), m_GraphicsShaderProgram(nullptr),
 		  m_PointSize(1), m_LineWidth(1), m_BlendType(BlendType::ONE), m_CullType(CullType::BACK), m_FrontFaceType(FrontFaceType::CCW),
 		  varyings0(Varyings()), varyings1(Varyings()), varyings2(Varyings()), interpolatedVaryings(Varyings())
 	{
 	}
 
-	Rasterizer::~Rasterizer()
+	GraphicsPipeline::~GraphicsPipeline()
 	{
 	}
 
-	const std::shared_ptr<Framebuffer> &Rasterizer::GetFramebuffer() const
+	const std::shared_ptr<Framebuffer> &GraphicsPipeline::GetFramebuffer() const
 	{
 		return m_Framebuffer;
 	}
 
-	void Rasterizer::SetClearColor(const Vector4f &color)
+	void GraphicsPipeline::SetClearColor(const Vector4f &color)
 	{
 		m_ClearColor = color;
 	}
 
-	void Rasterizer::SetClearColor(float r, float g, float b, float a)
+	void GraphicsPipeline::SetClearColor(float r, float g, float b, float a)
 	{
 		SetClearColor(Vector4f(r, g, b, a));
 	}
 
-	void Rasterizer::Clear(uint32_t type)
+	void GraphicsPipeline::Clear(uint32_t type)
 	{
 		if ((type & BufferType::COLOR_BUFFER) == BufferType::COLOR_BUFFER)
 			ClearColorBuffer();
@@ -45,55 +45,55 @@ namespace SGL
 			ClearStencilBuffer();
 	}
 
-	void Rasterizer::ClearColorBuffer()
+	void GraphicsPipeline::ClearColorBuffer()
 	{
 		for (uint32_t i = 0; i < m_Framebuffer->GetColorbuffer()->GetBufferExtent().x; ++i)
 			for (uint32_t j = 0; j < m_Framebuffer->GetColorbuffer()->GetBufferExtent().y; ++j)
 				m_Framebuffer->GetColorbuffer()->SetValue(i, j, m_ClearColor);
 	}
 
-	void Rasterizer::ClearDepthBuffer()
+	void GraphicsPipeline::ClearDepthBuffer()
 	{
 		for (uint32_t i = 0; i < m_Framebuffer->GetColorbuffer()->GetBufferExtent().x; ++i)
 			for (uint32_t j = 0; j < m_Framebuffer->GetColorbuffer()->GetBufferExtent().y; ++j)
 				m_Framebuffer->GetDepthbuffer()->SetValue(i, j, 1.0f);
 	}
 
-	void Rasterizer::ClearStencilBuffer()
+	void GraphicsPipeline::ClearStencilBuffer()
 	{
 	}
 
-	void Rasterizer::SetBlendType(BlendType mode)
+	void GraphicsPipeline::SetBlendType(BlendType mode)
 	{
 		m_BlendType = mode;
 	}
 
-	const BlendType &Rasterizer::GetBlendType() const
+	const BlendType &GraphicsPipeline::GetBlendType() const
 	{
 		return m_BlendType;
 	}
 
-	void Rasterizer::SetPointSize(uint32_t size)
+	void GraphicsPipeline::SetPointSize(uint32_t size)
 	{
 		m_PointSize = size;
 	}
 
-	uint32_t Rasterizer::GetPointSize() const
+	uint32_t GraphicsPipeline::GetPointSize() const
 	{
 		return m_PointSize;
 	}
 
-	void Rasterizer::SetLineWidth(uint32_t size)
+	void GraphicsPipeline::SetLineWidth(uint32_t size)
 	{
 		m_LineWidth = size;
 	}
 
-	uint32_t Rasterizer::GetLineWidth() const
+	uint32_t GraphicsPipeline::GetLineWidth() const
 	{
 		return m_LineWidth;
 	}
 
-	void Rasterizer::DrawArrays(RenderType mode, uint32_t startIndex, size_t vertexArraySize)
+	void GraphicsPipeline::DrawArrays(RenderType mode, uint32_t startIndex, size_t vertexArraySize)
 	{
 		switch (mode)
 		{
@@ -130,7 +130,7 @@ namespace SGL
 		}
 	}
 
-	void Rasterizer::DrawElements(RenderType mode, uint32_t startIndex, const std::vector<uint32_t> &indices)
+	void GraphicsPipeline::DrawElements(RenderType mode, uint32_t startIndex, const std::vector<uint32_t> &indices)
 	{
 		switch (mode)
 		{
@@ -167,7 +167,7 @@ namespace SGL
 		}
 	}
 
-	void Rasterizer::DrawPoint(uint32_t vertexIndex)
+	void GraphicsPipeline::DrawPoint(uint32_t vertexIndex)
 	{
 		CheckGraphicsShaderProgram();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
@@ -189,7 +189,7 @@ namespace SGL
 		}
 	}
 
-	void Rasterizer::DrawLine(uint32_t vertexIndex0, uint32_t vertexIndex1)
+	void GraphicsPipeline::DrawLine(uint32_t vertexIndex0, uint32_t vertexIndex1)
 	{
 		// CheckGraphicsShaderProgram();
 		// //模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
@@ -262,7 +262,7 @@ namespace SGL
 		// }
 	}
 
-	void Rasterizer::DrawTriangle_WireFrame(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2)
+	void GraphicsPipeline::DrawTriangle_WireFrame(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2)
 	{
 		CheckGraphicsShaderProgram();
 		// DrawLine(model_p0, model_p1);
@@ -270,7 +270,7 @@ namespace SGL
 		// DrawLine(model_p2, model_p0);
 	}
 
-	void Rasterizer::DrawTriangle_Solid(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2)
+	void GraphicsPipeline::DrawTriangle_Solid(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2)
 	{
 		CheckGraphicsShaderProgram();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
@@ -379,17 +379,17 @@ namespace SGL
 		}
 	}
 
-	void Rasterizer::SetGraphicsShaderProgram(const std::shared_ptr<GraphicsShaderProgram> &s)
+	void GraphicsPipeline::SetGraphicsShaderProgram(const std::shared_ptr<GraphicsShaderProgram> &s)
 	{
 		m_GraphicsShaderProgram = s;
 	}
 
-	const std::shared_ptr<GraphicsShaderProgram> &Rasterizer::GetGraphicsShaderProgram() const
+	const std::shared_ptr<GraphicsShaderProgram> &GraphicsPipeline::GetGraphicsShaderProgram() const
 	{
 		return m_GraphicsShaderProgram;
 	}
 
-	Vector3f Rasterizer::BaryCenteric(const Vector2i32 &p0, const Vector2i32 &p1, const Vector2i32 &p2, const Vector2i32 &p)
+	Vector3f GraphicsPipeline::BaryCenteric(const Vector2i32 &p0, const Vector2i32 &p1, const Vector2i32 &p2, const Vector2i32 &p)
 	{
 		Vector2i32 p1p0 = p1 - p0;
 		Vector2i32 p2p0 = p2 - p0;
@@ -401,19 +401,19 @@ namespace SGL
 		return Vector3f(-1.0f, -1.0f, -1.0f);
 	}
 
-	Vector3f Rasterizer::ToNDCSpace(const Vector4f &v)
+	Vector3f GraphicsPipeline::ToNDCSpace(const Vector4f &v)
 	{
 		return Vector4f::ToVector3(Vector4f::DivideByW(v));
 	}
 
-	Vector2i32 Rasterizer::ToScreenSpace(const Vector3f &v)
+	Vector2i32 GraphicsPipeline::ToScreenSpace(const Vector3f &v)
 	{
 		int32_t screen_x = Math::Round(m_BufferExtent.x * ((v.x + 1.0f) / 2.0f));
 		int32_t screen_y = Math::Round(m_BufferExtent.y * ((v.y + 1.0f) / 2.0f));
 		return Vector2i32(screen_x, screen_y);
 	}
 
-	void Rasterizer::CheckGraphicsShaderProgram()
+	void GraphicsPipeline::CheckGraphicsShaderProgram()
 	{
 		if (m_GraphicsShaderProgram != nullptr)
 			return;

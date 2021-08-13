@@ -39,7 +39,7 @@ public:
         shader->positions=triangle.GetPositions();
         shader->vertexColors=triangle.GetVertexColors();
 
-        m_Rasterizer->SetGraphicsShaderProgram(shader);
+        m_GraphicsPipeline->SetGraphicsShaderProgram(shader);
     }
 
     void ProcessInput() override
@@ -55,9 +55,9 @@ public:
     void Draw() override
     {
         Application::Draw();
-         m_Rasterizer->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_Rasterizer->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
-        m_Rasterizer->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, triangle.GetIndices());
+         m_GraphicsPipeline->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
+        m_GraphicsPipeline->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
+        m_GraphicsPipeline->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, triangle.GetIndices());
     }
 
 private:

@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <vector>
-#include "FrameBuffer.h"
+#include "Buffer.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
@@ -68,11 +68,11 @@ namespace SGL
 		ONE_MINUS_CONSTANT_ALPHA
 	};
 
-	class Rasterizer
+	class GraphicsPipeline
 	{
 	public:
-		Rasterizer(const Vector2u32 bufferExtent);
-		~Rasterizer();
+		GraphicsPipeline(const Vector2u32 bufferExtent);
+		~GraphicsPipeline();
 
 		const std::shared_ptr<Framebuffer> &GetFramebuffer() const;
 
@@ -141,7 +141,7 @@ namespace SGL
 	};
 
 	template <typename T>
-	inline T Rasterizer::InterpolateVaryingBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter,const Vector3f& recip_w)
+	inline T GraphicsPipeline::InterpolateVaryingBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter,const Vector3f& recip_w)
 	{
 
 		T value= v0 * barycenter.x*recip_w.x + v1 * barycenter.y*recip_w.y + v2 * barycenter.z*recip_w.z;
@@ -149,7 +149,7 @@ namespace SGL
 	}
 
 	template<typename T>
-	inline 	T Rasterizer::InterpolateBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter)
+	inline 	T GraphicsPipeline::InterpolateBarycenteric(const T &v0, const T &v1, const T &v2, const Vector3f &barycenter)
 	{
 		return v0 * barycenter.x + v1 * barycenter.y + v2 * barycenter.z;
 	}

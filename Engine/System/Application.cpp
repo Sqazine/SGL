@@ -36,7 +36,7 @@ void Application::Init()
 	SDL_Init(SDL_INIT_VIDEO);
 
 	m_Window = std::make_shared<Window>(m_AppName, m_FrameExtent);
-	m_Rasterizer = std::make_shared<SGL::Rasterizer>(m_FrameExtent);
+	m_GraphicsPipeline = std::make_shared<SGL::GraphicsPipeline>(m_FrameExtent);
 
 	m_InputSystem = std::make_shared<InputSystem>();
 
@@ -78,7 +78,7 @@ void Application::CleanUp()
 
 void Application::GenerateFrame()
 {
-	SDL_UpdateTexture(m_DefaultRenderTexture, nullptr, m_Rasterizer->GetFramebuffer()->GetColorbuffer()->GetBuffer().data(), m_FrameExtent.x * 4);
+	SDL_UpdateTexture(m_DefaultRenderTexture, nullptr, m_GraphicsPipeline->GetFramebuffer()->GetColorbuffer()->GetBuffer().data(), m_FrameExtent.x * 4);
 	SDL_RenderCopyEx(m_SDLRenderer, m_DefaultRenderTexture, nullptr, nullptr, 0.0f, nullptr, SDL_FLIP_VERTICAL);
 	SDL_RenderPresent(m_SDLRenderer);
 }

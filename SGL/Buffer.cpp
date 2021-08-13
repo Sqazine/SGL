@@ -1,4 +1,4 @@
-#include "FrameBuffer.h"
+#include "Buffer.h"
 #include <memory>
 #include <cstring>
 #include "Math.h"
