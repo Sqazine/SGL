@@ -14,12 +14,12 @@ public:
     ~TextureShaderProgram() {}
 
        uniform std::vector<SGL::Vector3f> positions;
-    uniform std::vector<SGL::Vector4f> vertexColors;
+    uniform std::vector<SGL::Vector2f> texcoords;
 
 
     SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
-         varyings.CommitVector4fVarying("vColor", vertexColors[vertexIndex]);
+         varyings.CommitVector2fVarying("vTexcoord", texcoords[vertexIndex]);
         return SGL::Vector4f(positions[vertexIndex],1.0f);
     }
 
@@ -66,7 +66,7 @@ public:
 
         auto shader = std::make_shared<TextureShaderProgram>();
           shader->positions=triangle.GetPositions();
-        shader->vertexColors=triangle.GetVertexColors();
+        shader->texcoords=triangle.GetTexcoords();
         shader->texture = texture;
 
         m_GraphicsPipeline->SetGraphicsShaderProgram(shader);
