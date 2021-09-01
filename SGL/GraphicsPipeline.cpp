@@ -47,16 +47,16 @@ namespace SGL
 
 	void GraphicsPipeline::ClearColorBuffer()
 	{
-		for (uint32_t i = 0; i < m_Framebuffer->GetColorbuffer()->GetBufferExtent().x; ++i)
-			for (uint32_t j = 0; j < m_Framebuffer->GetColorbuffer()->GetBufferExtent().y; ++j)
-				m_Framebuffer->GetColorbuffer()->SetValue(i, j, m_ClearColor);
+		for (uint32_t i = 0; i < m_Framebuffer->GetColorAttahment()->GetBufferExtent().x; ++i)
+			for (uint32_t j = 0; j < m_Framebuffer->GetColorAttahment()->GetBufferExtent().y; ++j)
+				m_Framebuffer->GetColorAttahment()->SetValue(i, j, m_ClearColor);
 	}
 
 	void GraphicsPipeline::ClearDepthBuffer()
 	{
-		for (uint32_t i = 0; i < m_Framebuffer->GetColorbuffer()->GetBufferExtent().x; ++i)
-			for (uint32_t j = 0; j < m_Framebuffer->GetColorbuffer()->GetBufferExtent().y; ++j)
-				m_Framebuffer->GetDepthbuffer()->SetValue(i, j, 1.0f);
+		for (uint32_t i = 0; i < m_Framebuffer->GetColorAttahment()->GetBufferExtent().x; ++i)
+			for (uint32_t j = 0; j < m_Framebuffer->GetColorAttahment()->GetBufferExtent().y; ++j)
+				m_Framebuffer->GetDepthAttachment()->SetValue(i, j, 1.0f);
 	}
 
 	void GraphicsPipeline::ClearStencilBuffer()
@@ -181,10 +181,10 @@ namespace SGL
 			for (uint32_t i = screen_position.x - m_PointSize / 2; i <= screen_position.x + m_PointSize / 2; ++i)
 				for (uint32_t j = screen_position.y - m_PointSize / 2; j <= screen_position.y + m_PointSize / 2; ++j)
 					if (i >= 0 && i < m_BufferExtent.x && j >= 0 && j < m_BufferExtent.y)
-						if (m_Framebuffer->GetDepthbuffer()->GetValue(i, j) > ndc_position.z)
+						if (m_Framebuffer->GetDepthAttachment()->GetValue(i, j) > ndc_position.z)
 						{
-							m_Framebuffer->GetDepthbuffer()->SetValue(i, j, ndc_position.z);
-							m_Framebuffer->GetColorbuffer()->SetValue(i, j, m_GraphicsShaderProgram->FragmentShader(varyings0));
+							m_Framebuffer->GetDepthAttachment()->SetValue(i, j, ndc_position.z);
+							m_Framebuffer->GetColorAttahment()->SetValue(i, j, m_GraphicsShaderProgram->FragmentShader(varyings0));
 						}
 		}
 	}
@@ -242,10 +242,10 @@ namespace SGL
 		// 		screen_vertex.texcoord = model_p0.texcoord * (1 - factor) + model_p1.texcoord * factor;
 
 		// 		//进行深度测试
-		// 		if (m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_vertex.position.z)
+		// 		if (m_Framebuffer->GetDepthAttachment()->GetValue(x, y) >= screen_vertex.position.z)
 		// 		{
-		// 			m_Framebuffer->GetDepthbuffer()->SetValue(x, y, screen_vertex.position.z);
-		// 			m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(screen_vertex, m_BufferExtent));
+		// 			m_Framebuffer->GetDepthAttachment()->SetValue(x, y, screen_vertex.position.z);
+		// 			m_Framebuffer->GetColorAttahment()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(screen_vertex, m_BufferExtent));
 		// 		}
 
 		// 		//继续下一步的计算
@@ -370,10 +370,10 @@ namespace SGL
 				Vector4f screen_position = Vector4f(x, y, InterpolateBarycenteric(ndc_position_p0.z, ndc_position_p1.z, ndc_position_p2.z, screen_bc_coord), InterpolateBarycenteric(clip_position0.w, clip_position1.w, clip_position2.w, screen_bc_coord));
 				//如果当前片元在三角形内且通过深度测试则渲染到颜色缓存中，否则丢弃该片元(这里使用提前深度测试)
 				if (screen_bc_coord.x >= 0.0f && screen_bc_coord.y >= 0.0f && screen_bc_coord.z >= 0.0f &&
-					m_Framebuffer->GetDepthbuffer()->GetValue(x, y) >= screen_position.z && screen_position.z >= -1.0f)
+					m_Framebuffer->GetDepthAttachment()->GetValue(x, y) >= screen_position.z && screen_position.z >= -1.0f)
 				{
-					m_Framebuffer->GetDepthbuffer()->SetValue(x, y, screen_position.z);
-					m_Framebuffer->GetColorbuffer()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(interpolatedVaryings));
+					m_Framebuffer->GetDepthAttachment()->SetValue(x, y, screen_position.z);
+					m_Framebuffer->GetColorAttahment()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(interpolatedVaryings));
 				}
 			}
 		}

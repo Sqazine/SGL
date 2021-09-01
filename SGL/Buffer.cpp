@@ -1,22 +1,22 @@
 #include "Buffer.h"
 #include <memory>
 #include <cstring>
+
 #include "Math.h"
 
 namespace SGL
 {
 
-	Colorbuffer::Colorbuffer(const Vector2u32 &bufferExtent)
-		: m_BufferExtent(bufferExtent)
-	{
-		m_Buffer.resize(bufferExtent.x * bufferExtent.y * 4);
-	}
-
-	Colorbuffer::~Colorbuffer()
+	ColorAttahment::ColorAttahment(const Vector2u32 &bufferExtent)
+		:m_BufferExtent(bufferExtent), m_Buffer(Buffer<uint8_t>(bufferExtent.x* bufferExtent.y * 4))
 	{
 	}
 
-	void Colorbuffer::SetValue(uint32_t x, uint32_t y, const Vector4f &color)
+	ColorAttahment::~ColorAttahment()
+	{
+	}
+
+	void ColorAttahment::SetValue(uint32_t x, uint32_t y, const Vector4f &color)
 	{
 		if (x >= m_BufferExtent.x || y >= m_BufferExtent.y)
 			return;
@@ -28,80 +28,79 @@ namespace SGL
 		m_Buffer[bufferPos * 4 + 3] = static_cast<uint8_t>(Math::Clamp(color.w, 0.0f, 1.0f) * 255.0f);
 	}
 
-	void Colorbuffer::SetValue(const Vector2u32 &pos, const Vector4f &color)
+	void ColorAttahment::SetValue(const Vector2u32 &pos, const Vector4f &color)
 	{
 		SetValue(pos.x, pos.y, color);
 	}
 
-	Vector4u8 Colorbuffer::GetValue(uint32_t x, uint32_t y) const
+	Vector4u8 ColorAttahment::GetValue(uint32_t x, uint32_t y) const
 	{
 		uint32_t bufferPos = y * m_BufferExtent.x + x;
 		return Vector4u8(m_Buffer[bufferPos * 4 + 0], m_Buffer[bufferPos * 4 + 1], m_Buffer[bufferPos * 4 + 2], m_Buffer[bufferPos * 4 + 3]);
 	}
 
-	Vector4u8 Colorbuffer::GetValue(const Vector2u32 &pos) const
+	Vector4u8 ColorAttahment::GetValue(const Vector2u32 &pos) const
 	{
 		return GetValue(static_cast<int>(pos.x), static_cast<int>(pos.y));
 	}
 
-	const std::vector<uint8_t> &Colorbuffer::GetBuffer() const
+	const Buffer<uint8_t> &ColorAttahment::GetBuffer() const
 	{
 
 		return m_Buffer;
 	}
 
-	const Vector2u32 &Colorbuffer::GetBufferExtent() const
+	const Vector2u32 &ColorAttahment::GetBufferExtent() const
 	{
 		return m_BufferExtent;
 	}
 
-	Depthbuffer::Depthbuffer(const Vector2u32 &bufferExtent)
-		: m_BufferExtent(bufferExtent)
-	{
-		m_Buffer.resize(bufferExtent.x * bufferExtent.y);
-	}
-
-	Depthbuffer::~Depthbuffer()
+	DepthAttachment::DepthAttachment(const Vector2u32 &bufferExtent)
+		: m_BufferExtent(bufferExtent),m_Buffer(bufferExtent.x*bufferExtent.y)
 	{
 	}
 
-	void Depthbuffer::SetValue(int x, int y, float value)
+	DepthAttachment::~DepthAttachment()
+	{
+	}
+
+	void DepthAttachment::SetValue(int x, int y, float value)
 	{
 		m_Buffer[y * m_BufferExtent.x + x] = value;
 	}
 
-	void Depthbuffer::SetValue(const Vector2u32 &pos, float value)
+	void DepthAttachment::SetValue(const Vector2u32 &pos, float value)
 	{
 		SetValue(static_cast<int>(pos.x), static_cast<int>(pos.y), value);
 	}
 
-	float Depthbuffer::GetValue(int x, int y)
+	float DepthAttachment::GetValue(int x, int y)
 	{
 		return m_Buffer[y * m_BufferExtent.x + x];
 	}
 
-	float Depthbuffer::GetValue(const Vector2u32 &pos)
+	float DepthAttachment::GetValue(const Vector2u32 &pos)
 	{
 		return GetValue(static_cast<int>(pos.x), static_cast<int>(pos.y));
 	}
 
-	const Vector2u32 &Depthbuffer::GetBufferExtent()
+	const Vector2u32 &DepthAttachment::GetBufferExtent()
 	{
 		return m_BufferExtent;
 	}
 
-	const std::vector<float> &Depthbuffer::GetBuffer() const
+	const Buffer<float> &DepthAttachment::GetBuffer() const
 	{
 		return m_Buffer;
 	}
 
 	Framebuffer::Framebuffer(const Vector2u32 &bufferExtent)
-		: m_Colorbuffer(std::make_shared<Colorbuffer>(bufferExtent)), m_Depthbuffer(std::make_shared<Depthbuffer>(bufferExtent))
+		: m_ColorAttahment(std::make_shared<ColorAttahment>(bufferExtent)), m_DepthAttachment(std::make_shared<DepthAttachment>(bufferExtent))
 	{
 	}
 
-	Framebuffer::Framebuffer(const std::shared_ptr<Colorbuffer> &colorBuffer, const std::shared_ptr<Depthbuffer> &depthBuffer)
-		: m_Colorbuffer(colorBuffer), m_Depthbuffer(depthBuffer)
+	Framebuffer::Framebuffer(const std::shared_ptr<ColorAttahment> &colorBuffer, const std::shared_ptr<DepthAttachment> &depthBuffer)
+		: m_ColorAttahment(colorBuffer), m_DepthAttachment(depthBuffer)
 	{
 	}
 
@@ -109,13 +108,13 @@ namespace SGL
 	{
 	}
 
-	const std::shared_ptr<Colorbuffer> &Framebuffer::GetColorbuffer() const
+	const std::shared_ptr<ColorAttahment> &Framebuffer::GetColorAttahment() const
 	{
-		return m_Colorbuffer;
+		return m_ColorAttahment;
 	}
 
-	const std::shared_ptr<Depthbuffer> &Framebuffer::GetDepthbuffer() const
+	const std::shared_ptr<DepthAttachment> &Framebuffer::GetDepthAttachment() const
 	{
-		return m_Depthbuffer;
+		return m_DepthAttachment;
 	}
 }
