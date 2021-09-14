@@ -49,10 +49,10 @@ namespace SGL
 				 const T &e02, const T &e12, const T &e22, const T &e32,
 				 const T &e03, const T &e13, const T &e23, const T &e33);
 
-		inline Matrix4<T> &operator+=(const Matrix4<T> &right);
-		inline Matrix4<T> &operator-=(const Matrix4<T> &right);
-		inline Matrix4<T> &operator*=(const Matrix4<T> &right);
-		inline Matrix4<T> &operator*=(const T &value);
+		 Matrix4<T> &operator+=(const Matrix4<T> &right);
+		 Matrix4<T> &operator-=(const Matrix4<T> &right);
+		 Matrix4<T> &operator*=(const Matrix4<T> &right);
+		 Matrix4<T> &operator*=(const T &value);
 
 		static Matrix4<T> Translate(const Vector3<T> &position);
 		static Matrix4<T> Rotate(const Vector3<T> &axis, const T &radian);

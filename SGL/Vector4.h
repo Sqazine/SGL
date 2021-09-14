@@ -33,23 +33,23 @@ namespace SGL
 		Vector4(const Vector3<T> &vec, const T &w = 1.0f);
 
 		template <typename T2>
-		inline Vector4<T> &operator+=(const T2 &value);
+		 Vector4<T> &operator+=(const T2 &value);
 		template <typename T2>
-		inline Vector4<T> &operator+=(const Vector4<T2> &right);
+		 Vector4<T> &operator+=(const Vector4<T2> &right);
 		template <typename T2>
-		inline Vector4<T> &operator-=(const T2 &value);
+		 Vector4<T> &operator-=(const T2 &value);
 		template <typename T2>
-		inline Vector4<T> &operator-=(const Vector4<T2> &right);
+		 Vector4<T> &operator-=(const Vector4<T2> &right);
 		template <typename T2>
-		inline Vector4<T> &operator*=(const T2 &value);
+		 Vector4<T> &operator*=(const T2 &value);
 		template <typename T2>
-		inline Vector4<T> &operator*=(const Vector4<T2> &right);
+		 Vector4<T> &operator*=(const Vector4<T2> &right);
 		template <typename T2>
-		inline Vector4<T> &operator/=(const T2 &value);
+		 Vector4<T> &operator/=(const T2 &value);
 		template <typename T2>
-		inline Vector4<T> &operator/=(const Vector4<T2> &right);
+		 Vector4<T> &operator/=(const Vector4<T2> &right);
 		template <typename T2>
-		inline Vector4<T> &operator=(const Vector4<T2> &right);
+		 Vector4<T> &operator=(const Vector4<T2> &right);
 
 		static Vector4<T> DivideByW(const Vector4<T> &vec);
 		static Vector3<T> ToVector3(const Vector4<T> &vec);

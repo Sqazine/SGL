@@ -34,23 +34,23 @@ namespace SGL
 		Vector2(const T &value);
 
 		template <typename T2>
-		inline Vector2<T> &operator+=(const T2 &value);
+		 Vector2<T> &operator+=(const T2 &value);
 		template <typename T2>
-		inline Vector2<T> &operator+=(const Vector2<T2> &right);
+		 Vector2<T> &operator+=(const Vector2<T2> &right);
 		template <typename T2>
-		inline Vector2<T> &operator-=(const T2 &value);
+		 Vector2<T> &operator-=(const T2 &value);
 		template <typename T2>
-		inline Vector2<T> &operator-=(const Vector2<T2> &right);
+		 Vector2<T> &operator-=(const Vector2<T2> &right);
 		template <typename T2>
-		inline Vector2<T> &operator*=(const T2 &value);
+		 Vector2<T> &operator*=(const T2 &value);
 		template <typename T2>
-		inline Vector2<T> &operator*=(const Vector2<T2> &right);
+		 Vector2<T> &operator*=(const Vector2<T2> &right);
 		template <typename T2>
-		inline Vector2<T> &operator/=(const T2 &value);
+		 Vector2<T> &operator/=(const T2 &value);
 		template <typename T2>
-		inline Vector2<T> &operator/=(const Vector2<T2> &right);
+		 Vector2<T> &operator/=(const Vector2<T2> &right);
 		template <typename T2>
-		inline Vector2<T> &operator=(const Vector2<T2> &right);
+		 Vector2<T> &operator=(const Vector2<T2> &right);
 
 		inline T SquareLength() const;
 		T Length() const;
@@ -183,7 +183,7 @@ namespace SGL
 	inline std::ostream &operator<<(std::ostream &stream, const Vector2<T> &vec)
 	{
 
-		stream << "(" << vec.x << "," << vec.y << "," << vec.z << ")";
+		stream << "(" << vec.x << "," << vec.y << ")";
 		return stream;
 	}
 
@@ -221,6 +221,7 @@ namespace SGL
 
 		x += right.x;
 		y += right.y;
+		return *this;
 	}
 	template <typename T>
 	template <typename T2>
@@ -247,6 +248,7 @@ namespace SGL
 
 		x *= value;
 		y *= value;
+		return *this;
 	}
 	template <typename T>
 	template <typename T2>
@@ -255,6 +257,7 @@ namespace SGL
 
 		x *= right.x;
 		y *= right.y;
+		return *this;
 	}
 	template <typename T>
 	template <typename T2>

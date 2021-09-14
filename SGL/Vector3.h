@@ -34,23 +34,23 @@ namespace SGL
 		Vector3(const Vector2<T> &value, const T &zValue);
 
 		template <typename T2>
-		inline Vector3<T> &operator+=(const T2 &value);
+		 Vector3<T> &operator+=(const T2 &value);
 		template <typename T2>
-		inline Vector3<T> &operator+=(const Vector3<T2> &right);
+		 Vector3<T> &operator+=(const Vector3<T2> &right);
 		template <typename T2>
-		inline Vector3<T> &operator-=(const T2 &value);
+		 Vector3<T> &operator-=(const T2 &value);
 		template <typename T2>
-		inline Vector3<T> &operator-=(const Vector3<T2> &right);
+		 Vector3<T> &operator-=(const Vector3<T2> &right);
 		template <typename T2>
-		inline Vector3<T> &operator*=(const T2 &value);
+		 Vector3<T> &operator*=(const T2 &value);
 		template <typename T2>
-		inline Vector3<T> &operator*=(const Vector3<T2> &right);
+		 Vector3<T> &operator*=(const Vector3<T2> &right);
 		template <typename T2>
-		inline Vector3<T> &operator/=(const T2 &value);
+		 Vector3<T> &operator/=(const T2 &value);
 		template <typename T2>
-		inline Vector3<T> &operator/=(const Vector3<T2> &right);
+		 Vector3<T> &operator/=(const Vector3<T2> &right);
 		template <typename T2>
-		inline Vector3<T> &operator=(const Vector3<T2> &right);
+		 Vector3<T> &operator=(const Vector3<T2> &right);
 
 		template <typename T2>
 		static T Dot(const Vector3<T> &left, const Vector3<T2> &right);

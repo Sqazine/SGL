@@ -33,10 +33,10 @@ namespace SGL
 		void Set(const T &d00, const T &d11, const T &d22);
 		void Set(const T &e00, const T &e10, const T &e20, const T &e01, const T &e11, const T &e21, const T &e02, const T &e12, const T &e22);
 
-		inline Matrix3<T> &operator+=(const Matrix3<T> &right);
-		inline Matrix3<T> &operator-=(const Matrix3<T> &right);
-		inline Matrix3<T> &operator*=(const Matrix3<T> &right);
-		inline Matrix3<T> &operator*=(const T &value);
+		 Matrix3<T> &operator+=(const Matrix3<T> &right);
+		 Matrix3<T> &operator-=(const Matrix3<T> &right);
+		 Matrix3<T> &operator*=(const Matrix3<T> &right);
+		 Matrix3<T> &operator*=(const T &value);
 
 		static Matrix3<T> Rotate(const Vector3<T> &axis, const T &radian);
 		static Matrix3<T> Scale(const T &factor);

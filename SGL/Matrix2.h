@@ -39,13 +39,13 @@ namespace SGL
 		void Set(const Vector2<T> &diagonal);
 
 		template <typename T2>
-		inline Matrix2<T> &operator+=(const Matrix2<T2> &right);
+		 Matrix2<T> &operator+=(const Matrix2<T2> &right);
 		template <typename T2>
-		inline Matrix2<T> &operator-=(const Matrix2<T2> &right);
+		 Matrix2<T> &operator-=(const Matrix2<T2> &right);
 		template <typename T2>
-		inline Matrix2<T> &operator*=(const Matrix2<T2> &right);
+		 Matrix2<T> &operator*=(const Matrix2<T2> &right);
 		template <typename T2>
-		inline Matrix2<T> &operator*=(const T2 &value);
+		 Matrix2<T> &operator*=(const T2 &value);
 
 		template <typename T2>
 		static Matrix2<T> Rotate(const T2 &radian);
