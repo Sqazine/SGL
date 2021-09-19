@@ -36,7 +36,6 @@ void Application::Init()
 	SDL_Init(SDL_INIT_VIDEO);
 
 	m_Window = std::make_shared<Window>(m_AppName, m_FrameExtent);
-	m_GraphicsPipeline = std::make_shared<SGL::GraphicsPipeline>(m_FrameExtent);
 
 	m_InputSystem = std::make_shared<InputSystem>();
 

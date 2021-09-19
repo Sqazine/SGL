@@ -74,6 +74,15 @@ public:
         shader->positions = quad.GetPositions();
         shader->texcoords = quad.GetTexcoords();
         shader->texture = texture;
+
+        SGL::GraphicsPipelineCreateInfo info;
+        info.defaultBufferExtent = m_FrameExtent;
+        info.shaderProgram = shader.get();
+        info.renderType = SGL::RenderType::SOLID_TRIANGLE;
+        info.clearBufferType = SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER;
+        info.clearColor = SGL::Vector4f(0.5f, 0.6f, 0.7f, 1.0f);
+
+        m_GraphicsPipeline = std::make_unique<SGL::GraphicsPipeline>(info);
     }
 
     void ProcessInput() override
@@ -96,15 +105,14 @@ public:
     void Draw() override
     {
         Application::Draw();
-        m_GraphicsPipeline->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_GraphicsPipeline->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
+        m_GraphicsPipeline->ClearBuffer();
 
         shader->texture = texture;
         shader->modelMatrix = modelMatrix;
         shader->viewMatrix = viewMatrix;
         shader->projectionMatrix = projectionMatrix;
-        m_GraphicsPipeline->SetGraphicsShaderProgram(shader);
-        m_GraphicsPipeline->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, quad.GetIndices());
+
+        m_GraphicsPipeline->DrawElements(0, quad.GetIndices());
     }
 
 private:

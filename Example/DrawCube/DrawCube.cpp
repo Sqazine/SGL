@@ -18,7 +18,7 @@ public:
     uniform SGL::Matrix4f modelMatrix;
     uniform SGL::Matrix4f viewMatrix;
     uniform SGL::Matrix4f projectionMatrix;
-    
+
     SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
         varyings.CommitVector2fVarying("vTexcoord", texcoords[vertexIndex]);
@@ -72,6 +72,15 @@ public:
         shader = std::make_shared<TextureShaderProgram>();
         shader->positions = cube.GetPositions();
         shader->texcoords = cube.GetTexcoords();
+
+        SGL::GraphicsPipelineCreateInfo info;
+        info.defaultBufferExtent = m_FrameExtent;
+        info.shaderProgram = shader.get();
+        info.renderType = SGL::RenderType::SOLID_TRIANGLE;
+        info.clearBufferType = SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER;
+        info.clearColor = SGL::Vector4f(0.5f, 0.6f, 0.7f, 1.0f);
+
+        m_GraphicsPipeline = std::make_unique<SGL::GraphicsPipeline>(info);
     }
 
     void ProcessInput() override
@@ -94,15 +103,14 @@ public:
     void Draw() override
     {
         Application::Draw();
-        m_GraphicsPipeline->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_GraphicsPipeline->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
 
         shader->texture = texture;
         shader->modelMatrix = modelMatrix;
         shader->viewMatrix = viewMatrix;
         shader->projectionMatrix = projectionMatrix;
-        m_GraphicsPipeline->SetGraphicsShaderProgram(shader);
-        m_GraphicsPipeline->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, cube.GetIndices());
+
+        m_GraphicsPipeline->ClearBuffer();
+        m_GraphicsPipeline->DrawElements(0, cube.GetIndices());
     }
 
 private:

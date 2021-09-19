@@ -13,14 +13,13 @@ public:
     TextureShaderProgram() {}
     ~TextureShaderProgram() {}
 
-       uniform std::vector<SGL::Vector3f> positions;
+    uniform std::vector<SGL::Vector3f> positions;
     uniform std::vector<SGL::Vector2f> texcoords;
-
 
     SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
-         varyings.CommitVector2fVarying("vTexcoord", texcoords[vertexIndex]);
-        return SGL::Vector4f(positions[vertexIndex],1.0f);
+        varyings.CommitVector2fVarying("vTexcoord", texcoords[vertexIndex]);
+        return SGL::Vector4f(positions[vertexIndex], 1.0f);
     }
 
     uniform SGL::Texture2D texture;
@@ -35,7 +34,7 @@ class ExampleTriangleWithTexture : public Application
 {
 
 public:
-    ExampleTriangleWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent),triangle(Mesh(MeshType::TRIANGLE)) {}
+    ExampleTriangleWithTexture(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent), triangle(Mesh(MeshType::TRIANGLE)) {}
     ~ExampleTriangleWithTexture() {}
 
     void Init() override
@@ -51,7 +50,7 @@ public:
         uint8_t *pixels = stbi_load(filePath.c_str(), &width, &height, &channel, STBI_default);
         assert(pixels != nullptr);
 
-         SGL::Texture2DCreateInfo texture2DCreateInfo{};
+        SGL::Texture2DCreateInfo texture2DCreateInfo{};
         if (channel == STBI_rgb)
             texture2DCreateInfo.channelMode = SGL::TextureChannelMode::RGB8;
         else if (channel == STBI_rgb_alpha)
@@ -64,12 +63,19 @@ public:
 
         auto texture = SGL::Texture2D(texture2DCreateInfo);
 
-        auto shader = std::make_shared<TextureShaderProgram>();
-          shader->positions=triangle.GetPositions();
-        shader->texcoords=triangle.GetTexcoords();
+        shader = std::make_shared<TextureShaderProgram>();
+        shader->positions = triangle.GetPositions();
+        shader->texcoords = triangle.GetTexcoords();
         shader->texture = texture;
 
-        m_GraphicsPipeline->SetGraphicsShaderProgram(shader);
+        SGL::GraphicsPipelineCreateInfo info;
+        info.defaultBufferExtent = m_FrameExtent;
+        info.shaderProgram = shader.get();
+        info.renderType = SGL::RenderType::SOLID_TRIANGLE;
+        info.clearBufferType = SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER;
+        info.clearColor = SGL::Vector4f(0.5f, 0.6f, 0.7f, 1.0f);
+
+        m_GraphicsPipeline = std::make_unique<SGL::GraphicsPipeline>(info);
     }
 
     void ProcessInput() override
@@ -85,14 +91,13 @@ public:
     void Draw() override
     {
         Application::Draw();
-        m_GraphicsPipeline->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_GraphicsPipeline->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
-
-        m_GraphicsPipeline->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, triangle.GetIndices());
+        m_GraphicsPipeline->ClearBuffer();
+        m_GraphicsPipeline->DrawElements(0, triangle.GetIndices());
     }
 
 private:
     Mesh triangle;
+    std::shared_ptr<TextureShaderProgram> shader;
 };
 
 #undef main

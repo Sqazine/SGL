@@ -36,7 +36,7 @@ public:
 
     SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
-        SGL::Vector4f vPositionWS = modelMatrix *SGL::Vector4f(positions[vertexIndex],1.0f);
+        SGL::Vector4f vPositionWS = modelMatrix * SGL::Vector4f(positions[vertexIndex], 1.0f);
         varyings.CommitVector3fVarying("vNormalWS", SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(SGL::Matrix4f::Transpose(SGL::Matrix4f::Inverse(modelMatrix))) * normals[vertexIndex]));
         varyings.CommitVector3fVarying("vPositionWS", SGL::Vector4f::ToVector3(vPositionWS));
         varyings.CommitVector2fVarying("vTexcoord", texcoords[vertexIndex]);
@@ -68,17 +68,17 @@ class ExampleBlinnPhong : public Application
 {
 
 public:
-    ExampleBlinnPhong(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent),sphere(Mesh(MeshType::SPHERE)) {}
+    ExampleBlinnPhong(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent), sphere(Mesh(MeshType::SPHERE)) {}
     ~ExampleBlinnPhong() {}
 
     void Init() override
     {
         Application::Init();
 
-        auto shader = std::make_shared<BlinnPhongShaderProgram>();
-        shader->positions=sphere.GetPositions();
-        shader->normals=sphere.GetNormals();
-        shader->texcoords=sphere.GetTexcoords();
+        shader = std::make_shared<BlinnPhongShaderProgram>();
+        shader->positions = sphere.GetPositions();
+        shader->normals = sphere.GetNormals();
+        shader->texcoords = sphere.GetTexcoords();
         shader->modelMatrix = SGL::Matrix4f();
         shader->viewMatrix = SGL::Matrix4f::Translate(SGL::Vector3f(0.0f, 0.0f, -3.0f));
         shader->projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
@@ -93,7 +93,14 @@ public:
         shader->light.specular = SGL::Vector3f(1.0f);
         shader->viewPosWS = SGL::Vector3f(0.0f, 0.0f, 3.0f);
 
-        m_GraphicsPipeline->SetGraphicsShaderProgram(shader);
+        SGL::GraphicsPipelineCreateInfo info;
+        info.defaultBufferExtent = m_FrameExtent;
+        info.shaderProgram = shader.get();
+        info.renderType = SGL::RenderType::SOLID_TRIANGLE;
+        info.clearBufferType = SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER;
+        info.clearColor = SGL::Vector4f(0.5f, 0.6f, 0.7f, 1.0f);
+
+        m_GraphicsPipeline = std::make_unique<SGL::GraphicsPipeline>(info);
     }
 
     void ProcessInput() override
@@ -109,14 +116,13 @@ public:
     void Draw() override
     {
         Application::Draw();
-        m_GraphicsPipeline->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_GraphicsPipeline->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
-
-        m_GraphicsPipeline->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, sphere.GetIndices());
+        m_GraphicsPipeline->ClearBuffer();
+        m_GraphicsPipeline->DrawElements(0, sphere.GetIndices());
     }
 
 private:
     Mesh sphere;
+    std::shared_ptr<BlinnPhongShaderProgram> shader;
 };
 
 #undef main

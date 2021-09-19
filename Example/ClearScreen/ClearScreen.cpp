@@ -4,7 +4,15 @@ class ExampleClearScreen : public Application
 {
 
 public:
-	ExampleClearScreen(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) {}
+	ExampleClearScreen(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent)
+	{
+		SGL::GraphicsPipelineCreateInfo info;
+		info.defaultBufferExtent = m_FrameExtent;
+		info.clearBufferType = SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER;
+		info.clearColor = SGL::Vector4f(0.5f, 0.6f, 0.7f, 1.0f);
+
+		m_GraphicsPipeline = std::make_unique<SGL::GraphicsPipeline>(info);
+	}
 	~ExampleClearScreen() {}
 
 	void ProcessInput() override
@@ -16,8 +24,7 @@ public:
 	void Draw() override
 	{
 		Application::Draw();
-		  m_GraphicsPipeline->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_GraphicsPipeline->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
+		m_GraphicsPipeline->ClearBuffer();
 	}
 };
 

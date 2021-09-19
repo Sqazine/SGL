@@ -13,7 +13,7 @@ namespace SGL
 	{
 		COLOR_BUFFER=0x0001,
 		DEPTH_BUFFER=0x0010,
-		STENCIL_BUFFER=0x0100
+		STENCIL_BUFFER=0x0100,
 	};
 
 
@@ -68,33 +68,33 @@ namespace SGL
 		ONE_MINUS_CONSTANT_ALPHA
 	};
 
+	struct GraphicsPipelineCreateInfo
+	{
+		Vector2u32 defaultBufferExtent=Vector2u32::ZERO;
+		GraphicsShaderProgram* shaderProgram;
+		Vector4f clearColor=Vector4f::ZERO;
+		float clearDepth=1.0f;
+		uint32_t pointSize=1;
+		uint32_t lineWidth=1;
+		BlendType blendType=BlendType::ZERO;
+		RenderType renderType=RenderType::SOLID_TRIANGLE;
+		CullType cullType=CullType::BACK;
+		FrontFaceType frontFaceType=FrontFaceType::CCW;
+		uint32_t clearBufferType=BufferType::COLOR_BUFFER|BufferType::DEPTH_BUFFER|BufferType::STENCIL_BUFFER;
+	};
+
 	class GraphicsPipeline
 	{
 	public:
-		GraphicsPipeline(const Vector2u32 bufferExtent);
+		GraphicsPipeline(const GraphicsPipelineCreateInfo& info);
 		~GraphicsPipeline();
 
 		const std::shared_ptr<Framebuffer> &GetFramebuffer() const;
 
-		void SetGraphicsShaderProgram(const std::shared_ptr<GraphicsShaderProgram> &s);
-		const std::shared_ptr<GraphicsShaderProgram> &GetGraphicsShaderProgram() const;
+		void ClearBuffer();
 
-		void SetPointSize(uint32_t size);
-		uint32_t GetPointSize() const;
-
-		void SetLineWidth(uint32_t size);
-		uint32_t GetLineWidth() const;
-
-		void SetClearColor(const Vector4f &color);
-		void SetClearColor(float r, float g, float b, float a);
-
-		void Clear(uint32_t type);
-
-		void SetBlendType(BlendType mode);
-		const BlendType &GetBlendType() const;
-
-		void DrawArrays(RenderType mode, uint32_t startIndex, size_t vertexArraySize);
-		void DrawElements(RenderType mode, uint32_t startIndex, const std::vector<uint32_t> &indices);
+		void DrawArrays( uint32_t startIndex, size_t vertexArraySize);
+		void DrawElements( uint32_t startIndex, const std::vector<uint32_t> &indices);
 
 	private:
 		void ClearColorBuffer();
@@ -119,21 +119,9 @@ namespace SGL
 		void DrawTriangle_WireFrame(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2);
 		void DrawTriangle_Solid(uint32_t vertexIndex0, uint32_t vertexIndex1, uint32_t vertexIndex2);
 
-		Vector4f m_ClearColor;
+		GraphicsPipelineCreateInfo m_Info;
 
-		std::shared_ptr<Framebuffer> m_Framebuffer;
-
-		Vector2u32 m_BufferExtent;
-
-		bool m_IsDepthTest;
-
-		std::shared_ptr<GraphicsShaderProgram> m_GraphicsShaderProgram;
-		uint32_t m_PointSize;
-		uint32_t m_LineWidth;
-		BlendType m_BlendType;
-		CullType m_CullType;
-		FrontFaceType m_FrontFaceType;
-
+		std::shared_ptr<Framebuffer> m_DefaultFramebuffer;
 		Varyings varyings0;
 		Varyings varyings1;
 		Varyings varyings2;

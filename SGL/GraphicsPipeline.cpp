@@ -7,9 +7,8 @@
 namespace SGL
 {
 
-	GraphicsPipeline::GraphicsPipeline(const Vector2u32 bufferExtent)
-		: m_Framebuffer(std::make_shared<Framebuffer>(bufferExtent)), m_BufferExtent(bufferExtent), m_GraphicsShaderProgram(nullptr),
-		  m_PointSize(1), m_LineWidth(1), m_BlendType(BlendType::ONE), m_CullType(CullType::BACK), m_FrontFaceType(FrontFaceType::CCW),
+	GraphicsPipeline::GraphicsPipeline(const GraphicsPipelineCreateInfo& info)
+		: m_DefaultFramebuffer(std::make_shared<Framebuffer>(info.defaultBufferExtent)),m_Info(info),
 		  varyings0(Varyings()), varyings1(Varyings()), varyings2(Varyings()), interpolatedVaryings(Varyings())
 	{
 	}
@@ -20,82 +19,42 @@ namespace SGL
 
 	const std::shared_ptr<Framebuffer> &GraphicsPipeline::GetFramebuffer() const
 	{
-		return m_Framebuffer;
+		return m_DefaultFramebuffer;
 	}
 
-	void GraphicsPipeline::SetClearColor(const Vector4f &color)
+	void GraphicsPipeline::ClearBuffer()
 	{
-		m_ClearColor = color;
-	}
-
-	void GraphicsPipeline::SetClearColor(float r, float g, float b, float a)
-	{
-		SetClearColor(Vector4f(r, g, b, a));
-	}
-
-	void GraphicsPipeline::Clear(uint32_t type)
-	{
-		if ((type & BufferType::COLOR_BUFFER) == BufferType::COLOR_BUFFER)
+		if ((m_Info.clearBufferType & BufferType::COLOR_BUFFER) == BufferType::COLOR_BUFFER)
 			ClearColorBuffer();
 
-		if ((type & BufferType::DEPTH_BUFFER) == BufferType::DEPTH_BUFFER)
+		if ((m_Info.clearBufferType & BufferType::DEPTH_BUFFER) == BufferType::DEPTH_BUFFER)
 			ClearDepthBuffer();
 
-		if ((type & BufferType::STENCIL_BUFFER) == BufferType::STENCIL_BUFFER)
+		if ((m_Info.clearBufferType & BufferType::STENCIL_BUFFER) == BufferType::STENCIL_BUFFER)
 			ClearStencilBuffer();
 	}
 
 	void GraphicsPipeline::ClearColorBuffer()
 	{
-		for (uint32_t i = 0; i < m_Framebuffer->GetColorAttahment()->GetBufferExtent().x; ++i)
-			for (uint32_t j = 0; j < m_Framebuffer->GetColorAttahment()->GetBufferExtent().y; ++j)
-				m_Framebuffer->GetColorAttahment()->SetValue(i, j, m_ClearColor);
+		for (uint32_t i = 0; i < m_DefaultFramebuffer->GetColorAttahment()->GetBufferExtent().x; ++i)
+			for (uint32_t j = 0; j < m_DefaultFramebuffer->GetColorAttahment()->GetBufferExtent().y; ++j)
+				m_DefaultFramebuffer->GetColorAttahment()->SetValue(i, j, m_Info.clearColor);
 	}
 
 	void GraphicsPipeline::ClearDepthBuffer()
 	{
-		for (uint32_t i = 0; i < m_Framebuffer->GetColorAttahment()->GetBufferExtent().x; ++i)
-			for (uint32_t j = 0; j < m_Framebuffer->GetColorAttahment()->GetBufferExtent().y; ++j)
-				m_Framebuffer->GetDepthAttachment()->SetValue(i, j, 1.0f);
+		for (uint32_t i = 0; i < m_DefaultFramebuffer->GetColorAttahment()->GetBufferExtent().x; ++i)
+			for (uint32_t j = 0; j < m_DefaultFramebuffer->GetColorAttahment()->GetBufferExtent().y; ++j)
+				m_DefaultFramebuffer->GetDepthAttachment()->SetValue(i, j, m_Info.clearDepth);
 	}
 
 	void GraphicsPipeline::ClearStencilBuffer()
 	{
 	}
 
-	void GraphicsPipeline::SetBlendType(BlendType mode)
+	void GraphicsPipeline::DrawArrays(uint32_t startIndex, size_t vertexArraySize)
 	{
-		m_BlendType = mode;
-	}
-
-	const BlendType &GraphicsPipeline::GetBlendType() const
-	{
-		return m_BlendType;
-	}
-
-	void GraphicsPipeline::SetPointSize(uint32_t size)
-	{
-		m_PointSize = size;
-	}
-
-	uint32_t GraphicsPipeline::GetPointSize() const
-	{
-		return m_PointSize;
-	}
-
-	void GraphicsPipeline::SetLineWidth(uint32_t size)
-	{
-		m_LineWidth = size;
-	}
-
-	uint32_t GraphicsPipeline::GetLineWidth() const
-	{
-		return m_LineWidth;
-	}
-
-	void GraphicsPipeline::DrawArrays(RenderType mode, uint32_t startIndex, size_t vertexArraySize)
-	{
-		switch (mode)
+		switch (m_Info.renderType)
 		{
 		case RenderType::POINT:
 			for (uint32_t i = startIndex; i < vertexArraySize; ++i)
@@ -130,9 +89,9 @@ namespace SGL
 		}
 	}
 
-	void GraphicsPipeline::DrawElements(RenderType mode, uint32_t startIndex, const std::vector<uint32_t> &indices)
+	void GraphicsPipeline::DrawElements(uint32_t startIndex, const std::vector<uint32_t> &indices)
 	{
-		switch (mode)
+		switch (m_Info.renderType)
 		{
 		case RenderType::POINT:
 			for (uint32_t i = startIndex; i < indices.size(); ++i)
@@ -171,20 +130,20 @@ namespace SGL
 	{
 		CheckGraphicsShaderProgram();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
-		Vector4f clip_position = m_GraphicsShaderProgram->VertexShader(vertexIndex, varyings0);
+		Vector4f clip_position = m_Info.shaderProgram->VertexShader(vertexIndex, varyings0);
 		Vector3f ndc_position = ToNDCSpace(clip_position);
 		Vector2i32 screen_position = ToScreenSpace(ndc_position);
 
-		if (0 <= screen_position.x && screen_position.x < m_BufferExtent.x && 0 <= screen_position.y && screen_position.y < m_BufferExtent.y)
+		if (0 <= screen_position.x && screen_position.x < m_Info.defaultBufferExtent.x && 0 <= screen_position.y && screen_position.y < m_Info.defaultBufferExtent.y)
 		{
 			//根据指定的顶点绘制像素
-			for (uint32_t i = screen_position.x - m_PointSize / 2; i <= screen_position.x + m_PointSize / 2; ++i)
-				for (uint32_t j = screen_position.y - m_PointSize / 2; j <= screen_position.y + m_PointSize / 2; ++j)
-					if (i >= 0 && i < m_BufferExtent.x && j >= 0 && j < m_BufferExtent.y)
-						if (m_Framebuffer->GetDepthAttachment()->GetValue(i, j) > ndc_position.z)
+			for (uint32_t i = screen_position.x - m_Info.pointSize / 2; i <= screen_position.x + m_Info.pointSize / 2; ++i)
+				for (uint32_t j = screen_position.y - m_Info.pointSize / 2; j <= screen_position.y + m_Info.pointSize / 2; ++j)
+					if (i >= 0 && i < m_Info.defaultBufferExtent.x && j >= 0 && j < m_Info.defaultBufferExtent.y)
+						if (m_DefaultFramebuffer->GetDepthAttachment()->GetValue(i, j) > ndc_position.z)
 						{
-							m_Framebuffer->GetDepthAttachment()->SetValue(i, j, ndc_position.z);
-							m_Framebuffer->GetColorAttahment()->SetValue(i, j, m_GraphicsShaderProgram->FragmentShader(varyings0));
+							m_DefaultFramebuffer->GetDepthAttachment()->SetValue(i, j, ndc_position.z);
+							m_DefaultFramebuffer->GetColorAttahment()->SetValue(i, j, m_Info.shaderProgram->FragmentShader(varyings0));
 						}
 		}
 	}
@@ -194,12 +153,12 @@ namespace SGL
 		// CheckGraphicsShaderProgram();
 		// //模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
 		// Varyings varyings0;
-		// Vector4f clip_position0 = m_GraphicsShaderProgram->VertexShader(model_p0, varyings0);
+		// Vector4f clip_position0 = m_Info.shaderProgram->VertexShader(model_p0, varyings0);
 		// Vector3f ndc_position_p0 = ToNDCSpace(clip_position0);
 		// Vector2i32 screen_position_p0 = ToScreenSpace(ndc_position_p0);
 
 		// Varyings varyings1;
-		// Vector4f clip_position1 = m_GraphicsShaderProgram->VertexShader(model_p1, varyings1);
+		// Vector4f clip_position1 = m_Info.shaderProgram->VertexShader(model_p1, varyings1);
 		// Vector3f ndc_position_p1 = ToNDCSpace(clip_position1);
 		// Vector2i32 screen_position_p1 = ToScreenSpace(ndc_position_p1);
 
@@ -228,7 +187,7 @@ namespace SGL
 		// Vector3f ndc_dir = ndc_position_p1 - ndc_position_p0;
 		// for (uint32_t x = screen_position_p0.x; x <= screen_position_p1.x; ++x)
 		// {
-		// 	if (0 <= x && x < m_BufferExtent.x && 0 <= y && y < m_BufferExtent.y)
+		// 	if (0 <= x && x < m_Info.defaultBufferExtent.x && 0 <= y && y < m_Info.defaultBufferExtent.y)
 		// 	{
 		// 		////将直线映射回原来的区域
 		// 		if (reverse)
@@ -242,10 +201,10 @@ namespace SGL
 		// 		screen_vertex.texcoord = model_p0.texcoord * (1 - factor) + model_p1.texcoord * factor;
 
 		// 		//进行深度测试
-		// 		if (m_Framebuffer->GetDepthAttachment()->GetValue(x, y) >= screen_vertex.position.z)
+		// 		if (m_DefaultFramebuffer->GetDepthAttachment()->GetValue(x, y) >= screen_vertex.position.z)
 		// 		{
-		// 			m_Framebuffer->GetDepthAttachment()->SetValue(x, y, screen_vertex.position.z);
-		// 			m_Framebuffer->GetColorAttahment()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(screen_vertex, m_BufferExtent));
+		// 			m_DefaultFramebuffer->GetDepthAttachment()->SetValue(x, y, screen_vertex.position.z);
+		// 			m_DefaultFramebuffer->GetColorAttahment()->SetValue(x, y, m_Info.shaderProgram->FragmentShader(screen_vertex, m_Info.defaultBufferExtent));
 		// 		}
 
 		// 		//继续下一步的计算
@@ -274,17 +233,17 @@ namespace SGL
 	{
 		CheckGraphicsShaderProgram();
 		//模型空间->世界空间->观察空间->裁剪空间->NDC空间->屏幕空间
-		Vector4f clip_position0 = m_GraphicsShaderProgram->VertexShader(vertexIndex0, varyings0);
+		Vector4f clip_position0 = m_Info.shaderProgram->VertexShader(vertexIndex0, varyings0);
 		Vector3f ndc_position_p0 = ToNDCSpace(clip_position0);
 		Vector2i32 screen_position_p0 = ToScreenSpace(ndc_position_p0);
 		float recip_p0_w = 1.0f / clip_position0.w;
 
-		Vector4f clip_position1 = m_GraphicsShaderProgram->VertexShader(vertexIndex1, varyings1);
+		Vector4f clip_position1 = m_Info.shaderProgram->VertexShader(vertexIndex1, varyings1);
 		Vector3f ndc_position_p1 = ToNDCSpace(clip_position1);
 		Vector2i32 screen_position_p1 = ToScreenSpace(ndc_position_p1);
 		float recip_p1_w = 1.0f / clip_position1.w;
 
-		Vector4f clip_position2 = m_GraphicsShaderProgram->VertexShader(vertexIndex2, varyings2);
+		Vector4f clip_position2 = m_Info.shaderProgram->VertexShader(vertexIndex2, varyings2);
 		Vector3f ndc_position_p2 = ToNDCSpace(clip_position2);
 		Vector2i32 screen_position_p2 = ToScreenSpace(ndc_position_p2);
 		float recip_p2_w = 1.0f / clip_position2.w;
@@ -300,10 +259,10 @@ namespace SGL
 		int32_t yMax = Math::Max(screen_position_p0.y, Math::Max(screen_position_p1.y, screen_position_p2.y));
 
 		//将AABB范围截断为屏幕大小，在屏幕外的像素则丢弃
-		xMin = Math::Clamp(xMin, 0, static_cast<int32_t>(m_BufferExtent.x - 1));
-		yMin = Math::Clamp(yMin, 0, static_cast<int32_t>(m_BufferExtent.y - 1));
-		xMax = Math::Clamp(xMax, 0, static_cast<int32_t>(m_BufferExtent.x - 1));
-		yMax = Math::Clamp(yMax, 0, static_cast<int32_t>(m_BufferExtent.y - 1));
+		xMin = Math::Clamp(xMin, 0, static_cast<int32_t>(m_Info.defaultBufferExtent.x - 1));
+		yMin = Math::Clamp(yMin, 0, static_cast<int32_t>(m_Info.defaultBufferExtent.y - 1));
+		xMax = Math::Clamp(xMax, 0, static_cast<int32_t>(m_Info.defaultBufferExtent.x - 1));
+		yMax = Math::Clamp(yMax, 0, static_cast<int32_t>(m_Info.defaultBufferExtent.y - 1));
 
 		//重心坐标判断AABB内的当前顶点是否在三角形内部
 		for (uint32_t x = xMin; x <= xMax; ++x)
@@ -370,23 +329,13 @@ namespace SGL
 				Vector4f screen_position = Vector4f(x, y, InterpolateBarycenteric(ndc_position_p0.z, ndc_position_p1.z, ndc_position_p2.z, screen_bc_coord), InterpolateBarycenteric(clip_position0.w, clip_position1.w, clip_position2.w, screen_bc_coord));
 				//如果当前片元在三角形内且通过深度测试则渲染到颜色缓存中，否则丢弃该片元(这里使用提前深度测试)
 				if (screen_bc_coord.x >= 0.0f && screen_bc_coord.y >= 0.0f && screen_bc_coord.z >= 0.0f &&
-					m_Framebuffer->GetDepthAttachment()->GetValue(x, y) >= screen_position.z && screen_position.z >= -1.0f)
+					m_DefaultFramebuffer->GetDepthAttachment()->GetValue(x, y) >= screen_position.z && screen_position.z >= -1.0f)
 				{
-					m_Framebuffer->GetDepthAttachment()->SetValue(x, y, screen_position.z);
-					m_Framebuffer->GetColorAttahment()->SetValue(x, y, m_GraphicsShaderProgram->FragmentShader(interpolatedVaryings));
+					m_DefaultFramebuffer->GetDepthAttachment()->SetValue(x, y, screen_position.z);
+					m_DefaultFramebuffer->GetColorAttahment()->SetValue(x, y, m_Info.shaderProgram->FragmentShader(interpolatedVaryings));
 				}
 			}
 		}
-	}
-
-	void GraphicsPipeline::SetGraphicsShaderProgram(const std::shared_ptr<GraphicsShaderProgram> &s)
-	{
-		m_GraphicsShaderProgram = s;
-	}
-
-	const std::shared_ptr<GraphicsShaderProgram> &GraphicsPipeline::GetGraphicsShaderProgram() const
-	{
-		return m_GraphicsShaderProgram;
 	}
 
 	Vector3f GraphicsPipeline::BaryCenteric(const Vector2i32 &p0, const Vector2i32 &p1, const Vector2i32 &p2, const Vector2i32 &p)
@@ -408,16 +357,16 @@ namespace SGL
 
 	Vector2i32 GraphicsPipeline::ToScreenSpace(const Vector3f &v)
 	{
-		int32_t screen_x = Math::Round(m_BufferExtent.x * ((v.x + 1.0f) / 2.0f));
-		int32_t screen_y = Math::Round(m_BufferExtent.y * ((v.y + 1.0f) / 2.0f));
+		int32_t screen_x = Math::Round(m_Info.defaultBufferExtent.x * ((v.x + 1.0f) / 2.0f));
+		int32_t screen_y = Math::Round(m_Info.defaultBufferExtent.y * ((v.y + 1.0f) / 2.0f));
 		return Vector2i32(screen_x, screen_y);
 	}
 
 	void GraphicsPipeline::CheckGraphicsShaderProgram()
 	{
-		if (m_GraphicsShaderProgram != nullptr)
+		if (m_Info.shaderProgram != nullptr)
 			return;
 		ERROR_OUTPUT_LN("Current binding shader is null!");
-		assert(m_GraphicsShaderProgram != nullptr);
+		assert(m_Info.shaderProgram != nullptr);
 	}
 }

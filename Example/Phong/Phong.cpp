@@ -67,17 +67,17 @@ class ExamplePhong : public Application
 {
 
 public:
-    ExamplePhong(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent),sphere(Mesh(MeshType::SPHERE)) {}
+    ExamplePhong(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent), sphere(Mesh(MeshType::SPHERE)) {}
     ~ExamplePhong() {}
 
     void Init() override
     {
         Application::Init();
 
-        auto shader = std::make_shared<PhongShaderProgram>();
-        shader->positions=sphere.GetPositions();
-        shader->normals=sphere.GetNormals();
-        shader->texcoords=sphere.GetTexcoords();
+        shader = std::make_shared<PhongShaderProgram>();
+        shader->positions = sphere.GetPositions();
+        shader->normals = sphere.GetNormals();
+        shader->texcoords = sphere.GetTexcoords();
         shader->modelMatrix = SGL::Matrix4f();
         shader->viewMatrix = SGL::Matrix4f::Translate(SGL::Vector3f(0.0f, 0.0f, -3.0f));
         shader->projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
@@ -92,7 +92,14 @@ public:
         shader->light.specular = SGL::Vector3f(1.0f);
         shader->viewPosWS = SGL::Vector3f(0.0f, 0.0f, 3.0f);
 
-        m_GraphicsPipeline->SetGraphicsShaderProgram(shader);
+        SGL::GraphicsPipelineCreateInfo info;
+        info.defaultBufferExtent = m_FrameExtent;
+        info.shaderProgram = shader.get();
+        info.renderType = SGL::RenderType::SOLID_TRIANGLE;
+        info.clearBufferType = SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER;
+        info.clearColor = SGL::Vector4f(0.5f, 0.6f, 0.7f, 1.0f);
+
+        m_GraphicsPipeline = std::make_unique<SGL::GraphicsPipeline>(info);
     }
 
     void ProcessInput() override
@@ -108,14 +115,13 @@ public:
     void Draw() override
     {
         Application::Draw();
-          m_GraphicsPipeline->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_GraphicsPipeline->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
-
-        m_GraphicsPipeline->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, sphere.GetIndices());
+        m_GraphicsPipeline->ClearBuffer();
+        m_GraphicsPipeline->DrawElements(0, sphere.GetIndices());
     }
 
 private:
     Mesh sphere;
+    std::shared_ptr<PhongShaderProgram> shader;
 };
 
 #undef main

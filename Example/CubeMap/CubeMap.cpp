@@ -43,8 +43,7 @@ public:
     {
         Application::Init();
 
-          m_InputSystem->GetMouse()->SetReleativeMode(true);
-
+        m_InputSystem->GetMouse()->SetReleativeMode(true);
 
         std::vector<std::string> filePaths;
         filePaths.resize(6, ASSET_DIR);
@@ -87,6 +86,15 @@ public:
         shader = std::make_shared<TextureShaderProgram>();
         shader->positions = cube.GetPositions();
         shader->textureCube = textureCube;
+
+        SGL::GraphicsPipelineCreateInfo info;
+        info.defaultBufferExtent = m_FrameExtent;
+        info.shaderProgram = shader.get();
+        info.renderType = SGL::RenderType::SOLID_TRIANGLE;
+        info.clearBufferType = SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER;
+        info.clearColor = SGL::Vector4f(0.5f, 0.6f, 0.7f, 1.0f);
+
+        m_GraphicsPipeline = std::make_unique<SGL::GraphicsPipeline>(info);
     }
 
     void ProcessInput() override
@@ -95,23 +103,20 @@ public:
         if (m_InputSystem->GetEventType() == SDL_QUIT || m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_ESCAPE) == BUTTON_STATE::PRESS)
             m_Status = ApplicationStatus::EXIT;
 
-         fpCamera->ProcessInput(m_InputSystem);
+        fpCamera->ProcessInput(m_InputSystem);
     }
     void Update() override
     {
         Application::Update();
-         fpCamera->Update();
+        fpCamera->Update();
     }
     void Draw() override
     {
         Application::Draw();
-        m_GraphicsPipeline->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_GraphicsPipeline->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
-
         shader->viewMatrix = fpCamera->GetViewMatrix();
         shader->projectionMatrix = fpCamera->GetProjectionMatrix();
-        m_GraphicsPipeline->SetGraphicsShaderProgram(shader);
-        m_GraphicsPipeline->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, cube.GetIndices());
+        m_GraphicsPipeline->ClearBuffer();
+        m_GraphicsPipeline->DrawElements(0, cube.GetIndices());
     }
 
 private:

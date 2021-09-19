@@ -16,7 +16,7 @@ public:
     SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
     {
         varyings.CommitVector4fVarying("vColor", vertexColors[vertexIndex]);
-        return SGL::Vector4f(positions[vertexIndex],1.0f);
+        return SGL::Vector4f(positions[vertexIndex], 1.0f);
     }
     SGL::Vector4f FragmentShader(const SGL::Varyings &varyings) override
     {
@@ -28,18 +28,25 @@ class ExampleTriangle : public Application
 {
 
 public:
-    ExampleTriangle(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent),triangle(Mesh(MeshType::TRIANGLE)) {}
+    ExampleTriangle(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent), triangle(Mesh(MeshType::TRIANGLE)) {}
     ~ExampleTriangle() {}
 
     void Init() override
     {
         Application::Init();
 
-        auto shader = std::make_shared<ColorShaderProgram>();
-        shader->positions=triangle.GetPositions();
-        shader->vertexColors=triangle.GetVertexColors();
+        shader = std::make_shared<ColorShaderProgram>();
+        shader->positions = triangle.GetPositions();
+        shader->vertexColors = triangle.GetVertexColors();
 
-        m_GraphicsPipeline->SetGraphicsShaderProgram(shader);
+        SGL::GraphicsPipelineCreateInfo info;
+        info.defaultBufferExtent = m_FrameExtent;
+        info.shaderProgram = shader.get();
+        info.renderType = SGL::RenderType::SOLID_TRIANGLE;
+        info.clearBufferType = SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER;
+        info.clearColor = SGL::Vector4f(0.5f, 0.6f, 0.7f, 1.0f);
+
+        m_GraphicsPipeline = std::make_unique<SGL::GraphicsPipeline>(info);
     }
 
     void ProcessInput() override
@@ -55,13 +62,14 @@ public:
     void Draw() override
     {
         Application::Draw();
-         m_GraphicsPipeline->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_GraphicsPipeline->Clear(SGL::BufferType::COLOR_BUFFER|SGL::BufferType::DEPTH_BUFFER);
-        m_GraphicsPipeline->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, triangle.GetIndices());
+
+        m_GraphicsPipeline->ClearBuffer();
+        m_GraphicsPipeline->DrawElements(0, triangle.GetIndices());
     }
 
 private:
     Mesh triangle;
+    std::shared_ptr<ColorShaderProgram> shader;
 };
 
 #undef main

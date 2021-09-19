@@ -37,7 +37,7 @@ class ExampleFPCamera : public Application
 {
 
 public:
-    ExampleFPCamera(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent) ,cube(Mesh(MeshType::CUBE)){}
+    ExampleFPCamera(const std::string &appName, const SGL::Vector2u32 &frameExtent) : Application(appName, frameExtent), cube(Mesh(MeshType::CUBE)) {}
     ~ExampleFPCamera() {}
 
     void Init() override
@@ -55,7 +55,7 @@ public:
         uint8_t *pixels = stbi_load(filePath.c_str(), &width, &height, &channel, STBI_default);
         assert(pixels != nullptr);
 
-       SGL::Texture2DCreateInfo texture2DCreateInfo{};
+        SGL::Texture2DCreateInfo texture2DCreateInfo{};
         if (channel == STBI_rgb)
             texture2DCreateInfo.channelMode = SGL::TextureChannelMode::RGB8;
         else if (channel == STBI_rgb_alpha)
@@ -73,6 +73,15 @@ public:
         shader->texcoords = cube.GetTexcoords();
 
         fpCamera = std::make_shared<FPCamera>(SGL::Math::ToRadian(60), m_FrameExtent.x / m_FrameExtent.y, 0.1f, 1000.0f);
+
+        SGL::GraphicsPipelineCreateInfo info;
+        info.defaultBufferExtent = m_FrameExtent;
+        info.shaderProgram = shader.get();
+        info.renderType = SGL::RenderType::SOLID_TRIANGLE;
+        info.clearBufferType = SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER;
+        info.clearColor = SGL::Vector4f(0.5f, 0.6f, 0.7f, 1.0f);
+
+        m_GraphicsPipeline = std::make_unique<SGL::GraphicsPipeline>(info);
     }
 
     void ProcessInput() override
@@ -92,15 +101,13 @@ public:
     void Draw() override
     {
         Application::Draw();
-        m_GraphicsPipeline->SetClearColor(0.5f, 0.6f, 0.7f, 1.0f);
-        m_GraphicsPipeline->Clear(SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER);
 
         shader->texture = texture;
         shader->modelMatrix = modelMatrix;
         shader->viewMatrix = fpCamera->GetViewMatrix();
         shader->projectionMatrix = fpCamera->GetProjectionMatrix();
-        m_GraphicsPipeline->SetGraphicsShaderProgram(shader);
-        m_GraphicsPipeline->DrawElements(SGL::RenderType::SOLID_TRIANGLE, 0, cube.GetIndices());
+        m_GraphicsPipeline->ClearBuffer();
+        m_GraphicsPipeline->DrawElements(0, cube.GetIndices());
     }
 
 private:
