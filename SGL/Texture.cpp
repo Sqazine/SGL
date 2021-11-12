@@ -70,7 +70,7 @@ namespace SGL
 		}
 		else if (channelMode == TextureChannelMode::RGBA32F)
 		{
-			float *data = static_cast<float *>(data);
+			float *data = static_cast<float *>(texData);
 			float r = data[texel_coord * 4 + 0];
 			float g = data[texel_coord * 4 + 1];
 			float b = data[texel_coord * 4 + 2];

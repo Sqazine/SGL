@@ -15,6 +15,11 @@ namespace SGL
 		RG8,
 		RGB8,
 		RGBA8,
+
+		R16,
+		RG16,
+		RGB16,
+		RGBA16,
 		
 		R32F,
 		RG32F,
