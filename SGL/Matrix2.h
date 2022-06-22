@@ -101,7 +101,7 @@ namespace SGL
 	}
 
 	template <typename T>
-	inline Matrix2<T>::~Matrix2<T>()
+	inline Matrix2<T>::~Matrix2()
 	{
 	}
 

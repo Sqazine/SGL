@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "Macros.h"
+
 #define COMPONENT_DECLARATION(parentComponent, childComponent)                         \
 protected:                                                                            \
     static std::string m_ComponentType = std::string(TO_STRING(childComponent));      \
