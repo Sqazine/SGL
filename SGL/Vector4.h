@@ -179,22 +179,34 @@ namespace SGL
 	template <typename T,typename T2>
 	inline Vector4<T> operator*(const Matrix4<T> &matrix, const Vector4<T2> &vec)
 	{
-		T x = matrix.elements[0] * vec.x + matrix.elements[4] * vec.y + matrix.elements[8] * vec.z + matrix.elements[12] * vec.w;
-		T y = matrix.elements[1] * vec.x + matrix.elements[5] * vec.y + matrix.elements[9] * vec.z + matrix.elements[13] * vec.w;
-		T z = matrix.elements[2] * vec.x + matrix.elements[6] * vec.y + matrix.elements[10] * vec.z + matrix.elements[14] * vec.w;
-		T w = matrix.elements[3] * vec.x + matrix.elements[7] * vec.y + matrix.elements[11] * vec.z + matrix.elements[15] * vec.w;
+		__m128 v = _mm_set_ps(static_cast<T>(vec.w), static_cast<T>(vec.z), static_cast<T>(vec.y), static_cast<T>(vec.x));
+		__m128 r0 = _mm_mul_ps(matrix.col[0], _mm_shuffle_ps(v, v, _MM_SHUFFLE(0, 0, 0, 0)));
+		__m128 r1 = _mm_mul_ps(matrix.col[1], _mm_shuffle_ps(v, v, _MM_SHUFFLE(1, 1, 1, 1)));
+		__m128 r2 = _mm_mul_ps(matrix.col[2], _mm_shuffle_ps(v, v, _MM_SHUFFLE(2, 2, 2, 2)));
+		__m128 r3 = _mm_mul_ps(matrix.col[3], _mm_shuffle_ps(v, v, _MM_SHUFFLE(3, 3, 3, 3)));
+		__m128 result = _mm_add_ps(_mm_add_ps(r0, r1), _mm_add_ps(r2, r3));
 
-		return Vector4<T>(x, y, z, w);
+		alignas(16) T tmp[4];
+		_mm_store_ps(tmp, result);
+		return Vector4<T>(tmp[0], tmp[1], tmp[2], tmp[3]);
 	}
 
 	template <typename T,typename T2>
 	inline Vector4<T> operator*(const Vector4<T> &vec, const Matrix4<T2> &matrix)
 	{
-		T x = vec.x * matrix.elements[0] + vec.y * matrix.elements[1] + vec.z * matrix.elements[2] + vec.w * matrix.elements[3];
-		T y = vec.x * matrix.elements[4] + vec.y * matrix.elements[5] + vec.z * matrix.elements[6] + vec.w * matrix.elements[7];
-		T z = vec.x * matrix.elements[8] + vec.y * matrix.elements[9] + vec.z * matrix.elements[10] + vec.w * matrix.elements[11];
-		T w = vec.x * matrix.elements[12] + vec.y * matrix.elements[13] + vec.z * matrix.elements[14] + vec.w * matrix.elements[15];
-		return Vector4<T>(x, y, z, w);
+		__m128 v = _mm_set_ps(static_cast<T>(vec.w), static_cast<T>(vec.z), static_cast<T>(vec.y), static_cast<T>(vec.x));
+
+		__m128 p0 = _mm_mul_ps(v, matrix.col[0]);
+		__m128 p1 = _mm_mul_ps(v, matrix.col[1]);
+		__m128 p2 = _mm_mul_ps(v, matrix.col[2]);
+		__m128 p3 = _mm_mul_ps(v, matrix.col[3]);
+
+		_MM_TRANSPOSE4_PS(p0, p1, p2, p3);
+		__m128 result = _mm_add_ps(_mm_add_ps(p0, p1), _mm_add_ps(p2, p3));
+
+		alignas(16) T tmp[4];
+		_mm_store_ps(tmp, result);
+		return Vector4<T>(tmp[0], tmp[1], tmp[2], tmp[3]);
 	}
 
 	template <typename T>

@@ -7,8 +7,8 @@
 namespace SGL
 {
 
-	GraphicsPipeline::GraphicsPipeline(const GraphicsPipelineCreateInfo& info)
-		: m_DefaultFramebuffer(std::make_shared<Framebuffer>(info.defaultBufferExtent)),m_Info(info),
+	GraphicsPipeline::GraphicsPipeline(const GraphicsPipelineCreateInfo &info)
+		: m_DefaultFramebuffer(std::make_shared<Framebuffer>(info.defaultBufferExtent)), m_Info(info),
 		  varyings0(Varyings()), varyings1(Varyings()), varyings2(Varyings()), interpolatedVaryings(Varyings())
 	{
 	}
@@ -357,8 +357,8 @@ namespace SGL
 
 	Vector2i32 GraphicsPipeline::ToScreenSpace(const Vector3f &v)
 	{
-		int32_t screen_x = Math::Round(m_Info.defaultBufferExtent.x * ((v.x + 1.0f) / 2.0f));
-		int32_t screen_y = Math::Round(m_Info.defaultBufferExtent.y * ((v.y + 1.0f) / 2.0f));
+		int32_t screen_x = (m_Info.defaultBufferExtent.x - 1) * ((v.x + 1.0f) / 2.0f);
+		int32_t screen_y = (m_Info.defaultBufferExtent.y - 1) * ((v.y + 1.0f) / 2.0f);
 		return Vector2i32(screen_x, screen_y);
 	}
 
