@@ -84,6 +84,7 @@
         "queue": "cpp",
         "stack": "cpp",
         "strstream": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "cassert": "cpp"
     }
 }

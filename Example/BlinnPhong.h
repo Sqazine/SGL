@@ -1,0 +1,116 @@
+#pragma once
+#include <memory>
+#include <vector>
+#include "Framework/Framework.h"
+#include "Common.h"
+
+struct BlinnPhongMaterial
+{
+    SGL::Vector3f ambient;
+    SGL::Vector3f diffuse;
+    SGL::Vector3f specular;
+    float shiness;
+};
+
+class BlinnPhongShaderProgram
+    : public SGL::GraphicsShaderProgram
+{
+public:
+    BlinnPhongShaderProgram() {}
+    ~BlinnPhongShaderProgram() {}
+
+    uniform std::vector<SGL::Vector3f> positions;
+    uniform std::vector<SGL::Vector3f> normals;
+    uniform std::vector<SGL::Vector2f> texcoords;
+
+    uniform SGL::Matrix4f modelMatrix;
+    uniform SGL::Matrix4f viewMatrix;
+    uniform SGL::Matrix4f projectionMatrix;
+
+    SGL::Vector4f VertexShader(uint32_t vertexIndex, SGL::Varyings &varyings) override
+    {
+        SGL::Vector4f vPositionWS = modelMatrix * SGL::Vector4f(positions[vertexIndex], 1.0f);
+        varyings.CommitVector3fVarying("vNormalWS", SGL::Vector3f::Normalize(SGL::Matrix4f::ToMatrix3(SGL::Matrix4f::Transpose(SGL::Matrix4f::Inverse(modelMatrix))) * normals[vertexIndex]));
+        varyings.CommitVector3fVarying("vPositionWS", SGL::Vector4f::ToVector3(vPositionWS));
+        varyings.CommitVector2fVarying("vTexcoord", texcoords[vertexIndex]);
+        return projectionMatrix * viewMatrix * vPositionWS;
+    }
+
+    uniform BlinnPhongMaterial material;
+    uniform Light light;
+    uniform SGL::Vector3f viewPosWS;
+
+    SGL::Vector4f FragmentShader(const SGL::Varyings &varyings) override
+    {
+        SGL::Vector3f vNormalWS = varyings.GetVector3fVarying("vNormalWS");
+        SGL::Vector2f vTexcoord = varyings.GetVector2fVarying("vTexcoord");
+        SGL::Vector3f vPositionWS = varyings.GetVector3fVarying("vPositionWS");
+        SGL::Vector3f viewDirWS = SGL::Vector3f::Normalize(viewPosWS - vPositionWS);
+        SGL::Vector3f lightDirWS = SGL::Vector3f::Normalize(light.position);
+
+        SGL::Vector3f halfDirWS = SGL::Vector3f::Normalize(lightDirWS + viewDirWS);
+
+        SGL::Vector3f ambientPart = light.ambient * material.ambient;
+        SGL::Vector3f diffusePart = light.diffuse * material.diffuse * (SGL::Vector3f::Dot(vNormalWS, lightDirWS) * 0.5f + 0.5f);                                           //half-lambertian
+        SGL::Vector3f specularPart = light.specular * material.specular * SGL::Math::Pow(SGL::Math::Max(SGL::Vector3f::Dot(vNormalWS, halfDirWS), 0.0f), material.shiness); //blinn-phong specular
+        return SGL::Vector4f(ambientPart + diffusePart + specularPart, 1.0);
+    }
+};
+
+class BlinnPhong : public Scene
+{
+public:
+    BlinnPhong(): sphere(Mesh(MeshType::SPHERE)) {}
+    ~BlinnPhong() {}
+
+    void Init() override
+    {
+        Scene::Init();
+
+        shader = std::make_shared<BlinnPhongShaderProgram>();
+        shader->positions = sphere.GetPositions();
+        shader->normals = sphere.GetNormals();
+        shader->texcoords = sphere.GetTexcoords();
+        shader->modelMatrix = SGL::Matrix4f();
+        shader->viewMatrix = SGL::Matrix4f::Translate(SGL::Vector3f(0.0f, 0.0f, -3.0f));
+        shader->projectionMatrix = SGL::Matrix4f::GLPerspective(SGL::Math::ToRadian(45.0f), 800 / 600.0f, 0.1f, 100.0f);
+        //parameter from http://devernay.free.fr/cours/opengl/materials.html
+        shader->material.ambient = SGL::Vector3f(1.0f, 0.5f, 0.31f);
+        shader->material.diffuse = SGL::Vector3f(1.0f, 0.5f, 0.31f);
+        shader->material.specular = SGL::Vector3f(0.5f);
+        shader->material.shiness = 32.0f;
+        shader->light.position = SGL::Vector3f(1.0f, 1.0f, 0.0f);
+        shader->light.ambient = SGL::Vector3f(0.2f);
+        shader->light.diffuse = SGL::Vector3f(1.0f);
+        shader->light.specular = SGL::Vector3f(1.0f);
+        shader->viewPosWS = SGL::Vector3f(0.0f, 0.0f, 3.0f);
+
+        SGL::GraphicsPipelineCreateInfo info;
+        info.defaultBufferExtent = m_OwnerApp->GetFrameExtent();
+        info.shaderProgram = shader.get();
+        info.renderType = SGL::RenderType::SOLID_TRIANGLE;
+        info.clearBufferType = SGL::BufferType::COLOR_BUFFER | SGL::BufferType::DEPTH_BUFFER;
+        info.clearColor = SGL::Vector4f(0.5f, 0.6f, 0.7f, 1.0f);
+
+        m_GraphicsPipeline = std::make_unique<SGL::GraphicsPipeline>(info);
+    }
+
+    void ProcessInput(InputSystem* inputSystem) override
+    {
+        Scene::ProcessInput(inputSystem);
+    }
+    void Update() override
+    {
+        Scene::Update();
+    }
+    void Draw() override
+    {
+        Scene::Draw();
+        m_GraphicsPipeline->ClearBuffer();
+        m_GraphicsPipeline->DrawElements(0, sphere.GetIndices());
+    }
+
+private:
+    Mesh sphere;
+    std::shared_ptr<BlinnPhongShaderProgram> shader;
+};
