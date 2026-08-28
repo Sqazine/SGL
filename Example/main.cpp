@@ -24,28 +24,28 @@ public:
     void ProcessInput() override
     {
         Application::ProcessInput();
-        if (m_InputSystem->GetEventType() == EventType::QUIT || m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_ESCAPE) == BUTTON_STATE::PRESS)
+        if (m_InputSystem->GetEventType() == EventType::QUIT || m_InputSystem->GetKeyState(KEYCODE_ESCAPE) == BUTTON_STATE::PRESS)
             m_Status = ApplicationStatus::EXIT;
 
-        if (m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_1) == BUTTON_STATE::PRESS)
+        if (m_InputSystem->GetKeyState(KEYCODE_1) == BUTTON_STATE::PRESS)
             m_CurrentSceneIndex = 0;
-        if (m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_2) == BUTTON_STATE::PRESS)
+        if (m_InputSystem->GetKeyState(KEYCODE_2) == BUTTON_STATE::PRESS)
             m_CurrentSceneIndex = 1;
-        if (m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_3) == BUTTON_STATE::PRESS)
+        if (m_InputSystem->GetKeyState(KEYCODE_3) == BUTTON_STATE::PRESS)
             m_CurrentSceneIndex = 2;
-        if (m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_4) == BUTTON_STATE::PRESS)
+        if (m_InputSystem->GetKeyState(KEYCODE_4) == BUTTON_STATE::PRESS)
             m_CurrentSceneIndex = 3;
-        if (m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_5) == BUTTON_STATE::PRESS)
+        if (m_InputSystem->GetKeyState(KEYCODE_5) == BUTTON_STATE::PRESS)
             m_CurrentSceneIndex = 4;
-        if (m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_6) == BUTTON_STATE::PRESS)
+        if (m_InputSystem->GetKeyState(KEYCODE_6) == BUTTON_STATE::PRESS)
             m_CurrentSceneIndex = 5;
-        if (m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_7) == BUTTON_STATE::PRESS)
+        if (m_InputSystem->GetKeyState(KEYCODE_7) == BUTTON_STATE::PRESS)
             m_CurrentSceneIndex = 6;
-        if (m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_8) == BUTTON_STATE::PRESS)
+        if (m_InputSystem->GetKeyState(KEYCODE_8) == BUTTON_STATE::PRESS)
             m_CurrentSceneIndex = 7;
-        if (m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_9) == BUTTON_STATE::PRESS)
+        if (m_InputSystem->GetKeyState(KEYCODE_9) == BUTTON_STATE::PRESS)
             m_CurrentSceneIndex = 8;
-        if (m_InputSystem->GetKeyboard()->GetKeyState(KEYCODE_0) == BUTTON_STATE::PRESS)
+        if (m_InputSystem->GetKeyState(KEYCODE_0) == BUTTON_STATE::PRESS)
             m_CurrentSceneIndex = 9;
     }
     void Update() override

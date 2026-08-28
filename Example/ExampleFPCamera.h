@@ -56,7 +56,7 @@ public:
 
     void ProcessInput(InputSystem *inputSystem) override
     {
-        inputSystem->GetMouse()->SetReleativeMode(true);
+        inputSystem->SetMouseRelativeMode(true);
 
         Scene::ProcessInput(inputSystem);
 

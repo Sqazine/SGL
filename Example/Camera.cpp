@@ -65,26 +65,26 @@ FPCamera::~FPCamera()
 void FPCamera::ProcessInput(InputSystem* inputSystem)
 {
 	float speed = 0;
-	if (inputSystem->GetKeyboard()->GetKeyState(KEYCODE_LSHIFT) == BUTTON_STATE::HOLD)
+	if (inputSystem->GetKeyState(KEYCODE_LSHIFT) == BUTTON_STATE::HOLD)
 		speed = (m_MoveSpeed + m_BoostSpeed) * Timer::deltaTime;
 	else
 		speed = m_MoveSpeed * Timer::deltaTime;
 
-	if (inputSystem->GetKeyboard()->GetKeyState(KEYCODE_W) == BUTTON_STATE::HOLD)
+	if (inputSystem->GetKeyState(KEYCODE_W) == BUTTON_STATE::HOLD)
 		m_Position += m_Front * speed;
-	if (inputSystem->GetKeyboard()->GetKeyState(KEYCODE_S) == BUTTON_STATE::HOLD)
+	if (inputSystem->GetKeyState(KEYCODE_S) == BUTTON_STATE::HOLD)
 		m_Position -= m_Front * speed;
-	if (inputSystem->GetKeyboard()->GetKeyState(KEYCODE_A) == BUTTON_STATE::HOLD)
+	if (inputSystem->GetKeyState(KEYCODE_A) == BUTTON_STATE::HOLD)
 		m_Position -= m_Right * speed;
-	if (inputSystem->GetKeyboard()->GetKeyState(KEYCODE_D) == BUTTON_STATE::HOLD)
+	if (inputSystem->GetKeyState(KEYCODE_D) == BUTTON_STATE::HOLD)
 		m_Position += m_Right * speed;
-	if (inputSystem->GetKeyboard()->GetKeyState(KEYCODE_E) == BUTTON_STATE::HOLD)
+	if (inputSystem->GetKeyState(KEYCODE_E) == BUTTON_STATE::HOLD)
 		m_Position += m_Up * speed;
-	if (inputSystem->GetKeyboard()->GetKeyState(KEYCODE_Q) == BUTTON_STATE::HOLD)
+	if (inputSystem->GetKeyState(KEYCODE_Q) == BUTTON_STATE::HOLD)
 		m_Position -= m_Up * speed;
 
-	m_Yaw += inputSystem->GetMouse()->GetMousePos().x * m_RotateSpeed * Timer::deltaTime;
-	m_Pitch -= inputSystem->GetMouse()->GetMousePos().y * m_RotateSpeed * Timer::deltaTime;
+	m_Yaw += inputSystem->GetMousePos().x * m_RotateSpeed * Timer::deltaTime;
+	m_Pitch -= inputSystem->GetMousePos().y * m_RotateSpeed * Timer::deltaTime;
 
 	//我们不希望相机在俯仰时发生视觉倒转的情况,因此要限制俯仰角
 	m_Pitch = SGL::Math::Clamp(m_Pitch, -89.0f, 89.0f);

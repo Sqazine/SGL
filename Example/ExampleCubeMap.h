@@ -97,11 +97,10 @@ public:
 
     void ProcessInput(InputSystem *inputSystem) override
     {
-        inputSystem->GetMouse()->SetReleativeMode(true);
+        inputSystem->SetMouseRelativeMode(true);
         Scene::ProcessInput(inputSystem);
 
         fpCamera->ProcessInput(inputSystem);
-        // inputSystem->GetMouse()->SetReleativeMode(false);
     }
 
     void Update() override

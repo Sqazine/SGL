@@ -1,18 +1,12 @@
 #include "InputSystem.h"
 #include <memory>
 
-KeyboardState::KeyboardState()
-{
-}
-KeyboardState::~KeyboardState()
-{
-}
-bool KeyboardState::GetKeyValue(KeyCode keyCode) const
+bool InputSystem::GetKeyValue(KeyCode keyCode) const
 {
 	return m_CurKeyState[keyCode] == 1 ? true : false;
 }
 
-BUTTON_STATE KeyboardState::GetKeyState(KeyCode keyCode) const
+BUTTON_STATE InputSystem::GetKeyState(KeyCode keyCode) const
 {
 	if (m_PreKeyState[keyCode] == 0)
 	{
@@ -30,73 +24,65 @@ BUTTON_STATE KeyboardState::GetKeyState(KeyCode keyCode) const
 	}
 }
 
-MouseState::MouseState()
-	: m_CurPos(SGL::Vector2i32(0.0f)), m_PrePos(SGL::Vector2i32(0.0f)), m_MouseScrollWheel(SGL::Vector2i32(0.0f)), m_CurButtons(0), m_PreButtons(0)
+bool InputSystem::GetMouseButtonValue(int button) const
 {
-}
-MouseState::~MouseState()
-{
-}
-bool MouseState::GetButtonValue(int button) const
-{
-	return (m_CurButtons & SDL_BUTTON(button)) == 1;
+	return (m_CurMouseButtons & SDL_BUTTON(button)) == 1;
 }
 
-BUTTON_STATE MouseState::GetButtonState(int button) const
+BUTTON_STATE InputSystem::GetMouseButtonState(int button) const
 {
-	if ((m_PreButtons & SDL_BUTTON(button)) == 0)
+	if ((m_PreMouseButtons & SDL_BUTTON(button)) == 0)
 	{
-		if ((m_PreButtons & SDL_BUTTON(button)) == 0)
+		if ((m_PreMouseButtons & SDL_BUTTON(button)) == 0)
 			return BUTTON_STATE::NONE;
 		else
 			return BUTTON_STATE::PRESS;
 	}
 	else
 	{
-		if ((m_PreButtons & SDL_BUTTON(button)) == 0)
+		if ((m_PreMouseButtons & SDL_BUTTON(button)) == 0)
 			return BUTTON_STATE::RELEASE;
 		else
 			return BUTTON_STATE::HOLD;
 	}
 }
 
-SGL::Vector2i32 MouseState::GetMousePos() const
+SGL::Vector2i32 InputSystem::GetMousePos() const
 {
-	return m_CurPos;
+	return m_CurMousePos;
 }
 
-SGL::Vector2i32 MouseState::GetReleativeMove() const
+SGL::Vector2i32 InputSystem::GetMouseRelativeMove() const
 {
-	return m_CurPos - m_PrePos;
+	return m_CurMousePos - m_PreMousePos;
 }
 
-SGL::Vector2i32 MouseState::GetMouseScrollWheel() const
+SGL::Vector2i32 InputSystem::GetMouseScrollWheel() const
 {
 	return m_MouseScrollWheel;
 }
 
-void MouseState::SetReleativeMode(bool isActive)
+void InputSystem::SetMouseRelativeMode(bool isActive)
 {
-	m_IsRelative = isActive;
+	m_IsMouseRelative = isActive;
 	if (isActive)
 		SDL_SetRelativeMouseMode(SDL_TRUE);
 	else
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
-bool MouseState::IsReleativeMode() const
+bool InputSystem::IsMouseRelativeMode() const
 {
-	return m_IsRelative;
+	return m_IsMouseRelative;
 }
 
 InputSystem::InputSystem()
-	: m_KeyboardState(std::make_shared<KeyboardState>()), m_MouseState(std::make_shared<MouseState>())
 {
 	//获取SDL中键盘状态
-	m_KeyboardState->m_CurKeyState = SDL_GetKeyboardState(nullptr);
+	m_CurKeyState = SDL_GetKeyboardState(nullptr);
 	//清空前一帧键盘状态的值（游戏开始前没有状态）
-	m_KeyboardState->m_PreKeyState = new uint8_t[SDL_NUM_SCANCODES];
-	memset(m_KeyboardState->m_PreKeyState, 0, SDL_NUM_SCANCODES);
+	m_PreKeyState = new uint8_t[SDL_NUM_SCANCODES];
+	memset(m_PreKeyState, 0, SDL_NUM_SCANCODES);
 }
 
 InputSystem::~InputSystem()
@@ -105,22 +91,22 @@ InputSystem::~InputSystem()
 
 void InputSystem::PreUpdate()
 {
-	memcpy_s(m_KeyboardState->m_PreKeyState, SDL_NUM_SCANCODES, m_KeyboardState->m_CurKeyState, SDL_NUM_SCANCODES);
-	m_MouseState->m_PreButtons = m_MouseState->m_CurButtons;
-	m_MouseState->m_PrePos = m_MouseState->m_CurPos;
-	m_MouseState->m_MouseScrollWheel = SGL::Vector2i32(0);
+	memcpy_s(m_PreKeyState, SDL_NUM_SCANCODES, m_CurKeyState, SDL_NUM_SCANCODES);
+	m_PreMouseButtons = m_CurMouseButtons;
+	m_PreMousePos = m_CurMousePos;
+	m_MouseScrollWheel = SGL::Vector2i32(0);
 }
 
 void InputSystem::PostUpdate()
 {
 	SGL::Vector2i32 p = SGL::Vector2i32(0);
 	//更新当前帧的鼠标按键的状态
-	if (!m_MouseState->m_IsRelative) //获取鼠标光标位置的绝对位置
-		m_MouseState->m_CurButtons = SDL_GetMouseState(&p.x, &p.y);
+	if (!m_IsMouseRelative) //获取鼠标光标位置的绝对位置
+		m_CurMouseButtons = SDL_GetMouseState(&p.x, &p.y);
 	else //获取鼠标光标的相对位置
-		m_MouseState->m_CurButtons = SDL_GetRelativeMouseState(&p.x, &p.y);
+		m_CurMouseButtons = SDL_GetRelativeMouseState(&p.x, &p.y);
 	//更新当前帧的鼠标光标位置
-	m_MouseState->m_CurPos = p;
+	m_CurMousePos = p;
 }
 
 void InputSystem::ProcessInput()
@@ -132,7 +118,7 @@ void InputSystem::ProcessInput()
 		{
 		case SDL_MOUSEWHEEL:
 			m_InputEventType = (EventType)SDL_MOUSEWHEEL;
-			m_MouseState->m_MouseScrollWheel = SGL::Vector2i32(event.wheel.x, event.wheel.y);
+			m_MouseScrollWheel = SGL::Vector2i32(event.wheel.x, event.wheel.y);
 			break;
 		case SDL_MOUSEMOTION:
 			m_InputEventType = (EventType)SDL_MOUSEMOTION;
@@ -144,16 +130,6 @@ void InputSystem::ProcessInput()
 			break;
 		}
 	}
-}
-
-const std::shared_ptr<KeyboardState> &InputSystem::GetKeyboard() const
-{
-	return m_KeyboardState;
-}
-
-const std::shared_ptr<MouseState> &InputSystem::GetMouse() const
-{
-	return m_MouseState;
 }
 
 EventType InputSystem::GetEventType() const

@@ -54,11 +54,11 @@ enum KeyCode
     KEYCODE_EQUALS = 46,
     KEYCODE_LEFTBRACKET = 47,
     KEYCODE_RIGHTBRACKET = 48,
-    KEYCODE_BACKSLASH = 49, 
-    KEYCODE_NONUSHASH = 50, 
+    KEYCODE_BACKSLASH = 49,
+    KEYCODE_NONUSHASH = 50,
     KEYCODE_SEMICOLON = 51,
     KEYCODE_APOSTROPHE = 52,
-    KEYCODE_GRAVE = 53, 
+    KEYCODE_GRAVE = 53,
     KEYCODE_COMMA = 54,
     KEYCODE_PERIOD = 55,
     KEYCODE_SLASH = 56,
@@ -92,7 +92,7 @@ enum KeyCode
     KEYCODE_DOWN = 81,
     KEYCODE_UP = 82,
 
-    KEYCODE_NUMLOCKCLEAR = 83, 
+    KEYCODE_NUMLOCKCLEAR = 83,
     KEYCODE_KP_DIVIDE = 84,
     KEYCODE_KP_MULTIPLY = 85,
     KEYCODE_KP_MINUS = 86,
@@ -110,9 +110,9 @@ enum KeyCode
     KEYCODE_KP_0 = 98,
     KEYCODE_KP_PERIOD = 99,
 
-    KEYCODE_NONUSBACKSLASH = 100, 
-    KEYCODE_APPLICATION = 101, 
-    KEYCODE_POWER = 102, 
+    KEYCODE_NONUSBACKSLASH = 100,
+    KEYCODE_APPLICATION = 101,
+    KEYCODE_POWER = 102,
     KEYCODE_KP_EQUALS = 103,
     KEYCODE_F13 = 104,
     KEYCODE_F14 = 105,
@@ -131,7 +131,7 @@ enum KeyCode
     KEYCODE_MENU = 118,
     KEYCODE_SELECT = 119,
     KEYCODE_STOP = 120,
-    KEYCODE_AGAIN = 121, 
+    KEYCODE_AGAIN = 121,
     KEYCODE_UNDO = 122,
     KEYCODE_CUT = 123,
     KEYCODE_COPY = 124,
@@ -144,7 +144,7 @@ enum KeyCode
     KEYCODE_KP_COMMA = 133,
     KEYCODE_KP_EQUALSAS400 = 134,
 
-    KEYCODE_INTERNATIONAL1 = 135, 
+    KEYCODE_INTERNATIONAL1 = 135,
     KEYCODE_INTERNATIONAL2 = 136,
     KEYCODE_INTERNATIONAL3 = 137,
     KEYCODE_INTERNATIONAL4 = 138,
@@ -163,7 +163,7 @@ enum KeyCode
     KEYCODE_LANG8 = 151,
     KEYCODE_LANG9 = 152,
 
-    KEYCODE_ALTERASE = 153, 
+    KEYCODE_ALTERASE = 153,
     KEYCODE_SYSREQ = 154,
     KEYCODE_CANCEL = 155,
     KEYCODE_CLEAR = 156,
@@ -225,15 +225,15 @@ enum KeyCode
 
     KEYCODE_LCTRL = 224,
     KEYCODE_LSHIFT = 225,
-    KEYCODE_LALT = 226, 
-    KEYCODE_LGUI = 227, 
+    KEYCODE_LALT = 226,
+    KEYCODE_LGUI = 227,
     KEYCODE_RCTRL = 228,
     KEYCODE_RSHIFT = 229,
     KEYCODE_RALT = 230,
     KEYCODE_RGUI = 231,
 
-    KEYCODE_MODE = 257,    
-                                
+    KEYCODE_MODE = 257,
+
     KEYCODE_AUDIONEXT = 258,
     KEYCODE_AUDIOPREV = 259,
     KEYCODE_AUDIOSTOP = 260,
@@ -254,7 +254,7 @@ enum KeyCode
 
     KEYCODE_BRIGHTNESSDOWN = 275,
     KEYCODE_BRIGHTNESSUP = 276,
-    KEYCODE_DISPLAYSWITCH = 277, 
+    KEYCODE_DISPLAYSWITCH = 277,
     KEYCODE_KBDILLUMTOGGLE = 278,
     KEYCODE_KBDILLUMDOWN = 279,
     KEYCODE_KBDILLUMUP = 280,
@@ -267,7 +267,7 @@ enum KeyCode
     KEYCODE_AUDIOREWIND = 285,
     KEYCODE_AUDIOFASTFORWARD = 286,
 
-    NUM_KEYCODES = 512 
+    NUM_KEYCODES = 512
 };
 
 enum EventType
@@ -279,65 +279,45 @@ enum EventType
 
 enum class BUTTON_STATE
 {
-	NONE,
-	PRESS,
-	RELEASE,
-	HOLD
-};
-
-class KeyboardState
-{
-public:
-	KeyboardState();
-	~KeyboardState();
-	bool GetKeyValue(KeyCode keyCode) const;
-	enum BUTTON_STATE GetKeyState(KeyCode keyCode) const;
-
-private:
-	friend class InputSystem;
-	const uint8_t *m_CurKeyState;
-	uint8_t *m_PreKeyState;
-};
-
-class MouseState
-{
-public:
-	MouseState();
-	~MouseState();
-	bool GetButtonValue(int button) const;
-	enum BUTTON_STATE GetButtonState(int button) const;
-	SGL::Vector2i32 GetMousePos() const;
-	SGL::Vector2i32 GetReleativeMove() const;
-	SGL::Vector2i32 GetMouseScrollWheel() const;
-
-	void SetReleativeMode(bool isActive);
-	bool IsReleativeMode() const;
-
-private:
-	friend class InputSystem;
-	bool m_IsRelative;
-	SGL::Vector2i32 m_CurPos;
-	SGL::Vector2i32 m_PrePos;
-	SGL::Vector2i32 m_MouseScrollWheel;
-	uint32_t m_CurButtons;
-	uint32_t m_PreButtons;
+    NONE,
+    PRESS,
+    RELEASE,
+    HOLD
 };
 
 class InputSystem
 {
 public:
-	InputSystem();
-	~InputSystem();
-	void PreUpdate();
-	void PostUpdate();
-	void ProcessInput();
-	const std::shared_ptr<KeyboardState> &GetKeyboard() const;
-	const std::shared_ptr<MouseState> &GetMouse() const;
+    InputSystem();
+    ~InputSystem();
+    void PreUpdate();
+    void PostUpdate();
+    void ProcessInput();
 
-	EventType GetEventType() const;
+    bool GetKeyValue(KeyCode keyCode) const;
+    enum BUTTON_STATE GetKeyState(KeyCode keyCode) const;
+
+    EventType GetEventType() const;
+
+    bool GetMouseButtonValue(int button) const;
+    enum BUTTON_STATE GetMouseButtonState(int button) const;
+    SGL::Vector2i32 GetMousePos() const;
+    SGL::Vector2i32 GetMouseRelativeMove() const;
+    SGL::Vector2i32 GetMouseScrollWheel() const;
+
+    void SetMouseRelativeMode(bool isActive);
+    bool IsMouseRelativeMode() const;
 
 private:
-	EventType m_InputEventType;
-	std::shared_ptr<KeyboardState> m_KeyboardState;
-	std::shared_ptr<MouseState> m_MouseState;
+    EventType m_InputEventType;
+
+    const uint8_t *m_CurKeyState{nullptr};
+    uint8_t *m_PreKeyState{nullptr};
+
+    bool m_IsMouseRelative{false};
+    SGL::Vector2i32 m_CurMousePos{SGL::Vector2i32(0.0f)};
+    SGL::Vector2i32 m_PreMousePos{SGL::Vector2i32(0.0f)};
+    SGL::Vector2i32 m_MouseScrollWheel{SGL::Vector2i32(0.0f)};
+    uint32_t m_CurMouseButtons{0};
+    uint32_t m_PreMouseButtons{0};
 };
